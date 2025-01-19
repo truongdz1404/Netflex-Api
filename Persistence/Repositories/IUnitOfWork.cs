@@ -1,4 +1,6 @@
-namespace Netflex.Persistance.Repositories;
+using Netflex.Entities.Abstractions;
+
+namespace Netflex.Persistence.Repositories;
 
 public interface IUnitOfWork
 {

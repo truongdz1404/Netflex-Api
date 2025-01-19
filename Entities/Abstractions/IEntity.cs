@@ -1,4 +1,4 @@
-namespace Netflex.Entities;
+namespace Netflex.Entities.Abstractions;
 
 public interface IEntity<T> : IEntity
 {

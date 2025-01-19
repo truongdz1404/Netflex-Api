@@ -1,6 +1,7 @@
 using System.Collections;
+using Netflex.Entities.Abstractions;
 
-namespace Netflex.Persistance.Repositories.Implements;
+namespace Netflex.Persistence.Repositories.Implements;
 
 public class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
 {

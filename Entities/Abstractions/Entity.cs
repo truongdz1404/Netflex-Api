@@ -1,4 +1,4 @@
-namespace Netflex.Entities;
+namespace Netflex.Entities.Abstractions;
 
 public abstract class Entity<T> : IEntity<T>
 {

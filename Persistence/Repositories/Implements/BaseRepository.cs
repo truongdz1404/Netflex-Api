@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Netflex.Entities.Abstractions;
 
-namespace Netflex.Persistance.Repositories.Implements;
+namespace Netflex.Persistence.Repositories.Implements;
 
 public class BaseRepository<T>(ApplicationDbContext dbContext)
     : IBaseRepository<T> where T : Entity
@@ -17,7 +18,7 @@ public class BaseRepository<T>(ApplicationDbContext dbContext)
 
     public Task UpdateAsync(T entity)
     {
-        T exist = _dbContext.Set<T>().Find(entity.Id) 
+        T exist = _dbContext.Set<T>().Find(entity.Id)
             ?? throw new NotFoundException(nameof(T), entity.Id);
         _dbContext.Entry(exist).CurrentValues.SetValues(entity);
         return Task.CompletedTask;
