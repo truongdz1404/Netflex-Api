@@ -10,6 +10,7 @@ public class Film : Entity
     public string? Path { get; set; }
     public string? Trailer { get; set; }
     public int ProductionYear { get; set; }
+    public Guid? AgeCategoryId { get; set; }
     public TimeSpan HowLong { get; set; }
     public DateTime CreatedAt { get; set; }
 }

@@ -179,6 +179,22 @@ namespace Netflex.Persistence.Migrations
                     b.ToTable("tblActors", "dbo");
                 });
 
+            modelBuilder.Entity("Netflex.Entities.AgeCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("tblAgeCategorys", "dbo");
+                });
+
             modelBuilder.Entity("Netflex.Entities.Blog", b =>
                 {
                     b.Property<Guid>("Id")
@@ -275,6 +291,9 @@ namespace Netflex.Persistence.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<Guid?>("AgeCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -301,6 +320,8 @@ namespace Netflex.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AgeCategoryId");
 
                     b.ToTable("tblFilms", "dbo");
                 });
@@ -446,6 +467,9 @@ namespace Netflex.Persistence.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<Guid?>("AgeCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -462,6 +486,8 @@ namespace Netflex.Persistence.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AgeCategoryId");
 
                     b.ToTable("tblSeries", "dbo");
                 });
@@ -660,6 +686,13 @@ namespace Netflex.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Netflex.Entities.Film", b =>
+                {
+                    b.HasOne("Netflex.Entities.AgeCategory", null)
+                        .WithMany()
+                        .HasForeignKey("AgeCategoryId");
+                });
+
             modelBuilder.Entity("Netflex.Entities.FilmActor", b =>
                 {
                     b.HasOne("Netflex.Entities.Actor", null)
@@ -745,6 +778,13 @@ namespace Netflex.Persistence.Migrations
                         .HasForeignKey("SerieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Netflex.Entities.Serie", b =>
+                {
+                    b.HasOne("Netflex.Entities.AgeCategory", null)
+                        .WithMany()
+                        .HasForeignKey("AgeCategoryId");
                 });
 
             modelBuilder.Entity("Netflex.Entities.SerieActor", b =>

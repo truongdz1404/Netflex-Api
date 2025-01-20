@@ -8,5 +8,6 @@ public class Serie : Entity
     public string? About { get; set; }
     public string? Poster { get; set; }
     public int ProductionYear { get; set; }
+    public Guid? AgeCategoryId { get; set; }
     public DateTime CreatedAt { get; set; }
 }

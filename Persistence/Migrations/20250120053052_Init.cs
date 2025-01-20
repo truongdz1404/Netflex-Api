@@ -30,6 +30,19 @@ namespace Netflex.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "tblAgeCategorys",
+                schema: "dbo",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblAgeCategorys", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "tblCountrys",
                 schema: "dbo",
                 columns: table => new
@@ -40,26 +53,6 @@ namespace Netflex.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_tblCountrys", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "tblFilms",
-                schema: "dbo",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    About = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    Poster = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    Path = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Trailer = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProductionYear = table.Column<int>(type: "int", nullable: false),
-                    HowLong = table.Column<TimeSpan>(type: "time", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_tblFilms", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -106,23 +99,6 @@ namespace Netflex.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblSeries",
-                schema: "dbo",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    About = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    Poster = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    ProductionYear = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_tblSeries", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "tblUsers",
                 schema: "dbo",
                 columns: table => new
@@ -149,84 +125,54 @@ namespace Netflex.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblFilmActors",
+                name: "tblFilms",
                 schema: "dbo",
                 columns: table => new
                 {
-                    FilmId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ActorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    About = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Poster = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    Path = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Trailer = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProductionYear = table.Column<int>(type: "int", nullable: false),
+                    AgeCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    HowLong = table.Column<TimeSpan>(type: "time", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_tblFilmActors", x => new { x.FilmId, x.ActorId });
+                    table.PrimaryKey("PK_tblFilms", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_tblFilmActors_tblActors_ActorId",
-                        column: x => x.ActorId,
+                        name: "FK_tblFilms_tblAgeCategorys_AgeCategoryId",
+                        column: x => x.AgeCategoryId,
                         principalSchema: "dbo",
-                        principalTable: "tblActors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_tblFilmActors_tblFilms_FilmId",
-                        column: x => x.FilmId,
-                        principalSchema: "dbo",
-                        principalTable: "tblFilms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalTable: "tblAgeCategorys",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblFilmCountrys",
+                name: "tblSeries",
                 schema: "dbo",
                 columns: table => new
                 {
-                    FilmId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CountryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    About = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Poster = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    ProductionYear = table.Column<int>(type: "int", nullable: false),
+                    AgeCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_tblFilmCountrys", x => new { x.FilmId, x.CountryId });
+                    table.PrimaryKey("PK_tblSeries", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_tblFilmCountrys_tblCountrys_CountryId",
-                        column: x => x.CountryId,
+                        name: "FK_tblSeries_tblAgeCategorys_AgeCategoryId",
+                        column: x => x.AgeCategoryId,
                         principalSchema: "dbo",
-                        principalTable: "tblCountrys",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_tblFilmCountrys_tblFilms_FilmId",
-                        column: x => x.FilmId,
-                        principalSchema: "dbo",
-                        principalTable: "tblFilms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "tblFilmGenres",
-                schema: "dbo",
-                columns: table => new
-                {
-                    FilmId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GenreId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_tblFilmGenres", x => new { x.FilmId, x.GenreId });
-                    table.ForeignKey(
-                        name: "FK_tblFilmGenres_tblFilms_FilmId",
-                        column: x => x.FilmId,
-                        principalSchema: "dbo",
-                        principalTable: "tblFilms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_tblFilmGenres_tblGenres_GenreId",
-                        column: x => x.GenreId,
-                        principalSchema: "dbo",
-                        principalTable: "tblGenres",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalTable: "tblAgeCategorys",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -253,112 +199,6 @@ namespace Netflex.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblEpisodes",
-                schema: "dbo",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Number = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    About = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    Path = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    HowLong = table.Column<TimeSpan>(type: "time", nullable: false),
-                    SerieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_tblEpisodes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_tblEpisodes_tblSeries_SerieId",
-                        column: x => x.SerieId,
-                        principalSchema: "dbo",
-                        principalTable: "tblSeries",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "tblSerieActors",
-                schema: "dbo",
-                columns: table => new
-                {
-                    SerieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ActorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_tblSerieActors", x => new { x.SerieId, x.ActorId });
-                    table.ForeignKey(
-                        name: "FK_tblSerieActors_tblActors_ActorId",
-                        column: x => x.ActorId,
-                        principalSchema: "dbo",
-                        principalTable: "tblActors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_tblSerieActors_tblSeries_SerieId",
-                        column: x => x.SerieId,
-                        principalSchema: "dbo",
-                        principalTable: "tblSeries",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "tblSerieCountrys",
-                schema: "dbo",
-                columns: table => new
-                {
-                    SerieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CountryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_tblSerieCountrys", x => new { x.SerieId, x.CountryId });
-                    table.ForeignKey(
-                        name: "FK_tblSerieCountrys_tblCountrys_CountryId",
-                        column: x => x.CountryId,
-                        principalSchema: "dbo",
-                        principalTable: "tblCountrys",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_tblSerieCountrys_tblSeries_SerieId",
-                        column: x => x.SerieId,
-                        principalSchema: "dbo",
-                        principalTable: "tblSeries",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "tblSerieGenres",
-                schema: "dbo",
-                columns: table => new
-                {
-                    SerieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GenreId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_tblSerieGenres", x => new { x.SerieId, x.GenreId });
-                    table.ForeignKey(
-                        name: "FK_tblSerieGenres_tblGenres_GenreId",
-                        column: x => x.GenreId,
-                        principalSchema: "dbo",
-                        principalTable: "tblGenres",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_tblSerieGenres_tblSeries_SerieId",
-                        column: x => x.SerieId,
-                        principalSchema: "dbo",
-                        principalTable: "tblSeries",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "tblBlogs",
                 schema: "dbo",
                 columns: table => new
@@ -375,78 +215,6 @@ namespace Netflex.Persistence.Migrations
                     table.PrimaryKey("PK_tblBlogs", x => x.Id);
                     table.ForeignKey(
                         name: "FK_tblBlogs_tblUsers_CreaterId",
-                        column: x => x.CreaterId,
-                        principalSchema: "dbo",
-                        principalTable: "tblUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "tblFollows",
-                schema: "dbo",
-                columns: table => new
-                {
-                    FollowerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FilmId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SerieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FollowedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_tblFollows", x => new { x.FollowerId, x.FilmId, x.SerieId });
-                    table.ForeignKey(
-                        name: "FK_tblFollows_tblFilms_FilmId",
-                        column: x => x.FilmId,
-                        principalSchema: "dbo",
-                        principalTable: "tblFilms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_tblFollows_tblSeries_SerieId",
-                        column: x => x.SerieId,
-                        principalSchema: "dbo",
-                        principalTable: "tblSeries",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_tblFollows_tblUsers_FollowerId",
-                        column: x => x.FollowerId,
-                        principalSchema: "dbo",
-                        principalTable: "tblUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "tblReviews",
-                schema: "dbo",
-                columns: table => new
-                {
-                    CreaterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FilmId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SerieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Rating = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_tblReviews", x => new { x.FilmId, x.CreaterId, x.SerieId });
-                    table.ForeignKey(
-                        name: "FK_tblReviews_tblFilms_FilmId",
-                        column: x => x.FilmId,
-                        principalSchema: "dbo",
-                        principalTable: "tblFilms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_tblReviews_tblSeries_SerieId",
-                        column: x => x.SerieId,
-                        principalSchema: "dbo",
-                        principalTable: "tblSeries",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_tblReviews_tblUsers_CreaterId",
                         column: x => x.CreaterId,
                         principalSchema: "dbo",
                         principalTable: "tblUsers",
@@ -575,6 +343,265 @@ namespace Netflex.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "tblFilmActors",
+                schema: "dbo",
+                columns: table => new
+                {
+                    FilmId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ActorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblFilmActors", x => new { x.FilmId, x.ActorId });
+                    table.ForeignKey(
+                        name: "FK_tblFilmActors_tblActors_ActorId",
+                        column: x => x.ActorId,
+                        principalSchema: "dbo",
+                        principalTable: "tblActors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblFilmActors_tblFilms_FilmId",
+                        column: x => x.FilmId,
+                        principalSchema: "dbo",
+                        principalTable: "tblFilms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tblFilmCountrys",
+                schema: "dbo",
+                columns: table => new
+                {
+                    FilmId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CountryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblFilmCountrys", x => new { x.FilmId, x.CountryId });
+                    table.ForeignKey(
+                        name: "FK_tblFilmCountrys_tblCountrys_CountryId",
+                        column: x => x.CountryId,
+                        principalSchema: "dbo",
+                        principalTable: "tblCountrys",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblFilmCountrys_tblFilms_FilmId",
+                        column: x => x.FilmId,
+                        principalSchema: "dbo",
+                        principalTable: "tblFilms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tblFilmGenres",
+                schema: "dbo",
+                columns: table => new
+                {
+                    FilmId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GenreId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblFilmGenres", x => new { x.FilmId, x.GenreId });
+                    table.ForeignKey(
+                        name: "FK_tblFilmGenres_tblFilms_FilmId",
+                        column: x => x.FilmId,
+                        principalSchema: "dbo",
+                        principalTable: "tblFilms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblFilmGenres_tblGenres_GenreId",
+                        column: x => x.GenreId,
+                        principalSchema: "dbo",
+                        principalTable: "tblGenres",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tblEpisodes",
+                schema: "dbo",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Number = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    About = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Path = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    HowLong = table.Column<TimeSpan>(type: "time", nullable: false),
+                    SerieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblEpisodes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_tblEpisodes_tblSeries_SerieId",
+                        column: x => x.SerieId,
+                        principalSchema: "dbo",
+                        principalTable: "tblSeries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tblFollows",
+                schema: "dbo",
+                columns: table => new
+                {
+                    FollowerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FilmId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SerieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FollowedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblFollows", x => new { x.FollowerId, x.FilmId, x.SerieId });
+                    table.ForeignKey(
+                        name: "FK_tblFollows_tblFilms_FilmId",
+                        column: x => x.FilmId,
+                        principalSchema: "dbo",
+                        principalTable: "tblFilms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblFollows_tblSeries_SerieId",
+                        column: x => x.SerieId,
+                        principalSchema: "dbo",
+                        principalTable: "tblSeries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblFollows_tblUsers_FollowerId",
+                        column: x => x.FollowerId,
+                        principalSchema: "dbo",
+                        principalTable: "tblUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tblReviews",
+                schema: "dbo",
+                columns: table => new
+                {
+                    CreaterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FilmId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SerieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblReviews", x => new { x.FilmId, x.CreaterId, x.SerieId });
+                    table.ForeignKey(
+                        name: "FK_tblReviews_tblFilms_FilmId",
+                        column: x => x.FilmId,
+                        principalSchema: "dbo",
+                        principalTable: "tblFilms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblReviews_tblSeries_SerieId",
+                        column: x => x.SerieId,
+                        principalSchema: "dbo",
+                        principalTable: "tblSeries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblReviews_tblUsers_CreaterId",
+                        column: x => x.CreaterId,
+                        principalSchema: "dbo",
+                        principalTable: "tblUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tblSerieActors",
+                schema: "dbo",
+                columns: table => new
+                {
+                    SerieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ActorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblSerieActors", x => new { x.SerieId, x.ActorId });
+                    table.ForeignKey(
+                        name: "FK_tblSerieActors_tblActors_ActorId",
+                        column: x => x.ActorId,
+                        principalSchema: "dbo",
+                        principalTable: "tblActors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblSerieActors_tblSeries_SerieId",
+                        column: x => x.SerieId,
+                        principalSchema: "dbo",
+                        principalTable: "tblSeries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tblSerieCountrys",
+                schema: "dbo",
+                columns: table => new
+                {
+                    SerieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CountryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblSerieCountrys", x => new { x.SerieId, x.CountryId });
+                    table.ForeignKey(
+                        name: "FK_tblSerieCountrys_tblCountrys_CountryId",
+                        column: x => x.CountryId,
+                        principalSchema: "dbo",
+                        principalTable: "tblCountrys",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblSerieCountrys_tblSeries_SerieId",
+                        column: x => x.SerieId,
+                        principalSchema: "dbo",
+                        principalTable: "tblSeries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tblSerieGenres",
+                schema: "dbo",
+                columns: table => new
+                {
+                    SerieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GenreId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tblSerieGenres", x => new { x.SerieId, x.GenreId });
+                    table.ForeignKey(
+                        name: "FK_tblSerieGenres_tblGenres_GenreId",
+                        column: x => x.GenreId,
+                        principalSchema: "dbo",
+                        principalTable: "tblGenres",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblSerieGenres_tblSeries_SerieId",
+                        column: x => x.SerieId,
+                        principalSchema: "dbo",
+                        principalTable: "tblSeries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_tblBlogs_CreaterId",
                 schema: "dbo",
@@ -604,6 +631,12 @@ namespace Netflex.Persistence.Migrations
                 schema: "dbo",
                 table: "tblFilmGenres",
                 column: "GenreId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblFilms_AgeCategoryId",
+                schema: "dbo",
+                table: "tblFilms",
+                column: "AgeCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblFollows_FilmId",
@@ -660,6 +693,12 @@ namespace Netflex.Persistence.Migrations
                 schema: "dbo",
                 table: "tblSerieGenres",
                 column: "GenreId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblSeries_AgeCategoryId",
+                schema: "dbo",
+                table: "tblSeries",
+                column: "AgeCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblUserClaims_UserId",
@@ -797,6 +836,10 @@ namespace Netflex.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "tblUsers",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "tblAgeCategorys",
                 schema: "dbo");
         }
     }
