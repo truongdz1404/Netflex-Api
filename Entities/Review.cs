@@ -1,8 +1,6 @@
-using Netflex.Entities.Abstractions;
-
 namespace Netflex.Entities;
 
-public class Review : Entity
+public class Review
 {
     public required int Rating { get; set; }
     public required string CreaterId { get; set; }

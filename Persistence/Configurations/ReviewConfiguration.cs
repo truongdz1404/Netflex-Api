@@ -8,7 +8,7 @@ public class ReviewConfiguration
 {
     public void Configure(EntityTypeBuilder<Review> builder)
     {
-        builder.ToTable("tblReviews").HasKey(x => x.Id);
+        builder.ToTable("tblReviews").HasKey(x => new { x.FilmId, x.CreaterId, x.SerieId });
         builder.Property(x => x.Rating).IsRequired();
     }
 }

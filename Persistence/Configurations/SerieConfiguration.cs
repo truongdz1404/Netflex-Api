@@ -14,10 +14,9 @@ public class SerieConfiguration
         builder.Property(x => x.About).HasMaxLength(1000);
         builder.Property(x => x.Poster).HasMaxLength(200);
 
-        builder.HasMany<SerieFollow>()
+        builder.HasMany<Follow>()
             .WithOne()
-            .HasForeignKey(f => f.SerieId)
-            .IsRequired();
+            .HasForeignKey(f => f.SerieId);
 
         builder.HasMany<Episode>()
             .WithOne()

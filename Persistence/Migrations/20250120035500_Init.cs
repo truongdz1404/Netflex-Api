@@ -383,26 +383,35 @@ namespace Netflex.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblFilmFollows",
+                name: "tblFollows",
                 schema: "dbo",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FilmId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    FollowerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FilmId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SerieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FollowedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_tblFilmFollows", x => new { x.FilmId, x.UserId });
+                    table.PrimaryKey("PK_tblFollows", x => new { x.FollowerId, x.FilmId, x.SerieId });
                     table.ForeignKey(
-                        name: "FK_tblFilmFollows_tblFilms_FilmId",
+                        name: "FK_tblFollows_tblFilms_FilmId",
                         column: x => x.FilmId,
                         principalSchema: "dbo",
                         principalTable: "tblFilms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_tblFilmFollows_tblUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_tblFollows_tblSeries_SerieId",
+                        column: x => x.SerieId,
+                        principalSchema: "dbo",
+                        principalTable: "tblSeries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblFollows_tblUsers_FollowerId",
+                        column: x => x.FollowerId,
                         principalSchema: "dbo",
                         principalTable: "tblUsers",
                         principalColumn: "Id",
@@ -414,57 +423,31 @@ namespace Netflex.Persistence.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Rating = table.Column<int>(type: "int", nullable: false),
                     CreaterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FilmId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    SerieId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    FilmId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SerieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_tblReviews", x => x.Id);
+                    table.PrimaryKey("PK_tblReviews", x => new { x.FilmId, x.CreaterId, x.SerieId });
                     table.ForeignKey(
                         name: "FK_tblReviews_tblFilms_FilmId",
                         column: x => x.FilmId,
                         principalSchema: "dbo",
                         principalTable: "tblFilms",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_tblReviews_tblSeries_SerieId",
                         column: x => x.SerieId,
                         principalSchema: "dbo",
                         principalTable: "tblSeries",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_tblReviews_tblUsers_CreaterId",
                         column: x => x.CreaterId,
-                        principalSchema: "dbo",
-                        principalTable: "tblUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "tblSerieFollows",
-                schema: "dbo",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    SerieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_tblSerieFollows", x => new { x.SerieId, x.UserId });
-                    table.ForeignKey(
-                        name: "FK_tblSerieFollows_tblSeries_SerieId",
-                        column: x => x.SerieId,
-                        principalSchema: "dbo",
-                        principalTable: "tblSeries",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_tblSerieFollows_tblUsers_UserId",
-                        column: x => x.UserId,
                         principalSchema: "dbo",
                         principalTable: "tblUsers",
                         principalColumn: "Id",
@@ -617,28 +600,28 @@ namespace Netflex.Persistence.Migrations
                 column: "CountryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_tblFilmFollows_UserId",
-                schema: "dbo",
-                table: "tblFilmFollows",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_tblFilmGenres_GenreId",
                 schema: "dbo",
                 table: "tblFilmGenres",
                 column: "GenreId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_tblFollows_FilmId",
+                schema: "dbo",
+                table: "tblFollows",
+                column: "FilmId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblFollows_SerieId",
+                schema: "dbo",
+                table: "tblFollows",
+                column: "SerieId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_tblReviews_CreaterId",
                 schema: "dbo",
                 table: "tblReviews",
                 column: "CreaterId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_tblReviews_FilmId",
-                schema: "dbo",
-                table: "tblReviews",
-                column: "FilmId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblReviews_SerieId",
@@ -671,12 +654,6 @@ namespace Netflex.Persistence.Migrations
                 schema: "dbo",
                 table: "tblSerieCountrys",
                 column: "CountryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_tblSerieFollows_UserId",
-                schema: "dbo",
-                table: "tblSerieFollows",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblSerieGenres_GenreId",
@@ -743,11 +720,11 @@ namespace Netflex.Persistence.Migrations
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "tblFilmFollows",
+                name: "tblFilmGenres",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "tblFilmGenres",
+                name: "tblFollows",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
@@ -764,10 +741,6 @@ namespace Netflex.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "tblSerieCountrys",
-                schema: "dbo");
-
-            migrationBuilder.DropTable(
-                name: "tblSerieFollows",
                 schema: "dbo");
 
             migrationBuilder.DropTable(

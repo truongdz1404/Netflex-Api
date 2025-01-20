@@ -9,14 +9,11 @@ public class UserConfiguration
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.ToTable("tblUsers");
-        builder.HasMany<FilmFollow>()
+        builder.HasMany<Follow>()
             .WithOne()
-            .HasForeignKey(f => f.UserId)
+            .HasForeignKey(f => f.FollowerId)
             .IsRequired();
-        builder.HasMany<SerieFollow>()
-            .WithOne()
-            .HasForeignKey(s => s.UserId)
-            .IsRequired();
+
         builder.HasMany<Review>()
             .WithOne()
             .HasForeignKey(r => r.CreaterId)

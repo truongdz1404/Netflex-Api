@@ -12,7 +12,7 @@ using Netflex.Persistence;
 namespace Netflex.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250119162339_Init")]
+    [Migration("20250120035500_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -338,21 +338,6 @@ namespace Netflex.Persistence.Migrations
                     b.ToTable("tblFilmCountrys", "dbo");
                 });
 
-            modelBuilder.Entity("Netflex.Entities.FilmFollow", b =>
-                {
-                    b.Property<Guid>("FilmId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("FilmId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("tblFilmFollows", "dbo");
-                });
-
             modelBuilder.Entity("Netflex.Entities.FilmGenre", b =>
                 {
                     b.Property<Guid>("FilmId")
@@ -366,6 +351,29 @@ namespace Netflex.Persistence.Migrations
                     b.HasIndex("GenreId");
 
                     b.ToTable("tblFilmGenres", "dbo");
+                });
+
+            modelBuilder.Entity("Netflex.Entities.Follow", b =>
+                {
+                    b.Property<string>("FollowerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid?>("FilmId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("SerieId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("FollowedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("FollowerId", "FilmId", "SerieId");
+
+                    b.HasIndex("FilmId");
+
+                    b.HasIndex("SerieId");
+
+                    b.ToTable("tblFollows", "dbo");
                 });
 
             modelBuilder.Entity("Netflex.Entities.Genre", b =>
@@ -410,28 +418,21 @@ namespace Netflex.Persistence.Migrations
 
             modelBuilder.Entity("Netflex.Entities.Review", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid?>("FilmId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CreaterId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid?>("FilmId")
+                    b.Property<Guid?>("SerieId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("SerieId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
+                    b.HasKey("FilmId", "CreaterId", "SerieId");
 
                     b.HasIndex("CreaterId");
-
-                    b.HasIndex("FilmId");
 
                     b.HasIndex("SerieId");
 
@@ -496,21 +497,6 @@ namespace Netflex.Persistence.Migrations
                     b.HasIndex("CountryId");
 
                     b.ToTable("tblSerieCountrys", "dbo");
-                });
-
-            modelBuilder.Entity("Netflex.Entities.SerieFollow", b =>
-                {
-                    b.Property<Guid>("SerieId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("SerieId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("tblSerieFollows", "dbo");
                 });
 
             modelBuilder.Entity("Netflex.Entities.SerieGenre", b =>
@@ -707,21 +693,6 @@ namespace Netflex.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Netflex.Entities.FilmFollow", b =>
-                {
-                    b.HasOne("Netflex.Entities.Film", null)
-                        .WithMany()
-                        .HasForeignKey("FilmId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Netflex.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Netflex.Entities.FilmGenre", b =>
                 {
                     b.HasOne("Netflex.Entities.Film", null)
@@ -737,6 +708,27 @@ namespace Netflex.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Netflex.Entities.Follow", b =>
+                {
+                    b.HasOne("Netflex.Entities.Film", null)
+                        .WithMany()
+                        .HasForeignKey("FilmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Netflex.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("FollowerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Netflex.Entities.Serie", null)
+                        .WithMany()
+                        .HasForeignKey("SerieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Netflex.Entities.Review", b =>
                 {
                     b.HasOne("Netflex.Entities.User", null)
@@ -747,11 +739,15 @@ namespace Netflex.Persistence.Migrations
 
                     b.HasOne("Netflex.Entities.Film", null)
                         .WithMany()
-                        .HasForeignKey("FilmId");
+                        .HasForeignKey("FilmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Netflex.Entities.Serie", null)
                         .WithMany()
-                        .HasForeignKey("SerieId");
+                        .HasForeignKey("SerieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Netflex.Entities.SerieActor", b =>
@@ -780,21 +776,6 @@ namespace Netflex.Persistence.Migrations
                     b.HasOne("Netflex.Entities.Serie", null)
                         .WithMany()
                         .HasForeignKey("SerieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Netflex.Entities.SerieFollow", b =>
-                {
-                    b.HasOne("Netflex.Entities.Serie", null)
-                        .WithMany()
-                        .HasForeignKey("SerieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Netflex.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

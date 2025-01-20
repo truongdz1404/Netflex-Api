@@ -17,10 +17,9 @@ public class FilmConfiguration
         builder.Property(x => x.HowLong);
         builder.Property(x => x.CreatedAt);
 
-        builder.HasMany<FilmFollow>()
+        builder.HasMany<Follow>()
             .WithOne()
-            .HasForeignKey(f => f.FilmId)
-            .IsRequired();
+            .HasForeignKey(f => f.FilmId);
 
         builder.HasMany<FilmCountry>()
             .WithOne()
