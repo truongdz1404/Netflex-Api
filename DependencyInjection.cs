@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
-using Netflex.Persistence;
+using Netflex.Database;
 using Netflex.Services.Implements;
 using Microsoft.EntityFrameworkCore;
-using Netflex.Persistence.Repositories.Implements;
+using Netflex.Database.Repositories.Implements;
 
 namespace Netflex;
 public static class DependencyInjection
