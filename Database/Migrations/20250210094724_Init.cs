@@ -371,7 +371,7 @@ namespace Netflex.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblFilmCountrys",
+                name: "tblFilmCountries",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -380,16 +380,16 @@ namespace Netflex.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_tblFilmCountrys", x => new { x.FilmId, x.CountryId });
+                    table.PrimaryKey("PK_tblFilmCountries", x => new { x.FilmId, x.CountryId });
                     table.ForeignKey(
-                        name: "FK_tblFilmCountrys_tblCountrys_CountryId",
+                        name: "FK_tblFilmCountries_tblCountrys_CountryId",
                         column: x => x.CountryId,
                         principalSchema: "dbo",
                         principalTable: "tblCountrys",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_tblFilmCountrys_tblFilms_FilmId",
+                        name: "FK_tblFilmCountries_tblFilms_FilmId",
                         column: x => x.FilmId,
                         principalSchema: "dbo",
                         principalTable: "tblFilms",
@@ -549,7 +549,7 @@ namespace Netflex.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tblSerieCountrys",
+                name: "tblSerieCountries",
                 schema: "dbo",
                 columns: table => new
                 {
@@ -558,16 +558,16 @@ namespace Netflex.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_tblSerieCountrys", x => new { x.SerieId, x.CountryId });
+                    table.PrimaryKey("PK_tblSerieCountries", x => new { x.SerieId, x.CountryId });
                     table.ForeignKey(
-                        name: "FK_tblSerieCountrys_tblCountrys_CountryId",
+                        name: "FK_tblSerieCountries_tblCountrys_CountryId",
                         column: x => x.CountryId,
                         principalSchema: "dbo",
                         principalTable: "tblCountrys",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_tblSerieCountrys_tblSeries_SerieId",
+                        name: "FK_tblSerieCountries_tblSeries_SerieId",
                         column: x => x.SerieId,
                         principalSchema: "dbo",
                         principalTable: "tblSeries",
@@ -621,9 +621,9 @@ namespace Netflex.Database.Migrations
                 column: "ActorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_tblFilmCountrys_CountryId",
+                name: "IX_tblFilmCountries_CountryId",
                 schema: "dbo",
-                table: "tblFilmCountrys",
+                table: "tblFilmCountries",
                 column: "CountryId");
 
             migrationBuilder.CreateIndex(
@@ -683,9 +683,9 @@ namespace Netflex.Database.Migrations
                 column: "ActorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_tblSerieCountrys_CountryId",
+                name: "IX_tblSerieCountries_CountryId",
                 schema: "dbo",
-                table: "tblSerieCountrys",
+                table: "tblSerieCountries",
                 column: "CountryId");
 
             migrationBuilder.CreateIndex(
@@ -755,7 +755,7 @@ namespace Netflex.Database.Migrations
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "tblFilmCountrys",
+                name: "tblFilmCountries",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
@@ -779,7 +779,7 @@ namespace Netflex.Database.Migrations
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "tblSerieCountrys",
+                name: "tblSerieCountries",
                 schema: "dbo");
 
             migrationBuilder.DropTable(

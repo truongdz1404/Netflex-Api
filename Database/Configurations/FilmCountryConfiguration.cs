@@ -8,6 +8,6 @@ public class FilmCountryConfiguration
 {
     public void Configure(EntityTypeBuilder<FilmCountry> builder)
     {
-        builder.ToTable("tblFilmCountrys").HasKey(x => new { x.FilmId, x.CountryId });
+        builder.ToTable("tblFilmCountries").HasKey(x => new { x.FilmId, x.CountryId });
     }
 }

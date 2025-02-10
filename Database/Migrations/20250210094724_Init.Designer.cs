@@ -12,7 +12,7 @@ using Netflex.Database;
 namespace Netflex.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250120053052_Init")]
+    [Migration("20250210094724_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -21,7 +21,7 @@ namespace Netflex.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("dbo")
-                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -356,7 +356,7 @@ namespace Netflex.Database.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.ToTable("tblFilmCountrys", "dbo");
+                    b.ToTable("tblFilmCountries", "dbo");
                 });
 
             modelBuilder.Entity("Netflex.Entities.FilmGenre", b =>
@@ -522,7 +522,7 @@ namespace Netflex.Database.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.ToTable("tblSerieCountrys", "dbo");
+                    b.ToTable("tblSerieCountries", "dbo");
                 });
 
             modelBuilder.Entity("Netflex.Entities.SerieGenre", b =>

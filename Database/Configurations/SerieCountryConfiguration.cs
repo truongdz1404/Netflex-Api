@@ -8,6 +8,6 @@ public class SerieCountryConfiguration
 {
     public void Configure(EntityTypeBuilder<SerieCountry> builder)
     {
-        builder.ToTable("tblSerieCountrys").HasKey(x => new { x.SerieId, x.CountryId });
+        builder.ToTable("tblSerieCountries").HasKey(x => new { x.SerieId, x.CountryId });
     }
 }
