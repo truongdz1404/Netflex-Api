@@ -1,8 +1,27 @@
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.Options;
+using Netflex.Models.Configs;
+using SendGrid;
+using SendGrid.Helpers.Mail;
+
 namespace Netflex.Services.Implements;
-public class EmailService : IEmailService
+public class EmailService : IEmailSender
 {
-    public Task<bool> SendEmailAsync(string email, string subject, string message)
+    private readonly EmailConfig _emailConfig;
+
+    public EmailService(IOptions<EmailConfig> emailConfig)
     {
-        throw new NotImplementedException();
+        _emailConfig = emailConfig.Value;
     }
+
+    public async Task SendEmailAsync(string toEmail, string subject, string verificationLink)
+    {
+        var apiKey = _emailConfig.Key;
+        var client = new SendGridClient(apiKey);
+        var from = new EmailAddress(_emailConfig.OwnerMail, _emailConfig.Company);
+        var to = new EmailAddress(toEmail);
+        var msg = MailHelper.CreateSingleEmail(from, to, subject, null, verificationLink);
+        var response = await client.SendEmailAsync(msg);
+    }
+
 }
