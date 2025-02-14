@@ -6,6 +6,7 @@ using Netflex.Database.Repositories.Implements;
 using Netflex.Exceptions.Handler;
 using Netflex.Models.Configs;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Authentication.OAuth;
 
 namespace Netflex;
 public static class DependencyInjection
@@ -48,14 +49,23 @@ public static class DependencyInjection
         services.AddAuthentication()
         .AddGoogle(options =>
         {
-            options.ClientId = configuration["Authentication:Google:ClientId"];
-            options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+            options.ClientId = configuration["Authentication:Google:ClientId"] ?? throw new InvalidOperationException("ClientId is not configured");
+            options.ClientSecret = configuration["Authentication:Google:ClientSecret"]  ?? throw new InvalidOperationException("ClientSecret is not configured");
             options.CallbackPath = "/signin-google";
         })
         .AddFacebook(options =>
         {
-            options.AppId = configuration["Authentication:Facebook:AppId"];
-            options.AppSecret = configuration["Authentication:Facebook:AppSecret"];
+            options.AppId = configuration["Authentication:Facebook:AppId"]  ?? throw new InvalidOperationException("ClientSecret is not configured");
+            options.AppSecret = configuration["Authentication:Facebook:AppSecret"]  ?? throw new InvalidOperationException("ClientSecret is not configured");
+            options.Events = new OAuthEvents
+            {
+                OnRemoteFailure = context =>
+                {
+                    context.Response.Redirect("/Identity/Account/Login");
+                    context.HandleResponse();
+                    return Task.CompletedTask;
+                }
+            };
         });
         services.ConfigureApplicationCookie(options =>
   {
