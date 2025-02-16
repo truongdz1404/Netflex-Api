@@ -1,0 +1,86 @@
+﻿@model List<AgeCategory>
+
+<h2 class="text-center mb-5">Age Category</h2>
+
+<div class="row mb-5">
+    <div class="col">
+        <a class="btn btn-primary" asp-controller="AgeCategory" asp-action="Create">New Age Category</a>
+    </div>
+    <div class="col">
+    </div>
+</div>
+@* Search *@
+<form asp-action="Index" method="get" class="mb-4">
+    <div class="row g-2">
+        <div class="col-md-6">
+            <label class="form-label">Find by name:</label>
+            <input type="text" name="SearchString" class="form-control" value="@ViewData["CurrentFilter"]" placeholder="Searching..." />
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary me-2"><i class="bi bi-search"></i> Search</button>
+            <a asp-action="Index" class="btn btn-secondary"><i class="bi bi-arrow-clockwise"></i> Reset</a>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Sort By:</label>
+            <select class="form-select" name="SortBy">
+                <option value="name" selected="@(ViewData["SortBy"] as string == "name" ? "selected" : null)">Name (A-Z)</option>
+                <option value="name_desc" selected="@(ViewData["SortBy"] as string == "name_desc" ? "selected" : null)">Name (Z-A)</option>
+            </select>
+        </div>
+    </div>
+    
+</form>
+
+<form asp-action="Index" method="get" class="d-flex align-items-center gap-2">
+    <label class="fw-bold">Sort by:</label>
+    <select class="form-select w-auto" name="sort" onchange="this.form.submit()">
+        <option value="name" selected="@(ViewBag.Sort == "name" ? "selected" : null)">Name (A-Z)</option>
+        <option value="name_desc" selected="@(ViewBag.Sort == "name_desc" ? "selected" : null)">Name (Z-A)</option>
+    </select>
+</form>
+
+
+@**@
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Name</td>
+                <td style="white-space:nowrap">
+                    <a class="btn btn-primary btn-sm" asp-controller="AgeCategory" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <a class="btn btn-danger btn-sm" asp-controller="AgeCategory" asp-action="Delete" asp-route-id="@item.Id" 
+                    onclick="return confirm('Are you sure delete this item?')">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@* @{ *@
+@*     var prevDisabled = !Model.HasPreviousPage ? "disabled" : ""; *@
+@*     var nextDisabled = !Model.HasNextPage ? "disabled" : ""; *@
+@* } *@
+
+@* <a asp-action="Index" *@
+@*    asp-route-sortOrder="@ViewData["CurrentSort"]" *@
+@*    asp-route-pageNumber="@(Model.PageIndex - 1)" *@
+@*    asp-route-currentFilter="@ViewData["CurrentFilter"]" *@
+@*    class="btn btn-default @prevDisabled"> *@
+@*     Previous *@
+@* </a> *@
+@* <a asp-action="Index" *@
+@*    asp-route-sortOrder="@ViewData["CurrentSort"]" *@
+@*    asp-route-pageNumber="@(Model.PageIndex + 1)" *@
+@*    asp-route-currentFilter="@ViewData["CurrentFilter"]" *@
+@*    class="btn btn-default @nextDisabled"> *@
+@*     Next *@
+@* </a> *@
