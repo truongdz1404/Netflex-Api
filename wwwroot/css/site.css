@@ -1,5 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
 html {
   font-size: 14px;
+}
+
+body {
+  font-family: "Inter", Helvetica, Arial, sans-serif;
 }
 
 @media (min-width: 768px) {
@@ -19,4 +25,26 @@ html {
 
 body {
   margin-bottom: 60px;
+}
+
+.form-group.required .control-label:after {
+  content: " *";
+  color: red;
+  font-weight: bold;
+}
+
+.video-container {
+  width: 100%; 
+  max-width: 100%; 
+  aspect-ratio: 16 / 9; 
+  background: black; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
 }
