@@ -8,6 +8,7 @@ namespace Netflex.Database;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : IdentityDbContext<User>(options)
 {
+    public virtual DbSet<Film> Films { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
