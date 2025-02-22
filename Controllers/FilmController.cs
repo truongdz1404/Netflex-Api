@@ -101,7 +101,7 @@ public class FilmController(IStorageService storage,
             Path = filmUri?.ToString() ?? update.FileUrl,
             Trailer = update.Trailer,
             ProductionYear = update.ProductionYear,
-            CreatedAt = DateTime.Now
+            CreatedAt = DateTime.UtcNow
         };
         _context.Update(newFilm);
         _context.SaveChanges();
@@ -131,7 +131,7 @@ public class FilmController(IStorageService storage,
             Path = filmUri?.ToString() ?? string.Empty,
             Trailer = film.Trailer,
             ProductionYear = film.ProductionYear,
-            CreatedAt = DateTime.Now
+            CreatedAt = DateTime.UtcNow
         };
         _context.Films.Add(newFilm);
         _context.SaveChanges();

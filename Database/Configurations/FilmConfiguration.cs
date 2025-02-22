@@ -10,7 +10,7 @@ public class FilmConfiguration
     {
         builder.ToTable("tblFilms").HasKey(x => x.Id);
         builder.Property(x => x.Title).HasMaxLength(100).IsRequired();
-        builder.Property(x => x.Path).IsRequired();
+        builder.Property(x => x.Path).HasMaxLength(200);
         builder.Property(x => x.About).HasMaxLength(1000);
         builder.Property(x => x.Poster).HasMaxLength(200);
         builder.Property(x => x.ProductionYear);
