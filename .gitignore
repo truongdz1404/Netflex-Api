@@ -5,6 +5,7 @@
 
 # dotenv files
 .env
+netflex-storage-key.json
 
 # User-specific files
 *.rsuser

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 namespace Netflex;
 public static class DependencyInjection
 {
-    public static IServiceCollection AddServices
+    public static IServiceCollection AddDependencyInjection
         (this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("Database");
@@ -38,6 +38,7 @@ public static class DependencyInjection
         services.AddHttpClient();
         services.AddScoped<ApplicationDbContext>();
         services.AddScoped<IEmailSender, EmailService>();
+        services.AddSingleton<IStorageService>(s => new StorageService());
 
         services.AddTransient(typeof(IUnitOfWork), typeof(UnitOfWork))
             .AddTransient(typeof(IBaseRepository<>), typeof(BaseRepository<>));
@@ -80,5 +81,3 @@ public static class DependencyInjection
         return services;
     }
 }
-
-
