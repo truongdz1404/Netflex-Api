@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Netflex.Models;
 
-public partial class TblUser
+public partial class UserViewModel
 {
     public string Id { get; set; } = null!;
 
@@ -35,19 +35,5 @@ public partial class TblUser
 
     public int AccessFailedCount { get; set; }
 
-    public virtual ICollection<TblBlog> TblBlogs { get; set; } = new List<TblBlog>();
-
-    public virtual ICollection<TblFollow> TblFollows { get; set; } = new List<TblFollow>();
-
-    public virtual ICollection<TblReview> TblReviews { get; set; } = new List<TblReview>();
-
-    public virtual ICollection<TblUserClaim> TblUserClaims { get; set; } = new List<TblUserClaim>();
-
-    public virtual ICollection<TblUserLogin> TblUserLogins { get; set; } = new List<TblUserLogin>();
-
-    public virtual ICollection<TblUserToken> TblUserTokens { get; set; } = new List<TblUserToken>();
-
-    public virtual ICollection<TblNotification> Notifications { get; set; } = new List<TblNotification>();
-
-    public virtual ICollection<TblRole> Roles { get; set; } = new List<TblRole>();
+    public virtual ICollection<BlogViewModel> TblBlogs { get; set; } = new List<BlogViewModel>();
 }

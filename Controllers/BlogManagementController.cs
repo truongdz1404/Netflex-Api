@@ -1,206 +1,173 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Netflex.Database;
 using Netflex.Models;
+using System;
+using System.Linq;
 
 namespace Netflex.Controllers
 {
     public class BlogManagementController : Controller
     {
-        private readonly NetflexContext context;
-        public BlogManagementController(NetflexContext context) => this.context = context;
-        // GET: BlogManagement
+        private readonly ApplicationDbContext _context;
+
+        public BlogManagementController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
         public IActionResult Index()
         {
-            var blogs = context.TblBlogs
-                .Include(b => b.Creater)
-                .ToList();
+            var blogs = _context.Blogs
+                .Select(b => new BlogViewModel
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Content = b.Content,
+                    Thumbnail = b.Thumbnail,
+                    CreatedAt = b.CreatedAt,
+                    CreaterId = b.CreaterId,
+                }).ToList();
 
             return View(blogs);
         }
 
-
-
-        // GET: BlogManagement/Details/5
-        public ActionResult Details(Guid? id)
+        public IActionResult Details(Guid? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var blog = context.TblBlogs
-                .Include(b => b.Creater)
-                .FirstOrDefault(m => m.Id == id);
+            var blog = _context.Blogs
+                .Where(b => b.Id == id)
+                .Select(b => new BlogViewModel
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Content = b.Content,
+                    Thumbnail = b.Thumbnail,
+                    CreatedAt = b.CreatedAt,
+                    CreaterId = b.CreaterId, 
+                }).FirstOrDefault();
 
             if (blog == null)
-            {
                 return NotFound();
-            }
 
             return View(blog);
         }
 
-
-        // GET: BlogManagement/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
-            ViewBag.CreaterId = new SelectList(context.TblUsers, "Id", "Id");
-            ViewBag.CreaterList = context.TblUsers.ToDictionary(u => u.Id, u => u.UserName);
-
+            ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName");
             return View();
         }
 
-
-
-        // POST: BlogManagement/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(TblBlog tblBlog)
+        public IActionResult Create(BlogViewModel blogViewModel)
         {
             if (ModelState.IsValid)
             {
-                try
+                var blog = new Blog
                 {
-                    tblBlog.Id = Guid.NewGuid(); 
-                    tblBlog.CreatedAt = DateTime.Now;
+                    Id = Guid.NewGuid(),
+                    Title = blogViewModel.Title,
+                    Content = blogViewModel.Content,
+                    Thumbnail = blogViewModel.Thumbnail,
+                    CreatedAt = DateTime.Now,
+                    CreaterId = blogViewModel.CreaterId
+                };
 
-                    if (!string.IsNullOrEmpty(tblBlog.CreaterId))
-                    {
-                        tblBlog.Creater = context.TblUsers.FirstOrDefault(u => u.Id == tblBlog.CreaterId);
-                    }
-
-                    context.TblBlogs.Add(tblBlog);
-                    context.SaveChanges();
-
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    ModelState.AddModelError("", "Error while creating blog.");
-                }
-            }
-
-            ViewBag.CreaterId = new SelectList(context.TblUsers, "Id", "Id", tblBlog.CreaterId);
-            ViewBag.CreaterList = context.TblUsers.ToDictionary(u => u.Id, u => u.UserName);
-
-            return View(tblBlog);
-        }
-
-
-
-        // GET: BlogManagement/Edit/5
-        public ActionResult Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var blog = context.TblBlogs
-                .Include(b => b.Creater)
-                .FirstOrDefault(m => m.Id == id);
-
-            if (blog == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.CreaterId = new SelectList(context.TblUsers, "Id", "Id", blog.CreaterId);
-
-            ViewBag.CreaterList = context.TblUsers.ToDictionary(u => u.Id, u => u.UserName);
-
-            return View(blog);
-        }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(Guid id, TblBlog tblBlog)
-        {
-            if (id != tblBlog.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var existingBlog = context.TblBlogs.Include(b => b.Creater).FirstOrDefault(b => b.Id == id);
-                    if (existingBlog != null)
-                    {
-                        existingBlog.Title = tblBlog.Title;
-                        existingBlog.Content = tblBlog.Content;
-                        existingBlog.Thumbnail = tblBlog.Thumbnail;
-                        existingBlog.CreatedAt = tblBlog.CreatedAt;
-
-                        if (!string.IsNullOrEmpty(tblBlog.CreaterId))
-                        {
-                            existingBlog.CreaterId = tblBlog.CreaterId;
-                            existingBlog.Creater = context.TblUsers.FirstOrDefault(u => u.Id == tblBlog.CreaterId);
-                        }
-
-                        context.SaveChanges();
-                    }
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!BlogExists(tblBlog.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _context.Blogs.Add(blog);
+                _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.CreaterId = new SelectList(context.TblUsers, "Id", "Id", tblBlog.CreaterId);
-            return View(tblBlog);
+            ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName", blogViewModel.CreaterId);
+            return View(blogViewModel);
         }
 
-
-        private bool BlogExists(Guid id)
-        {
-            return context.TblBlogs.Any(e => e.Id == id);
-        }
-
-        // GET: BlogManagement/Delete/5
-        public ActionResult Delete(Guid? id)
+        public IActionResult Edit(Guid? id)
         {
             if (id == null)
-            {
                 return NotFound();
+
+            var blog = _context.Blogs.Find(id);
+            if (blog == null)
+                return NotFound();
+
+            var blogViewModel = new BlogViewModel
+            {
+                Id = blog.Id,
+                Title = blog.Title,
+                Content = blog.Content,
+                Thumbnail = blog.Thumbnail,
+                CreatedAt = blog.CreatedAt,
+                CreaterId = blog.CreaterId
+            };
+
+            ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName", blog.CreaterId);
+            return View(blogViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Guid id, BlogViewModel blogViewModel)
+        {
+            if (id != blogViewModel.Id)
+                return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                var blog = _context.Blogs.Find(id);
+                if (blog == null)
+                    return NotFound();
+
+                blog.Title = blogViewModel.Title;
+                blog.Content = blogViewModel.Content;
+                blog.Thumbnail = blogViewModel.Thumbnail;
+                blog.CreaterId = blogViewModel.CreaterId;
+
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index));
             }
 
-            var blog = context.TblBlogs
-                .Include(b => b.Creater)
-                .FirstOrDefault(m => m.Id == id);
+            ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName", blogViewModel.CreaterId);
+            return View(blogViewModel);
+        }
+
+        public IActionResult Delete(Guid? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var blog = _context.Blogs
+                .Where(b => b.Id == id)
+                .Select(b => new BlogViewModel
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Content = b.Content,
+                    Thumbnail = b.Thumbnail,
+                    CreatedAt = b.CreatedAt,
+                    CreaterId = b.CreaterId,
+                }).FirstOrDefault();
 
             if (blog == null)
-            {
                 return NotFound();
-            }
 
             return View(blog);
         }
 
-
-        //POST: BlogManagement/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(Guid id)
+        public IActionResult DeleteConfirmed(Guid id)
         {
-            var blog = context.TblBlogs.Find(id);
+            var blog = _context.Blogs.Find(id);
             if (blog != null)
             {
-                context.TblBlogs.Remove(blog);
-                context.SaveChanges();
+                _context.Blogs.Remove(blog);
+                _context.SaveChanges();
             }
 
             return RedirectToAction(nameof(Index));

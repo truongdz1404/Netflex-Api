@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Netflex.Models;
 
-public partial class TblBlog
+public partial class BlogViewModel
 {
     public Guid Id { get; set; }
 
@@ -17,8 +17,4 @@ public partial class TblBlog
     public DateTime CreatedAt { get; set; }
 
     public string CreaterId { get; set; } = null!;
-
-    public virtual TblUser? Creater { get; set; }
-
-    //public virtual TblUser Creater { get; set; } = null!;
 }

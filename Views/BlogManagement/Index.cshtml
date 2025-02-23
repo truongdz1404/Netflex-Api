@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Netflex.Models.TblBlog>
+﻿@model IEnumerable<Netflex.Models.BlogViewModel>
 
 @{
     ViewData["Title"] = "Blog Management";
@@ -26,7 +26,7 @@
                 @Html.DisplayNameFor(model => model.CreatedAt)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Creater)
+                @Html.DisplayNameFor(model => model.CreaterId)
             </th>
             <th></th>
         </tr>
@@ -53,7 +53,7 @@
                 @Html.DisplayFor(modelItem => item.CreatedAt)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Creater.UserName)
+                @Html.DisplayFor(modelItem => item.CreaterId)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

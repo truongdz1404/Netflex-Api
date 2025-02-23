@@ -1,4 +1,4 @@
-﻿@model Netflex.Models.TblBlog
+﻿@model Netflex.Models.BlogViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -42,10 +42,10 @@
                 <span asp-validation-for="CreaterId" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            @* <div class="form-group">
                 <label asp-for="Creater" class="control-label"></label>
                 <input type="text" id="CreaterName" class="form-control" readonly />
-            </div>
+            </div> *@
 
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
