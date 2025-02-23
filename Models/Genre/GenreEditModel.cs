@@ -1,6 +1,6 @@
-﻿namespace Netflex.Models
+﻿namespace Netflex.Models.Genre
 {
-    public class AgeCategoryViewModel
+    public class GenreEditModel
     {
         public required string Name { get; set; }
     }

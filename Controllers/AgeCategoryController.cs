@@ -1,31 +1,32 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Netflex.Models;
+using Netflex.Models.AgeCategory;
+using System.Drawing.Printing;
+using X.PagedList.Extensions;
 
 namespace Netflex.Controllers
 {
     public class AgeCategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-
+        public const int PAGE_SIZE = 3;
         public AgeCategoryController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<IActionResult> Index(string? SearchString, string? SortBy = "name", int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string? SearchString, string? SortBy = "name", int PageNumber = 1)
         {
             var repository = _unitOfWork.Repository<AgeCategory>();
             var query = repository.Entities;
 
             ViewData["CurrentFilter"] = SearchString;
             ViewData["SortBy"] = SortBy;
-            // Tifm kiếm 
+
             if (!string.IsNullOrEmpty(SearchString))
             {
-                query = query.Where(x => x.Name.Contains(SearchString));
+                query = query.Where(x => x.Name.ToLower().Contains(SearchString.ToLower()));
             }
 
-            // Sắp xếp
             query = SortBy switch
             {
                 "name" => query.OrderBy(x => x.Name),
@@ -33,13 +34,20 @@ namespace Netflex.Controllers
                 _ => query.OrderBy(x => x.Name)
             };
 
-            return View(await query.ToListAsync());
+            var result = query.Select(x => new AgeCategoryViewModel
+            {
+                Id = x.Id,
+                Name = x.Name
+            }).ToPagedList(PageNumber, PAGE_SIZE);
+
+            return View(result);
         }
+
 
         public IActionResult Create() => View();
 
         [HttpPost]
-        public async Task<IActionResult> Create(AgeCategoryViewModel model)
+        public async Task<IActionResult> Create(AgeCategoryEditModel model)
         {
             if (!ModelState.IsValid) return View(model);
 
@@ -53,13 +61,13 @@ namespace Netflex.Controllers
         {
             var category = await _unitOfWork.Repository<AgeCategory>().GetByIdAsync(id);
             if (category == null) return NotFound();
-            AgeCategoryViewModel model = new AgeCategoryViewModel() { Name = category.Name };
+            AgeCategoryEditModel model = new AgeCategoryEditModel() { Name = category.Name };
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Guid id, AgeCategoryViewModel model)
+        public async Task<IActionResult> Edit(Guid id, AgeCategoryEditModel model)
         {
             if (!ModelState.IsValid) return View(model);
             var entity = await _unitOfWork.Repository<AgeCategory>().GetByIdAsync(id);
@@ -69,15 +77,9 @@ namespace Netflex.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            var category = await _unitOfWork.Repository<AgeCategory>().GetByIdAsync(id);
-            if (category == null) return NotFound();
-            return View(category);
-        }
 
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        [HttpPost]
+        public async Task<IActionResult> Delete(Guid id)
         {
             var category = await _unitOfWork.Repository<AgeCategory>().GetByIdAsync(id);
             if (category != null)
