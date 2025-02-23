@@ -27,10 +27,6 @@ public class FilmController(IStorageService storage,
 
         return View(models);
     }
-    public IActionResult Create()
-    {
-        return View();
-    }
 
     public IActionResult Detail(Guid? id)
     {
@@ -53,6 +49,19 @@ public class FilmController(IStorageService storage,
         return View(model);
     }
 
+    [HttpDelete]
+    public IActionResult Delete(Guid? id)
+    {
+        if (id == null)
+            return NotFound();
+        var film = _context.Films.FirstOrDefault(m => m.Id.Equals(id));
+        if (film == null)
+            return NotFound();
+        _context.Films.Remove(film);
+        _context.SaveChanges();
+        return RedirectToAction("index", "film");
+    }
+
     public IActionResult Edit(Guid? id)
     {
         if (id == null)
@@ -60,47 +69,52 @@ public class FilmController(IStorageService storage,
         var film = _context.Films.FirstOrDefault(m => m.Id.Equals(id));
         if (film == null)
             return NotFound();
-        var model = new DetailFilmViewModel
+        var model = new EditFilmViewModel
         {
             Id = film.Id,
             Title = film.Title,
             About = film.About,
-            Poster = film.Poster,
-            Path = film.Path,
+            PosterUrl = film.Poster,
+            FileUrl = film.Path,
             Trailer = film.Trailer,
             ProductionYear = film.ProductionYear
         };
 
         return View(model);
     }
+
     [HttpPost]
-    public IActionResult Edit(EditFilmModel film)
+    public async Task<IActionResult> Edit(EditFilmViewModel update)
     {
-        // if (!ModelState.IsValid)
-        //     return View(film);
+        if (!ModelState.IsValid)
+            return View(update);
 
-        // var posterUri = film.Poster != null ? await _storage.UploadFileAsync("poster", film.Poster) : null;
-        // var filmUri = film.File != null ? await _storage.UploadFileAsync("film", film.File) : null;
+        var posterUri = update.Poster != null ? await _storage.UploadFileAsync("poster", update.Poster) : null;
+        var filmUri = update.File != null ? await _storage.UploadFileAsync("film", update.File) : null;
 
-        // var newFilm = new Film()
-        // {
-        //     Id = Guid.NewGuid(),
-        //     Title = film.Title,
-        //     About = film.About,
-        //     Poster = posterUri?.ToString(),
-        //     Path = filmUri?.ToString(),
-        //     Trailer = film.Trailer,
-        //     ProductionYear = film.ProductionYear,
-        //     CreatedAt = DateTime.Now
-        // };
-        // _context.Films.Add(newFilm);
-        // _context.SaveChanges();
-
+        var newFilm = new Film()
+        {
+            Id = update.Id,
+            Title = update.Title,
+            About = update.About,
+            Poster = posterUri?.ToString() ?? update.PosterUrl,
+            Path = filmUri?.ToString() ?? update.FileUrl,
+            Trailer = update.Trailer,
+            ProductionYear = update.ProductionYear,
+            CreatedAt = DateTime.UtcNow
+        };
+        _context.Update(newFilm);
+        _context.SaveChanges();
         return RedirectToAction("index", "film");
     }
 
+    public IActionResult Create()
+    {
+        return View();
+    }
+
     [HttpPost]
-    public async Task<IActionResult> Create(CreateFilmModel film)
+    public async Task<IActionResult> Create(CreateFilmViewModel film)
     {
         if (!ModelState.IsValid)
             return View(film);
@@ -113,11 +127,11 @@ public class FilmController(IStorageService storage,
             Id = Guid.NewGuid(),
             Title = film.Title,
             About = film.About,
-            Poster = posterUri?.ToString(),
-            Path = filmUri?.ToString(),
+            Poster = posterUri?.ToString() ?? string.Empty,
+            Path = filmUri?.ToString() ?? string.Empty,
             Trailer = film.Trailer,
             ProductionYear = film.ProductionYear,
-            CreatedAt = DateTime.Now
+            CreatedAt = DateTime.UtcNow
         };
         _context.Films.Add(newFilm);
         _context.SaveChanges();
