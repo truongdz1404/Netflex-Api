@@ -9,7 +9,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     : IdentityDbContext<User>(options)
 {
     public virtual DbSet<Blog> Blogs { get; set; }
-    public virtual DbSet<User> Users { get; set; }
+    // public virtual DbSet<User> User { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
