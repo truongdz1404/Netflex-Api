@@ -74,7 +74,7 @@ namespace Netflex.Controllers
                     Title = blogViewModel.Title,
                     Content = blogViewModel.Content,
                     Thumbnail = blogViewModel.Thumbnail,
-                    CreatedAt = DateTime.Now,
+                    CreatedAt = DateTime.UtcNow,
                     CreaterId = blogViewModel.CreaterId
                 };
 

@@ -7,9 +7,6 @@ using Netflex.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
-builder.Services.AddScoped(typeof(ApplicationDbContext));
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddDependencyInjection(builder.Configuration);
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
