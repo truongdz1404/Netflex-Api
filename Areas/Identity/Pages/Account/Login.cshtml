@@ -8,17 +8,17 @@
 <div class="container">
     <div class="row ">
         <div
-            class="position-absolute py-5 px-3 top-50 start-50 translate-middle col-12 col-sm-10 col-md-8 col-lg-4 shadow-lg rounded-3">
+            class="position-absolute py-5 px-5 top-50 start-50 translate-middle col-12 col-sm-10 col-md-8 col-lg-4 shadow-lg rounded-3 bg-my-dark text-white-50">
             <section>
                 <form id="account" method="post">
                     <h2 class="text-center">Welcom to Netflex.
                     </h2>
                     <p class="text-center">Don't have an account?
-                        <a asp-page="./Register" class="text-black fw-bold">Sign up now</a>
+                        <a asp-page="./Register" class="fw-bold text-white">Sign up now</a>
                     </p>
 
                     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                    <label asp-for="Input.Email" class="form-label text-black fw-bold"></label>
+                    <label asp-for="Input.Email" class="form-label fw-bold"></label>
                     <div class="mb-3">
                         <input asp-for="Input.Email" class="form-control form-control-xs rounded-3"
                             autocomplete="username" aria-required="true" placeholder="name@example.com" />
@@ -38,7 +38,7 @@
                             </label>
                         </div>
                         <p>
-                            <a id="forgot-password" class="text-black" asp-page="./ForgotPassword">Forgot your
+                            <a id="forgot-password" class="text-white" asp-page="./ForgotPassword">Forgot your
                                 password?</a>
                         </p>
                     </div>

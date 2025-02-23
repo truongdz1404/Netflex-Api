@@ -8,17 +8,17 @@
 <div class="container">
     <div class="row ">
         <div
-            class="position-absolute py-5 px-3 top-50 start-50 translate-middle col-12 col-sm-10 col-md-8 col-lg-4 shadow-lg rounded-3">
+            class="position-absolute py-5 px-5 top-50 start-50 translate-middle col-12 col-sm-10 col-md-8 col-lg-4 shadow-lg rounded-3 bg-my-dark text-white-50">
             <section>
                 <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                     <h2 class="text-center">Welcom to Netflex.
                     </h2>
                     <p class="text-center">Already have an account?
-                        <a asp-page="./Login" class="text-black fw-bold">Log in</a>
+                        <a asp-page="./Login" class="text-white fw-bold">Log in</a>
                     </p>
 
                     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                    <label asp-for="Input.Email" class="form-label text-black fw-bold"></label>
+                    <label asp-for="Input.Email" class="form-label fw-bold"></label>
                     <div class="mb-3">
                         <input asp-for="Input.Email" class="form-control form-control-xs rounded-3"
                             autocomplete="username" aria-required="true" placeholder="name@example.com" />
@@ -31,7 +31,7 @@
                         <span asp-validation-for="Input.Password" class="text-danger"></span>
                     </div>
 
-                    <label asp-for="Input.ConfirmPassword" class="form-label text-black fw-bold">Confirm
+                    <label asp-for="Input.ConfirmPassword" class="form-label fw-bold">Confirm
                         Password</label>
                     <div class="mb-3">
                         <input asp-for="Input.ConfirmPassword" class="form-control form-control-xs" aria-required="true"
