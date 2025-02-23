@@ -14,10 +14,10 @@ public static class DependencyInjection
     public static IServiceCollection AddDependencyInjection
         (this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("Database");
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
-            options.UseSqlServer(connectionString);
+            options.UseNpgsql(connectionString);
         });
         services.AddIdentity<User, IdentityRole>(options =>
         {

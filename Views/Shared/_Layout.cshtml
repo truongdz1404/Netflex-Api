@@ -230,27 +230,33 @@
         </div>
     </footer>
 
-    <script defer>
-        function updateSidebarHeight() {
-            let mainContent = document.querySelector('.main-content');
-            let sidebar = document.querySelector('.sidebar');
-
-            if (mainContent && sidebar) {
-                sidebar.style.maxHeight = mainContent.clientHeight + "px";
-            }
-        }
-        function scrollToTop() {
-            window.scrollTo(0, 0);
-        }
-
-        document.addEventListener('DOMContentLoaded', updateSidebarHeight);
-        window.addEventListener('resize', updateSidebarHeight);
-        window.addEventListener('load', scrollToTop);
-    </script>
-
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/delete.js" asp-append-version="true"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            updateSidebarHeight();
+            $(window).on("resize", updateSidebarHeight);
+            $(window).on("load", scrollToTop);
+        });
+
+        function updateSidebarHeight() {
+            let mainContent = $(".main-content");
+            let sidebar = $(".sidebar");
+
+            if (mainContent.length && sidebar.length) {
+                sidebar.css("max-height", mainContent.outerHeight() + "px");
+            }
+        }
+
+        function scrollToTop() {
+            $(window).scrollTop(0);
+        }
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

@@ -1,6 +1,6 @@
 @model DetailFilmViewModel
 @{
-    ViewData["Title"] = "Movie";
+    ViewData["Title"] = Model.Title;
     Layout = "_Layout";
     float Ratings = 8.6f;
 }
@@ -115,58 +115,57 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const stars = document.querySelectorAll(".rating-stars i");
-        const selected = document.getElementById("selected-rating");
-        const ratings = Math.floor(@Ratings);
-        highlight(ratings)
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        $(document).ready(function () {
+            let stars = $(".rating-stars i");
+            let selected = $("#selected-rating");
+            let ratings = Math.floor(@Ratings);
 
-        stars.forEach(star => {
-            star.addEventListener("mouseover", function () {
-                let value = this.getAttribute("data-value");
+            highlight(ratings);
+
+            stars.on("mouseover", function () {
+                let value = $(this).data("value");
                 highlight(value);
             });
 
-            star.addEventListener("mouseout", function () {
-                highlight(selected.textContent.trim() == "0" ? ratings : selected.textContent);
+            stars.on("mouseout", function () {
+                let currentValue = selected.text().trim() === "0" ? ratings : selected.text();
+                highlight(currentValue);
             });
 
-            star.addEventListener("click", function () {
-                selected.textContent = this.getAttribute("data-value");
+            stars.on("click", function () {
+                selected.text($(this).data("value"));
             });
-        });
 
-        function highlight(value) {
-            stars.forEach(star => {
-                const starValue = parseInt(star.getAttribute("data-value"));
-                if (starValue <= value) {
-                    star.classList.remove("far");
-                    star.classList.add("fas");
-                } else {
-                    star.classList.remove("fas");
-                    star.classList.add("far");
-                }
-            });
-        }
-    });
-</script>
-<script>
-    let video = document.getElementById('video');
-    video.disablePictureInPicture = true;
-    video.addTextTrack("captions");
-    if (Hls.isSupported()) {
-        let hls = new Hls({
-            debug: true,
+            function highlight(value) {
+                stars.each(function () {
+                    let starValue = parseInt($(this).data("value"));
+                    $(this).toggleClass("fas", starValue <= value);
+                    $(this).toggleClass("far", starValue > value);
+                });
+            }
         });
-        hls.loadSource(@Html.Raw(Json.Serialize(Model.Path)));
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-            video.muted = true;
+    </script>
+    <script>
+        $(document).ready(function () {
+            let video = $("#video").get(0);
+            video.disablePictureInPicture = true;
+            video.addTextTrack("captions");
+
+            if (Hls.isSupported()) {
+                let hls = new Hls({
+                    debug: true,
+                });
+                hls.loadSource(@Html.Raw(Json.Serialize(Model.Path)));
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+                    video.muted = true;
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = @Html.Raw(Json.Serialize(Model.Path));
+            }
         });
-    }
-    else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = @Html.Raw(Json.Serialize(Model.Path));
-    }
-</script>
+    </script>
+}

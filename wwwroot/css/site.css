@@ -72,6 +72,8 @@ video {
   height: 100%;
   object-fit: cover; 
 }
+
+
 .dropdown-menu-dark {
   background: rgba(0, 0, 0, .98);
 }
@@ -94,6 +96,11 @@ video {
   background: transparent;
 }
 
+.btn-transparent{
+  border: none !important;
+  background-color: transparent !important;
+}
+
 .search {
   background: transparent;
   padding: 0.4rem;
@@ -109,4 +116,12 @@ video {
 .search:focus {
   border: none !important;
   outline: none !important;
+}
+
+.modal-content{
+  background-color: rgb(28, 28, 28);
+}
+
+.modal-header, .modal-footer{
+  border: none !important;
 }
