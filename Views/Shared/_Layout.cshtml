@@ -1,9 +1,11 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Netflex</title>
+    <link rel="stylesheet" href="~/font-awesome/css/all.css" crossorigin="anonymous" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Netflex.styles.css" asp-append-version="true" />
@@ -31,45 +33,256 @@
         })
     </script>
 </head>
-<body>
+
+<body class="text-white-50">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="home" asp-action="index">Netflex</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark">
+            <div class="container-fluid container-xxl">
+                <a class="navbar-brand text-white-80 fw-bold text-sm-end" asp-area="" asp-controller="home"
+                    asp-action="index">NETFLEX</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between" data-bs-theme="dark">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="home" asp-action="index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="home" asp-action="index">Trang chủ</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="home" asp-action="privacy">Privacy</a>
+                            <a class="nav-link" asp-area="" asp-controller="home" asp-action="privacy">Phim lẻ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="home" asp-action="privacy">Phim bộ</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Thể loại
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-dark">
+                                <div class="dropdown-grid text-white-50">
+                                    <a class="dropdown-item" href="#">
+                                        <i class="fa-solid fa-caret-right pe-2"></i>Phim Cổ Trang</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Bí
+                                        Ẩn</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Võ
+                                        Thuật</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Phiêu
+                                        Lưu</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Hình
+                                        Sự</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Viễn
+                                        Tưởng</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Thần
+                                        Thoại</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>TV
+                                        Shows</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Tâm
+                                        Lý</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Kinh
+                                        Dị</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Kịch
+                                        Tính</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Hài</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Gia
+                                        Đình</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Netflix</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Hoạt
+                                        Hình</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Tình
+                                        Cảm</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Hành
+                                        Động</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Chiến
+                                        Tranh</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        BL</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Khoa
+                                        Học</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Âm
+                                        Nhạc</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Chính
+                                        Kịch</a>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="countryDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Quốc gia
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-dark">
+                                <div class="dropdown-grid">
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Âu Mỹ</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Hàn Quốc</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Trung Quốc</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Nhật Bản</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Đài Loan</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Hồng Kông</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Thái Lan</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Ấn Độ</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Philippines</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Indonesia</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Singapore</a>
+                                </div>
+                            </div>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="BlogManagement" asp-action="Index">Blog Management</a>
                         </li>
                     </ul>
+                    <form class="d-none d-lg-flex search-box">
+                        <input class="search" placeholder="Tìm kiếm..." aria-label="Search">
+                        <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </form>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+    <div class="container-fluid container-xxl banner text-white-50 text-center">Xem phim mới nhất chất lượng cao không
+        giới hạn, truy cập
+        ngay
+        <b>NETFLEX
+        </b>.com
     </div>
+    <div class="container-fluid container-xxl content">
+        <div class="row d-flex justify-content-center">
+            <div class="main-content col-12 col-lg-8 col-xl-9">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+            <div class="sidebar d-none d-lg-block col-lg-4 col-xl-3">
+                <div class="d-flex justify-content-between">
+                    <p>Năm phát hành</p>
+                    <i class="fa-solid fa-caret-down"></i>
+                </div>
+                <ul class="menu-year overflow-auto">
+                    @for (int year = 2025; year >= 1980; year--)
+                    {
+                        <li>
+                            <a href="#">@year</a>
+                        </li>
+                    }
+                </ul>
+                <a href="#" class="d-block movie-banner position-relative my-4">
+                    <div class="position-absolute bottom-0  movie-banner-content p-2">
+                        <p class="m-0 text-white text-truncate" style="max-width:10rem;">Movie name: Phần 1</p>
+                        <span class="p-0 text-white-50">2069</span>
+                    </div>
+                    <img src="https://placehold.co/800X400/png" alt="Movie Poster">
+                </a>
+                <div class="rank">
+                    <a class="movie-item" href="#">
+                        <img src="https://placehold.co/400X600/png" alt="Movie Poster">
+                        <div class="p-2">
+                            <p class="text-truncate" style="max-width:10rem;">Movie name: Phần 1
+                            </p>
+                            <span class="rating"><i class="fa-solid fa-star"></i>&nbsp;7.8</span> <span
+                                class="text-white-50">2024</span>
+                        </div>
+                    </a>
+                    <a class="movie-item" href="#">
+                        <img src="https://placehold.co/400X600/png" alt="Movie Poster">
+                        <div class="p-2">
+                            <p class="text-truncate" style="max-width:10rem;">Movie name: Phần 2
+                            </p>
+                            <span class="rating"><i class="fa-solid fa-star"></i>&nbsp;7.8</span> <span
+                                class="text-white-50">2024</span>
+                        </div>
+                    </a>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - Netflex - <a asp-area="" asp-controller="home" asp-action="privacy">Privacy</a>
+                    <a class="movie-item" href="#">
+                        <img src="https://placehold.co/400X600/png" alt="Movie Poster">
+                        <div class="p-2">
+                            <p class="text-truncate" style="max-width:10rem;">Movie name: Phần 3
+                            </p>
+                            <span class="rating"><i class="fa-solid fa-star"></i>&nbsp;7.8</span> <span
+                                class="text-white-50">2024</span>
+                        </div>
+                    </a>
+
+                    <a class="movie-item" href="#">
+                        <img src="https://placehold.co/400X600/png" alt="Movie Poster">
+                        <div class="p-2">
+                            <p class="text-truncate" style="max-width:10rem;">Movie name: Phần 4
+                            </p>
+                            <span class="rating"><i class="fa-solid fa-star"></i>&nbsp;7.8</span> <span
+                                class="text-white-50">2024</span>
+                        </div>
+                    </a>
+                    </di>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <footer class="container-fluid container-xxl myfooter text-white-50 py-4">
+        <div class="text-center" style="font-size: 0.9rem;">
+            &copy; 2023 Netflex. All rights reserved.
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/delete.js" asp-append-version="true"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            updateSidebarHeight();
+            $(window).on("resize", updateSidebarHeight);
+            $(window).on("load", scrollToTop);
+        });
+
+        function updateSidebarHeight() {
+            let mainContent = $(".main-content");
+            let sidebar = $(".sidebar");
+
+            if (mainContent.length && sidebar.length) {
+                sidebar.css("max-height", mainContent.outerHeight() + "px");
+            }
+        }
+
+        function scrollToTop() {
+            $(window).scrollTop(0);
+        }
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>
