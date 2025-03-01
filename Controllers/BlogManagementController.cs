@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Netflex.Database;
-using Netflex.Models;
+using Netflex.Models.Blog;
 using System;
 using System.Linq;
 

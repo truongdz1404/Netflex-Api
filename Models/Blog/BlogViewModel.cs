@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Netflex.Models;
+namespace Netflex.Models.Blog;
 
 public partial class BlogViewModel
 {

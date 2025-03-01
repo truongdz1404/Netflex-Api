@@ -1,52 +1,69 @@
-﻿@model Netflex.Models.BlogViewModel
+﻿@model Netflex.Models.Blog.BlogViewModel
 
 @{
     ViewData["Title"] = "Details";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Admin/_AdminDashboard.cshtml";
 }
 
-<h1>Details</h1>
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header bg-dark text-white">
+            <h4 class="text-center mb-0">Blog Details</h4>
+        </div>
+        <div class="card-body bg-light">
+            <dl class="row text-dark">
+                <!-- Title -->
+                <dt class="col-sm-3">
+                    <strong>@Html.DisplayNameFor(model => model.Title)</strong>
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.Title)
+                </dd>
 
-<div>
-    <h4>TblBlog</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Content)
-        </dt>
-        @* <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Content)
-        </dd> *@
-        <dd class="col-sm-10">
-            @Html.Raw(Model.Content)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Thumbnail)
-        </dt>
-        <dd class = "col-sm-10">
-            @if (!string.IsNullOrEmpty(Model.Thumbnail))
-            {
-                <img src="@Model.Thumbnail" alt="Thumbnail" width="auto" height="auto" />
-            }
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreaterId)
-        </dd>
-    </dl>
+                <!-- Content -->
+                <dt class="col-sm-3">
+                    <strong>@Html.DisplayNameFor(model => model.Content)</strong>
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.Raw(Model.Content)
+                </dd>
+
+                <!-- Thumbnail -->
+                <dt class="col-sm-3">
+                    <strong>@Html.DisplayNameFor(model => model.Thumbnail)</strong>
+                </dt>
+                <dd class="col-sm-9">
+                    @if (!string.IsNullOrEmpty(Model.Thumbnail))
+                    {
+                        <img src="@Model.Thumbnail" alt="Thumbnail" class="img-fluid rounded" />
+                    }
+                    else
+                    {
+                        <span class="text-muted">No thumbnail available</span>
+                    }
+                </dd>
+
+                <!-- CreatedAt -->
+                <dt class="col-sm-3">
+                    <strong>@Html.DisplayNameFor(model => model.CreatedAt)</strong>
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.CreatedAt)
+                </dd>
+
+                <!-- Creator -->
+                <dt class="col-sm-3">
+                    <strong>@Html.DisplayNameFor(model => model.CreaterId)</strong>
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.CreaterId)
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer text-center">
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning btn-sm">Edit</a>
+            <a asp-action="Index" class="btn btn-secondary btn-sm">Back to List</a>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+

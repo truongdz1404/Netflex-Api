@@ -1,0 +1,62 @@
+﻿@model Netflex.Models.Blog.BlogViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+    Layout = "_Layout";
+}
+
+<style>
+    .comment-section {
+        color:white;
+        margin-top: 40px;
+        padding: 20px;
+        background: rgba(15, 15, 15, .9);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+        .comment-section h3 {
+            color: #333;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+    .fb-comments-wrapper {
+        color: white;
+        padding: 10px;
+        background: rgba(15, 15, 15, .9);
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+</style>
+<div class="container">
+    <h1>@Model.Title</h1>
+    <p class="text-muted">Đăng bởi <strong>@Model.CreaterId</strong> vào ngày @Model.CreatedAt.ToString("dd/MM/yyyy")</p>
+    <hr />
+    <p>@Html.Raw(Model.Content)</p>
+    <a href="@Url.Action("Index", "Blog")" class="btn btn-secondary">Quay lại</a>
+</div>
+
+<div class="comment-section">
+    <h3>Bình luận</h3>
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v22.0&appId=1589497395335451"></script>
+    <div class="fb-comments" data-href="https://localhost:8081" data-width="100%" data-numposts="5" data-colorscheme="dark" data-lazy="true"></div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var commentSection = document.querySelector(".comment-section");
+        commentSection.style.opacity = "0";
+        commentSection.style.transition = "opacity 0.5s ease-in-out";
+
+        window.addEventListener("scroll", function () {
+            var rect = commentSection.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom >= 0) {
+                commentSection.style.opacity = "1";
+            }
+        });
+    });
+</script>
+
