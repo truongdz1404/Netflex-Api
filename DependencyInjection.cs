@@ -3,6 +3,10 @@ using Netflex.Database;
 using Netflex.Services.Implements;
 using Microsoft.EntityFrameworkCore;
 using Netflex.Database.Repositories.Implements;
+using Netflex.Exceptions.Handler;
+using Netflex.Models.Configs;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Authentication.OAuth;
 
 namespace Netflex;
 public static class DependencyInjection
@@ -33,13 +37,47 @@ public static class DependencyInjection
 
         services.AddHttpClient();
         services.AddScoped<ApplicationDbContext>();
-        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IEmailSender, EmailService>();
         services.AddSingleton<IStorageService>(s => new StorageService());
 
         services.AddTransient(typeof(IUnitOfWork), typeof(UnitOfWork))
             .AddTransient(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 
+        services.AddRazorPages();
+        services.AddExceptionHandler<CustomExceptionHandler>();
+        services.Configure<EmailConfig>(configuration.GetSection("EmailApiKey"));
 
+        services.AddAuthentication()
+        .AddGoogle(options =>
+        {
+            options.ClientId = configuration["Authentication:Google:ClientId"] ?? throw new InvalidOperationException("ClientId is not configured");
+            options.ClientSecret = configuration["Authentication:Google:ClientSecret"]  ?? throw new InvalidOperationException("ClientSecret is not configured");
+            options.CallbackPath = "/signin-google";
+        })
+        .AddFacebook(options =>
+        {
+            options.AppId = configuration["Authentication:Facebook:AppId"]  ?? throw new InvalidOperationException("ClientSecret is not configured");
+            options.AppSecret = configuration["Authentication:Facebook:AppSecret"]  ?? throw new InvalidOperationException("ClientSecret is not configured");
+            options.Events = new OAuthEvents
+            {
+                OnRemoteFailure = context =>
+                {
+                    context.Response.Redirect("/Identity/Account/Login");
+                    context.HandleResponse();
+                    return Task.CompletedTask;
+                }
+            };
+        });
+        services.ConfigureApplicationCookie(options =>
+  {
+      options.SlidingExpiration = true;
+      options.ExpireTimeSpan = TimeSpan.FromDays(7);
+  });
+        services.Configure<CookiePolicyOptions>(options =>
+      {
+          options.CheckConsentNeeded = context => false;
+          options.MinimumSameSitePolicy = SameSiteMode.Lax;
+      });
         return services;
     }
 }

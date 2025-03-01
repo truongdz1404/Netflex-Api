@@ -109,6 +109,10 @@ video {
   color: #fff;
 }
 
+.bg-my-dark{
+  background-color: rgba(15, 15, 15, .9);
+}
+
 .search:focus {
   border: none !important;
   outline: none !important;
