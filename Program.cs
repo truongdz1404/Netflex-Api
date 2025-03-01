@@ -1,4 +1,6 @@
 using Netflex;
+using Netflex.Database.Repositories.Abstractions;
+using Netflex.Database.Repositories.Implements;
 using Netflex.Exceptions.Handler;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDependencyInjection(builder.Configuration);
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+builder.Services.AddScoped<ICountryRepository, CountryRepository>();
+builder.Services.AddScoped<IActorRepository, ActorRepository>();
 
 var app = builder.Build();
 

@@ -1,0 +1,24 @@
+﻿@model List<Netflex.Entities.Country>
+
+<h2>Danh sách Quốc gia</h2>
+<a asp-action="Create" class="btn btn-success">Thêm mới</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tên Quốc gia</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var country in Model)
+        {
+            <tr>
+                <td>@country.Name</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@country.Id" class="btn btn-warning">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@country.Id" class="btn btn-danger">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

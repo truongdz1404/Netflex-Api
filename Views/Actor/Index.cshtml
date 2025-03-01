@@ -1,0 +1,34 @@
+﻿@model List<Netflex.Entities.Actor>
+
+<h2>Danh sách diễn viên</h2>
+<a asp-action="Create" class="btn btn-primary">Thêm mới</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Ảnh</th>
+            <th>Tên</th>
+            <th>About</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var actor in Model)
+        {
+            <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(actor.Photo))
+                    {
+                        <img src="@actor.Photo" alt="Ảnh diễn viên" width="80" />
+                    }
+                </td>
+                <td>@actor.Name</td>
+                <td>@actor.About</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@actor.Id" class="btn btn-info">Chi tiết</a>
+                    <a asp-action="Edit" asp-route-id="@actor.Id" class="btn btn-warning">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@actor.Id" class="btn btn-danger">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
