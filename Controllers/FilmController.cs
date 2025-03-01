@@ -1,29 +1,29 @@
 using Microsoft.AspNetCore.Mvc;
-using Netflex.Database;
 using Netflex.Models.Film;
 using X.PagedList.Extensions;
 namespace Netflex.Controllers;
 
-public class FilmController(IStorageService storage,
-    ApplicationDbContext context)
+public class FilmController(IStorageService storage, IUnitOfWork unitOfWork)
     : Controller
 {
     private readonly IStorageService _storage = storage;
-    private readonly ApplicationDbContext _context = context;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private const int PAGE_SIZE = 3;
     public IActionResult Index(int? page)
     {
         int pageNumber = page ?? 1;
 
-        var models = _context.Films.Select(film => new FilmViewModel()
-        {
-            Id = film.Id,
-            Title = film.Title,
-            Poster = film.Poster,
-            Path = film.Path,
-            Trailer = film.Trailer,
-            ProductionYear = film.ProductionYear
-        }).ToPagedList(pageNumber, PAGE_SIZE);
+        var models = _unitOfWork.Repository<Film>().Entities.Select(
+            film => new FilmViewModel()
+            {
+                Id = film.Id,
+                Title = film.Title,
+                Poster = film.Poster,
+                Path = film.Path,
+                Trailer = film.Trailer,
+                ProductionYear = film.ProductionYear
+            }
+        ).ToPagedList(pageNumber, PAGE_SIZE);
 
         return View(models);
     }
@@ -32,7 +32,7 @@ public class FilmController(IStorageService storage,
     {
         if (id == null)
             return NotFound();
-        var film = _context.Films.FirstOrDefault(m => m.Id.Equals(id));
+        var film = _unitOfWork.Repository<Film>().Entities.FirstOrDefault(m => m.Id.Equals(id));
         if (film == null)
             return NotFound();
         var model = new DetailFilmViewModel
@@ -50,15 +50,15 @@ public class FilmController(IStorageService storage,
     }
 
     [HttpDelete]
-    public IActionResult Delete(Guid? id)
+    public async Task<IActionResult> Delete(Guid? id)
     {
         if (id == null)
             return NotFound();
-        var film = _context.Films.FirstOrDefault(m => m.Id.Equals(id));
+        var film = _unitOfWork.Repository<Film>().Entities.FirstOrDefault(m => m.Id.Equals(id));
         if (film == null)
             return NotFound();
-        _context.Films.Remove(film);
-        _context.SaveChanges();
+        await _unitOfWork.Repository<Film>().DeleteAsync(film);
+        await _unitOfWork.Save(CancellationToken.None);
         return RedirectToAction("index", "film");
     }
 
@@ -66,7 +66,7 @@ public class FilmController(IStorageService storage,
     {
         if (id == null)
             return NotFound();
-        var film = _context.Films.FirstOrDefault(m => m.Id.Equals(id));
+        var film = _unitOfWork.Repository<Film>().Entities.FirstOrDefault(m => m.Id.Equals(id));
         if (film == null)
             return NotFound();
         var model = new EditFilmViewModel
@@ -103,8 +103,8 @@ public class FilmController(IStorageService storage,
             ProductionYear = update.ProductionYear,
             CreatedAt = DateTime.UtcNow
         };
-        _context.Update(newFilm);
-        _context.SaveChanges();
+        await _unitOfWork.Repository<Film>().UpdateAsync(newFilm);
+        await _unitOfWork.Save(CancellationToken.None);
         return RedirectToAction("index", "film");
     }
 
@@ -133,8 +133,8 @@ public class FilmController(IStorageService storage,
             ProductionYear = film.ProductionYear,
             CreatedAt = DateTime.UtcNow
         };
-        _context.Films.Add(newFilm);
-        _context.SaveChanges();
+        await _unitOfWork.Repository<Film>().AddAsync(newFilm);
+        await _unitOfWork.Save(CancellationToken.None);
 
         return RedirectToAction("index", "film");
     }
