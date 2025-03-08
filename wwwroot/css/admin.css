@@ -14,7 +14,7 @@ h2 {
 }
 
 .table-hover tbody tr:hover {
-    background-color: #5a5a5a;
+    background-color: #cecece;
 }
 
 .text-truncate {
@@ -81,7 +81,7 @@ th {
 }
 
 td{
-    color: #ffffff;
+    color: #000000;
 }
 
 /* ----------------EDIT-------------------- */

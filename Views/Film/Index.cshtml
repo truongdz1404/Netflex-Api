@@ -49,12 +49,12 @@
     </table>
     <div class="row">
         @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions()
-   {
-       DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
-       DisplayLinkToNextPage = PagedListDisplayMode.Always,
-       LiElementClasses = new string[] { "page-item" },
-       PageClasses = new string[] { "page-link" }
-   })
+        {
+            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                LiElementClasses = new string[] { "page-item" },
+                PageClasses = new string[] { "page-link" }
+                })
     </div>
 
 </div>

@@ -1,4 +1,4 @@
-﻿@model Netflex.Models.Blog.BlogViewModel
+﻿@model Netflex.Models.Blog.EditBlogViewModels
 
 @{
     ViewData["Title"] = "Edit";
@@ -18,9 +18,7 @@
                 <strong>Edit Blog</strong>
             </div>
             <div class="card-body bg-light">
-                <form asp-action="Edit">
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                    <input type="hidden" asp-for="Id" />
+                <form method="POST" enctype="multipart/form-data" asp-controller="blogmanagement" asp-action="edit">
 
                     <!-- Tiêu đề -->
                     <div class="form-group mb-4">
@@ -32,28 +30,35 @@
                     <!-- Nội dung -->
                     <div class="form-group mb-4">
                         <label asp-for="Content" class="control-label text-dark">Content</label>
-                        <textarea asp-for="Content" id="tiny" class="form-control border-dark" placeholder="Enter blog content"></textarea>
+                        <textarea asp-for="Content" id="tiny" class="form-control border-dark"
+                            placeholder="Enter blog content"></textarea>
                         <span asp-validation-for="Content" class="text-danger"></span>
                     </div>
 
                     <!-- Thumbnail -->
                     <div class="form-group mb-4">
                         <label asp-for="Thumbnail" class="control-label text-dark">Thumbnail</label>
-                        <input asp-for="Thumbnail" class="form-control border-dark" placeholder="Enter image URL" />
+                        <input asp-for="Thumbnail" type="file" class="form-control border-dark"
+                            placeholder="Enter image URL" id="thumbnailUpload"/>
                         <span asp-validation-for="Thumbnail" class="text-danger"></span>
+                        <div class="mt-2">
+                            <img id="thumbnailPreview" src="@Model.ThumbnailUrl" alt="Preview Image"
+                                class="img-fluid rounded shadow-sm d-none mw-100">
+                        </div>
                     </div>
 
                     <!-- CreatedAt -->
                     <div class="form-group mb-4">
                         <label asp-for="CreatedAt" class="control-label text-dark">Created At</label>
-                        <input asp-for="CreatedAt" class="form-control border-dark" />
+                        <input asp-for="CreatedAt" class="form-control border-dark" type="datetime-local" value="@Model.CreatedAt.ToString("yyyy-MM-ddTHH:mm")"/>
                         <span asp-validation-for="CreatedAt" class="text-danger"></span>
                     </div>
 
                     <!-- Creator -->
                     <div class="form-group mb-4">
                         <label asp-for="CreaterId" class="control-label text-dark">Creator</label>
-                        <select asp-for="CreaterId" class="form-control border-dark" asp-items="ViewBag.CreaterId" id="CreaterIdDropdown">
+                        <select asp-for="CreaterId" class="form-control border-dark" asp-items="ViewBag.CreaterId"
+                            id="CreaterIdDropdown">
                             <option value="">-- Select Creator --</option>
                         </select>
                         <span asp-validation-for="CreaterId" class="text-danger"></span>
@@ -76,7 +81,9 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -95,6 +102,23 @@
             // Cập nhật giá trị ban đầu khi load trang
             var initialId = createrDropdown.value;
             createrNameInput.value = createrData[initialId] || "";
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            if ($("#thumbnailPreview").attr("src") != null && $("#thumbnailPreview").attr("src") != "")
+                $("#thumbnailPreview").removeClass("d-none");
+
+            $("#thumbnailUpload").change(function () {
+                let input = this;
+                if (input.files && input.files[0]) {
+                    let reader = new FileReader();
+                    reader.onload = function (e) {
+                        $("#thumbnailPreview").attr("src", e.target.result).removeClass("d-none");
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            });
         });
     </script>
 }

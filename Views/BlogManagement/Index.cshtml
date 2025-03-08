@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Netflex.Models.Blog.BlogViewModel>
+﻿@model IPagedList<Netflex.Models.Blog.BlogViewModel>
 
 @{
     ViewData["Title"] = "Blog Management";
@@ -8,22 +8,60 @@
 <div class="container-fluid px-4">
     <div class="d-flex justify-content-between align-items-center my-4">
         <h2 class="fw-bold text-primary">📑 Blog Management</h2>
-        <a class="btn btn-success btn-lg" asp-action="Create"><i class="fa fa-plus"></i> Create New</a>
+        <div>
+            <a class="btn btn-success btn-lg" asp-action="Create"><i class="fa fa-plus"></i> Create New</a>
+            <a href="@Url.Action("ExportToExcel", new { searchTerm = ViewBag.SearchTerm, createrId = ViewBag.CreaterId, createdAt = ViewBag.CreatedAt, sortOrder = ViewBag.SortOrder })"
+                class="btn btn-info btn-lg ms-2">
+                <i class="fa fa-download"></i> Export to Excel
+            </a>
+        </div>
     </div>
 
     <!-- Filter & Search Bar -->
     <div class="row mb-4">
-        <div class="col-md-6">
-            <input type="text" id="searchInput" class="form-control border-primary shadow-sm"
-                placeholder="🔍 Search by title...">
-        </div>
+        <!-- Search by Title or ID -->
         <div class="col-md-3">
-            <input type="date" id="filterDate" class="form-control border-secondary shadow-sm">
+            <input type="text" id="searchInput" class="form-control border-primary shadow-sm"
+                placeholder="🔍 Search by title or ID..." />
         </div>
+
+        <!-- Filter by Creator ID -->
+        <div class="col-md-3">
+            <input type="text" id="createrIdInput" class="form-control border-secondary shadow-sm"
+                placeholder="🔍 Filter by Creator ID..." />
+        </div>
+
+        <!-- Filter by CreatedAt Date -->
+        <div class="col-md-3">
+            <input type="date" id="filterDate" class="form-control border-secondary shadow-sm" />
+        </div>
+
+        <!-- Reset Filters Button -->
         <div class="col-md-3">
             <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">Reset Filters</button>
         </div>
     </div>
+
+    <!-- Sorting Options -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <select id="sortOrderSelect" class="form-control" onchange="setSortOrder(this.value)">
+                <option value="title_desc">Title (Descending)</option>
+                <option value="created_at">Created At (Ascending)</option>
+                <option value="created_at_desc">Created At (Descending)</option>
+                <option value="creater_id">Creator ID (Ascending)</option>
+                <option value="creater_id_desc">Creator ID (Descending)</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Filter & Search Form -->
+    <form id="filterForm" method="get" action="@Url.Action("Index", "BlogManagement")">
+        <input type="hidden" id="hiddenSearchTerm" name="searchTerm" />
+        <input type="hidden" id="hiddenCreaterId" name="createrId" />
+        <input type="hidden" id="hiddenCreatedAt" name="createdAt" />
+        <input type="hidden" id="hiddenSortOrder" name="sortOrder" />
+    </form>
 
     <!-- Responsive Table with Fixed Header -->
     <div class="table-responsive-lg" style="max-height: 600px; overflow-y: auto;">
@@ -72,22 +110,47 @@
         </table>
     </div>
 
-    <!-- Pagination -->
-    <div class="d-flex justify-content-center mt-4">
-        <ul class="pagination">
-            <li class="page-item">
-                <a class="page-link" href="#">Previous</a>
-            </li>
-            <li class="page-item active">
-                <a class="page-link" href="#">1</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">2</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">Next</a>
-            </li>
-        </ul>
+    <div class="row">
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+                <!-- Previous Page Link -->
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                }
+
+                <!-- Page Number Links -->
+                @for (var i = 1; i <= Model.PageCount; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                    </li>
+                }
+
+                <!-- Next Page Link -->
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                }
+            </ul>
+        </div>
     </div>
 </div>
 
@@ -95,42 +158,42 @@
 
 @section Scripts {
     <script>
-        // Search function
-        document.getElementById('searchInput').addEventListener('keyup', function () {
-            let filter = this.value.toLowerCase();
-            let rows = document.querySelectorAll("#blogTable tr");
-
-            rows.forEach(row => {
-                let title = row.cells[0].textContent.toLowerCase();
-                if (title.includes(filter)) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
+        // Update hidden fields based on user input
+        document.getElementById('searchInput').addEventListener('input', function () {
+            document.getElementById('hiddenSearchTerm').value = this.value;
+            submitForm();
         });
 
-        // Filter by Date
+        document.getElementById('createrIdInput').addEventListener('input', function () {
+            document.getElementById('hiddenCreaterId').value = this.value;
+            submitForm();
+        });
+
         document.getElementById('filterDate').addEventListener('change', function () {
-            let filterDate = this.value;
-            let rows = document.querySelectorAll("#blogTable tr");
-
-            rows.forEach(row => {
-                let rowDate = row.cells[3].getAttribute("data-date");
-                if (!filterDate || rowDate === filterDate) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
+            document.getElementById('hiddenCreatedAt').value = this.value;
+            submitForm();
         });
 
-        // Reset Filters
+        // Reset filters function
         function resetFilters() {
-            document.getElementById('searchInput').value = "";
-            document.getElementById('filterDate').value = "";
-            let rows = document.querySelectorAll("#blogTable tr");
-            rows.forEach(row => row.style.display = "");
+            document.getElementById('searchInput').value = '';
+            document.getElementById('createrIdInput').value = '';
+            document.getElementById('filterDate').value = '';
+            document.getElementById('hiddenSearchTerm').value = '';
+            document.getElementById('hiddenCreaterId').value = '';
+            document.getElementById('hiddenCreatedAt').value = '';
+            submitForm();
+        }
+
+        // Submit form to apply filters
+        function submitForm() {
+            document.getElementById('filterForm').submit();
+        }
+
+        // Set sort order and submit the form
+        function setSortOrder(order) {
+            document.getElementById('hiddenSortOrder').value = order;
+            submitForm();
         }
     </script>
 }
