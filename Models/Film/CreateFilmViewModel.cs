@@ -19,4 +19,7 @@ public class CreateFilmViewModel
     public IFormFile? Poster { get; set; }
     [MaxFileSize(5 * 1024 * 1024), AllowedExtensions([".m3u8"])]
     public IFormFile? File { get; set; }
+    public List<Guid> ActorIds { get; set; } = new();
+    public List<Guid> GenreIds { get; set; } = new();
+    public List<Guid> CountryIds { get; set; } = new();
 }

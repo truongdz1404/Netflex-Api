@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Netflex.Models.Episode;
 
-public class EditEpisodeViewModel
+public class EpisodeViewModel
 {
     public Guid Id { get; set; }
     [Required]
@@ -11,7 +11,6 @@ public class EditEpisodeViewModel
     public required string Title { get; set; }
     [StringLength(1000)]
     public string? About { get; set; }
-    public IFormFile? File { get; set; }
-    public string FileUrl { get; set; } = string.Empty;
-    public required Guid SerieId { get; set; }
+    public string? Path { get; set; }
+    public required string Serie { get; set; }
 }

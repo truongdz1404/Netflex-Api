@@ -13,4 +13,7 @@ public class Film : Entity
     public Guid? AgeCategoryId { get; set; }
     public TimeSpan HowLong { get; set; }
     public DateTime CreatedAt { get; set; }
+    public ICollection<FilmActor> FilmActors { get; set; } = [];
+    public ICollection<FilmGenre> FilmGenres { get; set; } = [];
+    public ICollection<FilmCountry> FilmCountries { get; set; } = [];
 }
