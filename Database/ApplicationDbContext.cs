@@ -8,6 +8,7 @@ namespace Netflex.Database;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : IdentityDbContext<User>(options)
 {
+    public virtual DbSet<Blog> Blogs { get; set; }
     public virtual DbSet<Film> Films { get; set; }
     public virtual DbSet<SerieCountry> SerieCountries { get; set; }
     public virtual DbSet<SerieActor> SerieActors { get; set; }

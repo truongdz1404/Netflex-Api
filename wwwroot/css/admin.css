@@ -1,0 +1,154 @@
+/* ----------------INDEX-------------------- */
+body {
+    margin-bottom: 60px;
+    background-color: #424040;
+}
+
+h2 {
+    color: #343a40;
+}
+
+/* Table Style */
+.table-lg {
+    font-size: 1.2rem;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #cecece;
+}
+
+.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+th {
+    font-size: 1.1rem;
+    background-color: #343a40 !important;
+    color: white !important;
+}
+
+/* Pagination */
+.pagination .page-item .page-link {
+    color: #343a40;
+    border: 1px solid #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+/* Buttons */
+.btn-lg {
+    font-size: 1rem;
+    padding: 10px 15px;
+}
+
+/* Fixed Table Header */
+.table-responsive-lg {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.action-column {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.btn-sm {
+    font-size: 1rem;
+    padding: 10px 15px;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .action-column {
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .btn-sm {
+        width: 100%; 
+        max-width: none; 
+    }
+}
+
+td{
+    color: #000000;
+}
+
+/* ----------------EDIT-------------------- */
+
+/* Cải thiện phong cách với viền đen và xám */
+.card {
+    border-radius: 10px; /* Các góc tròn */
+    border: 1px solid #6c757d; /* Viền màu xám sáng */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Bóng đổ nhẹ */
+}
+
+/* Thêm border cho các input và textarea */
+.form-control {
+    border-radius: 5px;
+    border: 1px solid #343a40; /* Viền màu đen */
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #495057; /* Khi focus, viền chuyển sang màu xám */
+    box-shadow: 0 0 5px rgba(73, 80, 87, 0.5); /* Hiệu ứng khi focus */
+}
+
+/* Tùy chỉnh nút Save */
+.btn-dark {
+    background-color: #343a40;
+    border-color: #343a40;
+    padding: 0.75rem 1.25rem;
+    font-size: 1.25rem;
+}
+
+.btn-dark:hover {
+    background-color: #23272b;
+    border-color: #1d2124;
+}
+
+
+/* ----------------DETAILS-------------------- */
+/* Cải thiện phần Card */
+.card {
+    border-radius: 10px;
+    border: 1px solid #6c757d;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Tạo bóng đổ mượt mà */
+}
+
+/* Cải thiện giao diện các nút */
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+}
+
+/* Làm hình ảnh thumbnail đẹp hơn */
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Tùy chỉnh màu sắc và kiểu dáng của các trường */
+.dt {
+    font-weight: bold;
+}
+
+.dd {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+
+/* ----------------DELETE-------------------- */
+

@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Netflex.Models.Blog.BlogViewModel>
+
+@{
+    ViewData["Title"] = "Blogs";
+    Layout = "_Layout";
+}
+
+<h1 class="text-light">Danh sách Blog</h1>
+
+<div class="container">
+    @foreach (var blog in Model)
+    {
+        <div class="row align-items-center border-bottom py-3" style="background-color: rgba(15, 15, 15, .9);">
+            <div class="col-md-2 text-center text-light">
+                <h2 class="fw-bold" style="color:aliceblue">@blog.CreatedAt.Day</h2>
+                <small class="d-block text-uppercase" style="color:grey;">
+                    @blog.CreatedAt.ToString("MMMM")
+                </small>
+            </div>
+
+            <div class="col-md-10">
+                <h3 class="fw-bold" style="color:aliceblue">
+                    @Html.Raw(blog.Title.Length > 50 ? blog.Title.Substring(0, 50) + "..." : blog.Title)
+                </h3>
+                <p class="text-muted">
+                    Đăng bởi <strong>@blog.CreaterId</strong> vào ngày @blog.CreatedAt.ToString("dd/MM/yyyy")
+                </p>
+                <p class="text-light">
+                    @Html.Raw(blog.Content.Length > 200 ? blog.Content.Substring(0, 200) + "..." : blog.Content)
+                </p>
+                <a href="@Url.Action("Details", "Blog", new { id = blog.Id })" class="btn btn-outline-primary">Xem chi tiết</a>
+            </div>
+        </div>
+    }
+</div>
