@@ -1,0 +1,16 @@
+﻿@using Netflex.Models.Genre
+@model List<GenreViewModel>
+
+@if (Model != null && Model.Any())
+{
+	@foreach (var genre in Model)
+	{
+		<a class="dropdown-item" href="@Url.Action("FilmsByGenre", "Film", new { genreId = genre.Id })">
+			<i class="fa-solid fa-caret-right pe-2" ></i>@genre.Name
+		</a>
+	}
+}
+else
+{
+	<p class="text-muted">No Genre</p>
+}

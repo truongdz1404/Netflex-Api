@@ -27,7 +27,6 @@ public class FilmController(IStorageService storage, IUnitOfWork unitOfWork)
 
         return View(models);
     }
-
     public IActionResult Detail(Guid? id)
     {
         if (id == null)
