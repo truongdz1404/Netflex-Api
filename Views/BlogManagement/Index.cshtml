@@ -6,61 +6,69 @@
 }
 
 <div class="container-fluid px-4">
-    <div class="d-flex justify-content-between align-items-center my-4">
-        <h2 class="fw-bold text-primary">📑 Blog Management</h2>
-        <div>
-            <a class="btn btn-success btn-lg" asp-action="Create"><i class="fa fa-plus"></i> Create New</a>
-            <a href="@Url.Action("ExportToExcel", new { searchTerm = ViewBag.SearchTerm, createrId = ViewBag.CreaterId, createdAt = ViewBag.CreatedAt, sortOrder = ViewBag.SortOrder })"
-                class="btn btn-info btn-lg ms-2">
-                <i class="fa fa-download"></i> Export to Excel
-            </a>
-        </div>
-    </div>
 
-    <!-- Filter & Search Bar -->
-    <div class="row mb-4">
-        <!-- Search by Title or ID -->
-        <div class="col-md-3">
-            <input type="text" id="searchInput" class="form-control border-primary shadow-sm"
-                placeholder="🔍 Search by title or ID..." />
-        </div>
-
-        <!-- Filter by Creator ID -->
-        <div class="col-md-3">
-            <input type="text" id="createrIdInput" class="form-control border-secondary shadow-sm"
-                placeholder="🔍 Filter by Creator ID..." />
-        </div>
-
-        <!-- Filter by CreatedAt Date -->
-        <div class="col-md-3">
-            <input type="date" id="filterDate" class="form-control border-secondary shadow-sm" />
-        </div>
-
-        <!-- Reset Filters Button -->
-        <div class="col-md-3">
-            <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">Reset Filters</button>
-        </div>
-    </div>
-
-    <!-- Sorting Options -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <select id="sortOrderSelect" class="form-control" onchange="setSortOrder(this.value)">
-                <option value="title_desc">Title (Descending)</option>
-                <option value="created_at">Created At (Ascending)</option>
-                <option value="created_at_desc">Created At (Descending)</option>
-                <option value="creater_id">Creator ID (Ascending)</option>
-                <option value="creater_id_desc">Creator ID (Descending)</option>
-            </select>
-        </div>
-    </div>
 
     <!-- Filter & Search Form -->
     <form id="filterForm" method="get" action="@Url.Action("Index", "BlogManagement")">
         <input type="hidden" id="hiddenSearchTerm" name="searchTerm" />
         <input type="hidden" id="hiddenCreaterId" name="createrId" />
+        <input type="hidden" id="hiddenCreaterName" name="createrName" />
         <input type="hidden" id="hiddenCreatedAt" name="createdAt" />
         <input type="hidden" id="hiddenSortOrder" name="sortOrder" />
+        
+        <div class="d-flex justify-content-between align-items-center my-4">
+            <h2 class="fw-bold text-primary">📑 Blog Management</h2>
+            <div>
+                <a class="btn btn-success btn-lg" asp-action="Create"><i class="fa fa-plus"></i> Create New</a>
+                <a href="@Url.Action("ExportToExcel", new { searchTerm = ViewBag.SearchTerm, createrId = ViewBag.CreaterId, createdAt = ViewBag.CreatedAt, sortOrder = ViewBag.SortOrder })"
+                    class="btn btn-info btn-lg ms-2">
+                    <i class="fa fa-download"></i> Export to Excel
+                </a>
+            </div>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="row mb-4">
+            <!-- Search by Title or ID -->
+            <div class="col-md-3">
+                <input type="text" id="searchInput" class="form-control border-primary shadow-sm"
+                    placeholder="🔍 Search by title or ID..." />
+            </div>
+
+            <!-- Filter by Creator ID -->
+            <div class="col-md-3">
+                <input type="text" id="createrNameInput" class="form-control border-secondary shadow-sm"
+                    placeholder="🔍 Filter by Creator Name..." />
+            </div>
+
+            <!-- Filter by CreatedAt Date -->
+            <div class="col-md-3">
+                <input type="date" id="filterDate" class="form-control border-secondary shadow-sm" />
+            </div>
+
+            <!-- Reset Filters Button -->
+            <div class="col-md-1">
+                <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">Reset Filters</button>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-secondary w-100" type="button" id="filterButton">Apply Filters</button>
+            </div>
+        </div>
+
+        <!-- Sorting Options -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <select id="sortOrderSelect" class="form-control" onchange="setSortOrder(this.value)">
+                    <option value="title">Title (Ascending)</option>
+                    <option value="title_desc">Title (Descending)</option>
+                    <option value="created_at">Created At (Ascending)</option>
+                    <option value="created_at_desc">Created At (Descending)</option>
+                    <option value="creater_id">Creator ID (Ascending)</option>
+                    <option value="creater_id_desc">Creator ID (Descending)</option>
+                </select>
+            </div>
+        </div>
+        @* <button type="button" id="filterButton" class="btn btn-primary">Apply Filters</button> *@
     </form>
 
     <!-- Responsive Table with Fixed Header -->
@@ -96,9 +104,13 @@
                         <td>
                             @Html.DisplayFor(modelItem => item.CreatedAt)
                         </td>
-                        <td>
+                        @* <td>
                             @Html.DisplayFor(modelItem => item.CreaterId)
+                        </td> *@
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CreatorName)
                         </td>
+
                         <td class="text-center action-column">
                             <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                             <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.Id">Details</a>
@@ -158,42 +170,43 @@
 
 @section Scripts {
     <script>
-        // Update hidden fields based on user input
-        document.getElementById('searchInput').addEventListener('input', function () {
-            document.getElementById('hiddenSearchTerm').value = this.value;
+        document.getElementById('filterButton').addEventListener('click', function () {
+            document.getElementById('hiddenSearchTerm').value = document.getElementById('searchInput').value;
+            document.getElementById('hiddenCreaterName').value = document.getElementById('createrNameInput').value;
+            document.getElementById('hiddenCreatedAt').value = document.getElementById('filterDate').value;
             submitForm();
         });
 
-        document.getElementById('createrIdInput').addEventListener('input', function () {
-            document.getElementById('hiddenCreaterId').value = this.value;
-            submitForm();
+        document.getElementById('searchInput').addEventListener('input', function () {
+            document.getElementById('hiddenSearchTerm').value = this.value;
+        });
+
+        document.getElementById('createrNameInput').addEventListener('input', function () {
+            document.getElementById('hiddenCreaterName').value = this.value;
         });
 
         document.getElementById('filterDate').addEventListener('change', function () {
             document.getElementById('hiddenCreatedAt').value = this.value;
-            submitForm();
         });
 
-        // Reset filters function
+        function submitForm() {
+            document.getElementById('filterForm').submit();
+        }
+
         function resetFilters() {
             document.getElementById('searchInput').value = '';
             document.getElementById('createrIdInput').value = '';
             document.getElementById('filterDate').value = '';
             document.getElementById('hiddenSearchTerm').value = '';
-            document.getElementById('hiddenCreaterId').value = '';
+            document.getElementById('hiddenCreaterName').value = '';
             document.getElementById('hiddenCreatedAt').value = '';
             submitForm();
         }
 
-        // Submit form to apply filters
-        function submitForm() {
-            document.getElementById('filterForm').submit();
-        }
-
-        // Set sort order and submit the form
         function setSortOrder(order) {
             document.getElementById('hiddenSortOrder').value = order;
             submitForm();
         }
+
     </script>
 }

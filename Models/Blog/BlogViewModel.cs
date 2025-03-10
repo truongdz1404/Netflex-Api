@@ -17,4 +17,6 @@ public partial class BlogViewModel
     public DateTime CreatedAt { get; set; }
 
     public string CreaterId { get; set; } = null!;
+
+    public string? CreatorName { get; set; }
 }

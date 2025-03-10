@@ -1,0 +1,150 @@
+﻿@* @model Netflex.Models.User.DetailsUserViewModels
+
+@{
+    ViewData["Title"] = "User Details";
+    Layout = "~/Views/Admin/_AdminDashboard.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-dark text-white">
+            <h4 class="text-center mb-0">User Details</h4>
+        </div>
+        <div class="card-body bg-light">
+            <dl class="row text-dark">
+                <!-- UserName -->
+                <dt class="col-sm-3 text-center">
+                    <strong>@Html.DisplayNameFor(model => model.UserName)</strong>
+                </dt>
+                <dd class="col-sm-9 text-center">
+                    @Html.DisplayFor(model => model.UserName)
+                </dd>
+
+                <!-- Email -->
+                <dt class="col-sm-3 text-center">
+                    <strong>@Html.DisplayNameFor(model => model.Email)</strong>
+                </dt>
+                <dd class="col-sm-9 text-center">
+                    @Html.DisplayFor(model => model.Email)
+                </dd>
+
+                <!-- PhoneNumber -->
+                <dt class="col-sm-3 text-center">
+                    <strong>@Html.DisplayNameFor(model => model.PhoneNumber)</strong>
+                </dt>
+                <dd class="col-sm-9 text-center">
+                    @Html.DisplayFor(model => model.PhoneNumber)
+                </dd>
+
+                <!-- Status -->
+                <dt class="col-sm-3 text-center">
+                    <strong>Status</strong>
+                </dt>
+                <dd class="col-sm-9 text-center">
+                    @if (Model.LockoutEnd == null && Model.LockoutEnabled == true)
+                    {
+                        <span class="text-success">
+                            <i class="fas fa-check-circle"></i> Active
+                        </span>
+                    }
+                    else if (Model.LockoutEnd != null && Model.LockoutEnabled == false)
+                    {
+                        <span class="text-danger">
+                            <i class="fas fa-times-circle"></i> Non-Active
+                        </span>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.LockoutEnd)
+                    }
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer text-center bg-dark">
+            <a asp-action="Edit" asp-route-id="@Model?.Id"
+                class="btn btn-warning btn-lg text-white px-4 py-2 mr-2">Edit</a>
+            <a asp-action="Index" class="btn btn-secondary btn-lg text-white px-4 py-2">Back to List</a>
+        </div>
+    </div>
+</div> *@
+
+@model Netflex.Models.User.DetailsUserViewModels
+
+@{
+    ViewData["Title"] = "User Details";
+    Layout = "~/Views/Admin/_AdminDashboard.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-dark text-white">
+            <h4 class="text-center mb-0">User Details</h4>
+        </div>
+        <div class="card-body bg-light p-4">
+            <dl class="row text-dark">
+                <!-- UserName -->
+                <dt class="col-sm-3 text-left">
+                    <strong>@Html.DisplayNameFor(model => model.UserName)</strong>
+                </dt>
+                <dd class="col-sm-9 text-right">
+                    @Html.DisplayFor(model => model.UserName)
+                </dd>
+
+                <!-- Email -->
+                <dt class="col-sm-3 text-left">
+                    <strong>@Html.DisplayNameFor(model => model.Email)</strong>
+                </dt>
+                <dd class="col-sm-9 text-right">
+                    @Html.DisplayFor(model => model.Email)
+                </dd>
+
+                <!-- PhoneNumber -->
+                <dt class="col-sm-3 text-left">
+                    <strong>@Html.DisplayNameFor(model => model.PhoneNumber)</strong>
+                </dt>
+                <dd class="col-sm-9 text-right">
+                    @Html.DisplayFor(model => model.PhoneNumber)
+                </dd>
+
+                <!-- Status -->
+                <dt class="col-sm-3 text-left">
+                    <strong>Status</strong>
+                </dt>
+                <dd class="col-sm-9 text-right">
+                    @if (Model.LockoutEnabled == false)
+                    {
+                        <span class="text-success">
+                            <i class="fas fa-check-circle"></i> Active
+                        </span>
+                    }
+                    else if (Model.LockoutEnabled == true)
+                    {
+                        <span class="text-danger">
+                            <i class="fas fa-times-circle"></i> Non-Active
+                        </span>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.LockoutEnd)
+                    }
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer text-center bg-dark">
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning btn-lg text-white px-4 py-2 mr-2 hover-shadow">Edit</a>
+            <a asp-action="Index" class="btn btn-secondary btn-lg text-white px-4 py-2 hover-shadow">Back to List</a>
+        </div>
+    </div>
+</div>
+
+<!-- Adding hover effect with some custom CSS -->
+<style>
+    .hover-shadow {
+        transition: all 0.3s ease-in-out;
+    }
+
+    .hover-shadow:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transform: translateY(-3px);
+    }
+</style>
