@@ -1,0 +1,248 @@
+﻿@model IPagedList<Netflex.Models.User.UserViewModels>
+
+@{
+    ViewData["Title"] = "User Management";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid px-4">
+
+
+    <!-- Filter & Search Form -->
+    <form id="filterForm" method="get" action="@Url.Action("Index", "User")">
+        <input type="hidden" id="hiddenSearchTerm" name="searchTerm" />
+        <input type="hidden" id="hiddenUserId" name="userId" />
+        <input type="hidden" id="hiddenUserName" name="userName" />
+        <input type="hidden" id="hiddenEmail" name="email" />
+        <input type="hidden" id="hiddenPhoneNumber" name="phoneNumber" />
+        <input type="hidden" id="hiddenSelectedRoles" name="selectedRoles" />
+        <input type="hidden" id="hiddenSortOrder" name="sortOrder" />
+
+        <div class="d-flex justify-content-between align-items-center my-4">
+            <h2 class="fw-bold text-primary">📑 User Management</h2>
+            <div>
+                <a class="btn btn-success btn-lg" asp-action="Create"><i class="fa fa-plus"></i> Create Account</a>
+                <a href="@Url.Action("ExportToExcel", new { searchTerm = ViewBag.SearchTerm, userId = ViewBag.userId, phoneNumber = ViewBag.phoneNumber, email = ViewBag.email})"
+                    class="btn btn-info btn-lg ms-2">
+                    <i class="fa fa-download"></i> Export to Excel
+                </a>
+            </div>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="row mb-4">
+            <!-- Search by Title or ID -->
+            <div class="col-md-2">
+                <input type="text" id="searchInput" class="form-control border-primary shadow-sm"
+                    placeholder="🔍 Search" />
+            </div>
+
+            <!-- Filter by Creator Name -->
+            <div class="col-md-2">
+                <input type="text" id="userNameInput" class="form-control border-secondary shadow-sm"
+                    placeholder="🔍 Filter by Creator Name..." />
+            </div>
+
+            <!-- Filter by Email -->
+            <div class="col-md-2">
+                <input type="text" id="emailInput" class="form-control border-secondary shadow-sm"
+                    placeholder="🔍 Filter by Email..." />
+            </div>
+
+            <!-- Filter by Phone Number -->
+            <div class="col-md-2">
+                <input type="text" id="phoneInput" class="form-control border-secondary shadow-sm"
+                    placeholder="🔍 Filter by Phone Number..." />
+            </div>
+
+            <!-- Reset Filters Button -->
+            <div class="col-md-2">
+                <button class="btn btn-outline-secondary w-100" type="button" onclick="resetFilters()">Reset
+                    Filters</button>
+            </div>
+
+            <div class="col-md-2">
+                <button class="btn btn-outline-secondary w-100" type="button" id="filterButton">Apply Filters</button>
+            </div>
+        </div>
+
+        <!-- Sorting Options -->
+        <div class="row mb-4">
+            <div class="col-md-2">
+                <select id="sortOrderSelect" class="form-control" onchange="setSortOrder(this.value)">
+                    <option value="userName_asc">UserName (Ascending)</option>
+                    <option value="userName_desc">UserName (Descending)</option>
+                    <option value="email_asc">Email (Ascending)</option>
+                    <option value="email_desc">Email (Descending)</option>
+                </select>
+            </div>
+        </div>
+    </form>
+
+    <!-- Responsive Table with Fixed Header -->
+    <div class="table-responsive-lg" style="max-height: 600px; overflow-y: auto;">
+        <table class="table table-hover table-bordered align-middle shadow-lg table-lg">
+            <thead class="table-dark position-sticky top-0">
+                <tr>
+                    <th style="min-width: 150px;">Id</th>
+                    <th style="min-width: 300px;">UserName</th>
+                    <th style="min-width: 300px;">Email</th>
+                    <th style="min-width: 100px;">PhoneNumber</th>
+                    <th style="min-width: 150px;">Status</th>
+                    <th style="min-width: 120px; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="text-truncate" style="max-width: 250px;">
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td class="text-truncate" style="max-width: 400px;">
+                            @Html.DisplayFor(modelItem => item.UserName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PhoneNumber)
+                        </td>
+                        <td>
+                            @if (item.LockoutEnabled == false)
+                            {
+                                <span class="text-success">Active</span>
+                            }
+                            else if (item.LockoutEnabled == true)
+                            {
+                                <span class="text-danger">Non-Active</span>
+                            }
+                            else
+                            {
+                                @Html.DisplayFor(modelItem => item.LockoutEnd)
+                            }
+                        </td>
+                        <td class="text-center action-column">
+                            <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                            @if (item.LockoutEnabled == false)
+                            {
+                                <a class="btn btn-danger btn-sm" asp-action="Lock" asp-route-id="@item.Id">Lock</a>
+                            }
+                            else if (item.LockoutEnabled == true)
+                            {
+                                <a class="btn btn-danger btn-sm" asp-action="Unlock" asp-route-id="@item.Id">Unlock</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row">
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+                <!-- Previous Page Link -->
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                }
+
+                <!-- Page Number Links -->
+                @for (var i = 1; i <= Model.PageCount; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                    </li>
+                }
+
+                <!-- Next Page Link -->
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        // Function to apply filters
+        document.getElementById('filterButton').addEventListener('click', function () {
+            document.getElementById('hiddenSearchTerm').value = document.getElementById('searchInput').value;
+            document.getElementById('hiddenUserName').value = document.getElementById('userNameInput').value;
+            document.getElementById('hiddenEmail').value = document.getElementById('emailInput').value;
+            document.getElementById('hiddenPhoneNumber').value = document.getElementById('phoneInput').value;
+            document.getElementById('hiddenSortOrder').value = document.getElementById('sortOrderSelect').value;
+            submitForm();
+        });
+
+        // Listen for changes in the input fields and update hidden inputs accordingly
+        document.getElementById('searchInput').addEventListener('input', function () {
+            document.getElementById('hiddenSearchTerm').value = this.value;
+        });
+
+        document.getElementById('userNameInput').addEventListener('input', function () {
+            document.getElementById('hiddenUserName').value = this.value;
+        });
+
+        document.getElementById('emailInput').addEventListener('input', function () {
+            document.getElementById('hiddenEmail').value = this.value;
+        });
+
+        document.getElementById('phoneInput').addEventListener('input', function () {
+            document.getElementById('hiddenPhoneNumber').value = this.value;
+        });
+
+        // Function to reset all the filters
+        function resetFilters() {
+            // Reset các trường nhập liệu
+            document.getElementById('searchInput').value = '';
+            document.getElementById('userNameInput').value = '';
+            document.getElementById('emailInput').value = '';
+            document.getElementById('phoneInput').value = '';
+            document.getElementById('sortOrderSelect').value = 'userName_asc'; // Default sort order
+
+            // Reset các trường hidden
+            document.getElementById('hiddenSearchTerm').value = '';
+            document.getElementById('hiddenUserName').value = '';
+            document.getElementById('hiddenEmail').value = '';
+            document.getElementById('hiddenPhoneNumber').value = '';
+            document.getElementById('hiddenSortOrder').value = 'userName_asc'; // Default sort order
+
+            // Submit the form after resetting
+            submitForm();
+        }
+
+        // Function to set sort order and submit form
+        function setSortOrder(order) {
+            document.getElementById('hiddenSortOrder').value = order;
+            submitForm();
+        }
+
+        // Submit the form
+        function submitForm() {
+            document.getElementById('filterForm').submit();
+        }
+    </script>
+}

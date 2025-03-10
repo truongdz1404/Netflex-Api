@@ -24,58 +24,76 @@ namespace Netflex.Controllers
         private readonly ApplicationDbContext _context = context;
 
         private readonly ILogger<BlogManagementController> _logger = logger;
-
-        public IActionResult Index(int? page, string searchTerm, string createrId, DateTime? createdAt, string sortOrder)
+        public IActionResult Index(int? page, string searchTerm, string createrName, string createrId, DateTime? createdAt, string sortOrder)
         {
             int pageNumber = page ?? 1;
 
-            var blogsQuery = _unitOfWork.Repository<Blog>().Entities.AsQueryable();
+            var users = _context.Users.ToList();
+            ViewBag.Users = new SelectList(users, "Id", "UserName");
+
+            var blogsQuery = _context.Blogs
+                .Join(_context.Users, b => b.CreaterId, u => u.Id, (b, u) => new
+                {
+                    Blog = b,
+                    UserName = u.UserName
+                })
+                .AsQueryable();
 
             if (!string.IsNullOrEmpty(searchTerm))
             {
-                blogsQuery = blogsQuery.Where(b => b.Title.Contains(searchTerm));
+                blogsQuery = blogsQuery.Where(b => b.Blog.Title.Contains(searchTerm));
             }
 
             if (!string.IsNullOrEmpty(createrId))
             {
-                blogsQuery = blogsQuery.Where(b => b.CreaterId == createrId);
+                blogsQuery = blogsQuery.Where(b => b.Blog.CreaterId == createrId);
+            }
+
+            if (!string.IsNullOrEmpty(createrName))
+            {
+                blogsQuery = blogsQuery.Where(b => b.UserName != null && b.UserName.Contains(createrName));
             }
 
             if (createdAt.HasValue)
             {
-                blogsQuery = blogsQuery.Where(b => b.CreatedAt.Date == createdAt.Value.Date);
+                var utcCreatedAt = createdAt.Value.Kind == DateTimeKind.Utc ? createdAt.Value : createdAt.Value.ToUniversalTime();
+                blogsQuery = blogsQuery.Where(b => b.Blog.CreatedAt.Date == utcCreatedAt.Date);
             }
 
             switch (sortOrder)
             {
+                case "title":
+                    blogsQuery = blogsQuery.OrderBy(b => b.Blog.Title);
+                    break;
                 case "title_desc":
-                    blogsQuery = blogsQuery.OrderByDescending(b => b.Title);
+                    blogsQuery = blogsQuery.OrderByDescending(b => b.Blog.Title);
                     break;
                 case "created_at":
-                    blogsQuery = blogsQuery.OrderBy(b => b.CreatedAt);
+                    blogsQuery = blogsQuery.OrderBy(b => b.Blog.CreatedAt);
                     break;
                 case "created_at_desc":
-                    blogsQuery = blogsQuery.OrderByDescending(b => b.CreatedAt);
+                    blogsQuery = blogsQuery.OrderByDescending(b => b.Blog.CreatedAt);
                     break;
                 case "creater_id":
-                    blogsQuery = blogsQuery.OrderBy(b => b.CreaterId);
+                    blogsQuery = blogsQuery.OrderBy(b => b.Blog.CreaterId);
                     break;
                 case "creater_id_desc":
-                    blogsQuery = blogsQuery.OrderByDescending(b => b.CreaterId);
+                    blogsQuery = blogsQuery.OrderByDescending(b => b.Blog.CreaterId);
                     break;
                 default:
-                    blogsQuery = blogsQuery.OrderBy(b => b.Title);
+                    blogsQuery = blogsQuery.OrderBy(b => b.Blog.Title);
                     break;
             }
 
             var models = blogsQuery.Select(b => new BlogViewModel()
             {
-                Id = b.Id,
-                Title = b.Title,
-                Content = b.Content,
-                Thumbnail = b.Thumbnail,
-                CreatedAt = b.CreatedAt,
-                CreaterId = b.CreaterId,
+                Id = b.Blog.Id,
+                Title = b.Blog.Title,
+                Content = b.Blog.Content,
+                Thumbnail = b.Blog.Thumbnail,
+                CreatedAt = b.Blog.CreatedAt,
+                CreaterId = b.Blog.CreaterId,
+                CreatorName = b.UserName
             })
             .ToPagedList(pageNumber, PAGE_SIZE);
 
@@ -86,46 +104,10 @@ namespace Netflex.Controllers
 
             return View(models);
         }
-        public IActionResult ExportToExcel(string searchTerm, string createrId, DateTime? createdAt, string sortOrder)
+
+        public IActionResult ExportToExcel()
         {
             var blogsQuery = _unitOfWork.Repository<Blog>().Entities.AsQueryable();
-
-            if (!string.IsNullOrEmpty(searchTerm))
-            {
-                blogsQuery = blogsQuery.Where(b => b.Title.Contains(searchTerm));
-            }
-
-            if (!string.IsNullOrEmpty(createrId))
-            {
-                blogsQuery = blogsQuery.Where(b => b.CreaterId == createrId);
-            }
-
-            if (createdAt.HasValue)
-            {
-                blogsQuery = blogsQuery.Where(b => b.CreatedAt.Date == createdAt.Value.Date);
-            }
-
-            switch (sortOrder)
-            {
-                case "title_desc":
-                    blogsQuery = blogsQuery.OrderByDescending(b => b.Title);
-                    break;
-                case "created_at":
-                    blogsQuery = blogsQuery.OrderBy(b => b.CreatedAt);
-                    break;
-                case "created_at_desc":
-                    blogsQuery = blogsQuery.OrderByDescending(b => b.CreatedAt);
-                    break;
-                case "creater_id":
-                    blogsQuery = blogsQuery.OrderBy(b => b.CreaterId);
-                    break;
-                case "creater_id_desc":
-                    blogsQuery = blogsQuery.OrderByDescending(b => b.CreaterId);
-                    break;
-                default:
-                    blogsQuery = blogsQuery.OrderBy(b => b.Title);
-                    break;
-            }
 
             var blogsData = blogsQuery.Select(b => new
             {

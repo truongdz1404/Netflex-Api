@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Edit";
-    Layout = "~/Views/Admin/_AdminDashboard.cshtml";
+    Layout = "_AdminLayout";
 }
 
 <h1 class="text-center text-dark">Edit Blog</h1>
@@ -90,16 +90,13 @@
             var createrDropdown = document.getElementById("CreaterIdDropdown");
             var createrNameInput = document.getElementById("CreaterName");
 
-            // Lấy danh sách Users từ ViewBag
             var createrData = @Html.Raw(Json.Serialize(ViewBag.CreaterList));
 
-            // Khi chọn CreaterId, cập nhật CreaterName
             createrDropdown.addEventListener("change", function () {
                 var selectedId = createrDropdown.value;
                 createrNameInput.value = createrData[selectedId] || "";
             });
 
-            // Cập nhật giá trị ban đầu khi load trang
             var initialId = createrDropdown.value;
             createrNameInput.value = createrData[initialId] || "";
         });
