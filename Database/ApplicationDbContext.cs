@@ -9,6 +9,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     : IdentityDbContext<User>(options)
 {
     public virtual DbSet<Film> Films { get; set; }
+    public virtual DbSet<SerieCountry> SerieCountries { get; set; }
+    public virtual DbSet<SerieActor> SerieActors { get; set; }
+    public virtual DbSet<SerieGenre> SerieGenres { get; set; }
+    public virtual DbSet<FilmActor> FilmActors { get; set; }
+    public virtual DbSet<FilmGenre> FilmGenres { get; set; }
+    public virtual DbSet<FilmCountry> FilmCountries { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

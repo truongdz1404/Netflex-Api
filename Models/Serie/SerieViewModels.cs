@@ -1,6 +1,6 @@
 namespace Netflex.Models.Serie;
 
-public class DetailSerieViewModel
+public class SerieViewModel
 {
     public required Guid Id { get; set; }
 
@@ -9,7 +9,4 @@ public class DetailSerieViewModel
     public int ProductionYear { get; set; }
     public Guid? AgeCategoryId { get; set; }
     public string? Poster { get; set; }
-    public required List<Guid> ActorIds { get; set; }
-    public required List<Guid> GenreIds { get; set; }
-    public required List<Guid> CountryIds { get; set; }
 }

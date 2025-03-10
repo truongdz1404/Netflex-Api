@@ -9,4 +9,5 @@ public class FilmViewModel
     public string? Trailer { get; set; }
     public int ProductionYear { get; set; }
     public string? AgeCategory { get; set; }
+    
 }

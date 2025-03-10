@@ -11,5 +11,5 @@ public class CreateEpisodeModel
     [StringLength(1000)]
     public string? About { get; set; }
     public IFormFile? File { get; set; }
-    public required string SerieId { get; set; }
+    public required Guid SerieId { get; set; }
 }
