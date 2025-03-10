@@ -11,8 +11,8 @@ namespace Netflex.Entities
         public Guid AgeCategoryId { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        public ICollection<SerieActor> SerieActors { get; set; } = new List<SerieActor>();
-        public ICollection<SerieGenre> SerieGenres { get; set; } = new List<SerieGenre>();
-        public ICollection<SerieCountry> SerieCountries { get; set; } = new List<SerieCountry>();
+        public ICollection<SerieActor> SerieActors { get; set; } = [];
+        public ICollection<SerieGenre> SerieGenres { get; set; } = [];
+        public ICollection<SerieCountry> SerieCountries { get; set; } = [];
     }
 }

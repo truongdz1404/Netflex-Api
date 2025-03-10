@@ -9,11 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Netflex.Migrations
+namespace Netflex.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250305140522_CreateDb")]
-    partial class CreateDb
+    [Migration("20250310085225_Dev_V1")]
+    partial class Dev_V1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -205,8 +205,8 @@ namespace Netflex.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(3000)
-                        .HasColumnType("character varying(3000)");
+                        .HasMaxLength(20000)
+                        .HasColumnType("character varying(20000)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -336,9 +336,19 @@ namespace Netflex.Migrations
                     b.Property<Guid>("ActorId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ActorId1")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("FilmId1")
+                        .HasColumnType("uuid");
+
                     b.HasKey("FilmId", "ActorId");
 
                     b.HasIndex("ActorId");
+
+                    b.HasIndex("ActorId1");
+
+                    b.HasIndex("FilmId1");
 
                     b.ToTable("tblFilmActors", "dbo");
                 });
@@ -351,9 +361,19 @@ namespace Netflex.Migrations
                     b.Property<Guid>("CountryId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("CountryId1")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("FilmId1")
+                        .HasColumnType("uuid");
+
                     b.HasKey("FilmId", "CountryId");
 
                     b.HasIndex("CountryId");
+
+                    b.HasIndex("CountryId1");
+
+                    b.HasIndex("FilmId1");
 
                     b.ToTable("tblFilmCountries", "dbo");
                 });
@@ -366,7 +386,12 @@ namespace Netflex.Migrations
                     b.Property<Guid>("GenreId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("FilmId1")
+                        .HasColumnType("uuid");
+
                     b.HasKey("FilmId", "GenreId");
+
+                    b.HasIndex("FilmId1");
 
                     b.HasIndex("GenreId");
 
@@ -466,16 +491,18 @@ namespace Netflex.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("About")
+                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<Guid?>("AgeCategoryId")
+                    b.Property<Guid>("AgeCategoryId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Poster")
+                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
@@ -502,9 +529,19 @@ namespace Netflex.Migrations
                     b.Property<Guid>("ActorId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ActorId1")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("SerieId1")
+                        .HasColumnType("uuid");
+
                     b.HasKey("SerieId", "ActorId");
 
                     b.HasIndex("ActorId");
+
+                    b.HasIndex("ActorId1");
+
+                    b.HasIndex("SerieId1");
 
                     b.ToTable("tblSerieActors", "dbo");
                 });
@@ -517,9 +554,19 @@ namespace Netflex.Migrations
                     b.Property<Guid>("CountryId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("CountryId1")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("SerieId1")
+                        .HasColumnType("uuid");
+
                     b.HasKey("SerieId", "CountryId");
 
                     b.HasIndex("CountryId");
+
+                    b.HasIndex("CountryId1");
+
+                    b.HasIndex("SerieId1");
 
                     b.ToTable("tblSerieCountries", "dbo");
                 });
@@ -532,9 +579,24 @@ namespace Netflex.Migrations
                     b.Property<Guid>("GenreId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("GenreId1")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("GenreId2")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("SerieId1")
+                        .HasColumnType("uuid");
+
                     b.HasKey("SerieId", "GenreId");
 
                     b.HasIndex("GenreId");
+
+                    b.HasIndex("GenreId1");
+
+                    b.HasIndex("GenreId2");
+
+                    b.HasIndex("SerieId1");
 
                     b.ToTable("tblSerieGenres", "dbo");
                 });
@@ -702,11 +764,19 @@ namespace Netflex.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Netflex.Entities.Actor", null)
+                        .WithMany("FilmActors")
+                        .HasForeignKey("ActorId1");
+
                     b.HasOne("Netflex.Entities.Film", null)
                         .WithMany()
                         .HasForeignKey("FilmId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Netflex.Entities.Film", null)
+                        .WithMany("FilmActors")
+                        .HasForeignKey("FilmId1");
                 });
 
             modelBuilder.Entity("Netflex.Entities.FilmCountry", b =>
@@ -717,11 +787,19 @@ namespace Netflex.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Netflex.Entities.Country", null)
+                        .WithMany("FilmCountries")
+                        .HasForeignKey("CountryId1");
+
                     b.HasOne("Netflex.Entities.Film", null)
                         .WithMany()
                         .HasForeignKey("FilmId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Netflex.Entities.Film", null)
+                        .WithMany("FilmCountries")
+                        .HasForeignKey("FilmId1");
                 });
 
             modelBuilder.Entity("Netflex.Entities.FilmGenre", b =>
@@ -731,6 +809,10 @@ namespace Netflex.Migrations
                         .HasForeignKey("FilmId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Netflex.Entities.Film", null)
+                        .WithMany("FilmGenres")
+                        .HasForeignKey("FilmId1");
 
                     b.HasOne("Netflex.Entities.Genre", null)
                         .WithMany()
@@ -785,64 +867,82 @@ namespace Netflex.Migrations
                 {
                     b.HasOne("Netflex.Entities.AgeCategory", null)
                         .WithMany()
-                        .HasForeignKey("AgeCategoryId");
+                        .HasForeignKey("AgeCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Netflex.Entities.SerieActor", b =>
                 {
-                    b.HasOne("Netflex.Entities.Actor", "Actor")
-                        .WithMany("SerieActors")
+                    b.HasOne("Netflex.Entities.Actor", null)
+                        .WithMany()
                         .HasForeignKey("ActorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Netflex.Entities.Serie", "Serie")
+                    b.HasOne("Netflex.Entities.Actor", null)
                         .WithMany("SerieActors")
+                        .HasForeignKey("ActorId1");
+
+                    b.HasOne("Netflex.Entities.Serie", null)
+                        .WithMany()
                         .HasForeignKey("SerieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Actor");
-
-                    b.Navigation("Serie");
+                    b.HasOne("Netflex.Entities.Serie", null)
+                        .WithMany("SerieActors")
+                        .HasForeignKey("SerieId1");
                 });
 
             modelBuilder.Entity("Netflex.Entities.SerieCountry", b =>
                 {
-                    b.HasOne("Netflex.Entities.Country", "Country")
-                        .WithMany("SerieCountries")
+                    b.HasOne("Netflex.Entities.Country", null)
+                        .WithMany()
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Netflex.Entities.Serie", "Serie")
+                    b.HasOne("Netflex.Entities.Country", null)
                         .WithMany("SerieCountries")
+                        .HasForeignKey("CountryId1");
+
+                    b.HasOne("Netflex.Entities.Serie", null)
+                        .WithMany()
                         .HasForeignKey("SerieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Country");
-
-                    b.Navigation("Serie");
+                    b.HasOne("Netflex.Entities.Serie", null)
+                        .WithMany("SerieCountries")
+                        .HasForeignKey("SerieId1");
                 });
 
             modelBuilder.Entity("Netflex.Entities.SerieGenre", b =>
                 {
-                    b.HasOne("Netflex.Entities.Genre", "Genre")
-                        .WithMany("SerieGenres")
+                    b.HasOne("Netflex.Entities.Genre", null)
+                        .WithMany()
                         .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Netflex.Entities.Serie", "Serie")
+                    b.HasOne("Netflex.Entities.Genre", null)
                         .WithMany("SerieGenres")
+                        .HasForeignKey("GenreId1");
+
+                    b.HasOne("Netflex.Entities.Genre", null)
+                        .WithMany("FilmGenres")
+                        .HasForeignKey("GenreId2");
+
+                    b.HasOne("Netflex.Entities.Serie", null)
+                        .WithMany()
                         .HasForeignKey("SerieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Genre");
-
-                    b.Navigation("Serie");
+                    b.HasOne("Netflex.Entities.Serie", null)
+                        .WithMany("SerieGenres")
+                        .HasForeignKey("SerieId1");
                 });
 
             modelBuilder.Entity("Netflex.Entities.UserNotification", b =>
@@ -862,16 +962,31 @@ namespace Netflex.Migrations
 
             modelBuilder.Entity("Netflex.Entities.Actor", b =>
                 {
+                    b.Navigation("FilmActors");
+
                     b.Navigation("SerieActors");
                 });
 
             modelBuilder.Entity("Netflex.Entities.Country", b =>
                 {
+                    b.Navigation("FilmCountries");
+
                     b.Navigation("SerieCountries");
+                });
+
+            modelBuilder.Entity("Netflex.Entities.Film", b =>
+                {
+                    b.Navigation("FilmActors");
+
+                    b.Navigation("FilmCountries");
+
+                    b.Navigation("FilmGenres");
                 });
 
             modelBuilder.Entity("Netflex.Entities.Genre", b =>
                 {
+                    b.Navigation("FilmGenres");
+
                     b.Navigation("SerieGenres");
                 });
 

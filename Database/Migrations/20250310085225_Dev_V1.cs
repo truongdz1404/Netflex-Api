@@ -4,10 +4,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Netflex.Migrations
+namespace Netflex.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateDb : Migration
+    public partial class Dev_V1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -159,10 +159,10 @@ namespace Netflex.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    About = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    Poster = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    About = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    Poster = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     ProductionYear = table.Column<int>(type: "integer", nullable: false),
-                    AgeCategoryId = table.Column<Guid>(type: "uuid", nullable: true),
+                    AgeCategoryId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -173,7 +173,8 @@ namespace Netflex.Migrations
                         column: x => x.AgeCategoryId,
                         principalSchema: "dbo",
                         principalTable: "tblAgeCategorys",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -206,7 +207,7 @@ namespace Netflex.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Content = table.Column<string>(type: "character varying(3000)", maxLength: 3000, nullable: false),
+                    Content = table.Column<string>(type: "character varying(20000)", maxLength: 20000, nullable: false),
                     Thumbnail = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreaterId = table.Column<string>(type: "text", nullable: false)
@@ -350,7 +351,9 @@ namespace Netflex.Migrations
                 columns: table => new
                 {
                     FilmId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ActorId = table.Column<Guid>(type: "uuid", nullable: false)
+                    ActorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ActorId1 = table.Column<Guid>(type: "uuid", nullable: true),
+                    FilmId1 = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -363,12 +366,24 @@ namespace Netflex.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_tblFilmActors_tblActors_ActorId1",
+                        column: x => x.ActorId1,
+                        principalSchema: "dbo",
+                        principalTable: "tblActors",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_tblFilmActors_tblFilms_FilmId",
                         column: x => x.FilmId,
                         principalSchema: "dbo",
                         principalTable: "tblFilms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblFilmActors_tblFilms_FilmId1",
+                        column: x => x.FilmId1,
+                        principalSchema: "dbo",
+                        principalTable: "tblFilms",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -377,7 +392,9 @@ namespace Netflex.Migrations
                 columns: table => new
                 {
                     FilmId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CountryId = table.Column<Guid>(type: "uuid", nullable: false)
+                    CountryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CountryId1 = table.Column<Guid>(type: "uuid", nullable: true),
+                    FilmId1 = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -390,12 +407,24 @@ namespace Netflex.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_tblFilmCountries_tblCountrys_CountryId1",
+                        column: x => x.CountryId1,
+                        principalSchema: "dbo",
+                        principalTable: "tblCountrys",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_tblFilmCountries_tblFilms_FilmId",
                         column: x => x.FilmId,
                         principalSchema: "dbo",
                         principalTable: "tblFilms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblFilmCountries_tblFilms_FilmId1",
+                        column: x => x.FilmId1,
+                        principalSchema: "dbo",
+                        principalTable: "tblFilms",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -404,7 +433,8 @@ namespace Netflex.Migrations
                 columns: table => new
                 {
                     FilmId = table.Column<Guid>(type: "uuid", nullable: false),
-                    GenreId = table.Column<Guid>(type: "uuid", nullable: false)
+                    GenreId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FilmId1 = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -416,6 +446,12 @@ namespace Netflex.Migrations
                         principalTable: "tblFilms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblFilmGenres_tblFilms_FilmId1",
+                        column: x => x.FilmId1,
+                        principalSchema: "dbo",
+                        principalTable: "tblFilms",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_tblFilmGenres_tblGenres_GenreId",
                         column: x => x.GenreId,
@@ -528,7 +564,9 @@ namespace Netflex.Migrations
                 columns: table => new
                 {
                     SerieId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ActorId = table.Column<Guid>(type: "uuid", nullable: false)
+                    ActorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ActorId1 = table.Column<Guid>(type: "uuid", nullable: true),
+                    SerieId1 = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -541,12 +579,24 @@ namespace Netflex.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_tblSerieActors_tblActors_ActorId1",
+                        column: x => x.ActorId1,
+                        principalSchema: "dbo",
+                        principalTable: "tblActors",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_tblSerieActors_tblSeries_SerieId",
                         column: x => x.SerieId,
                         principalSchema: "dbo",
                         principalTable: "tblSeries",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblSerieActors_tblSeries_SerieId1",
+                        column: x => x.SerieId1,
+                        principalSchema: "dbo",
+                        principalTable: "tblSeries",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -555,7 +605,9 @@ namespace Netflex.Migrations
                 columns: table => new
                 {
                     SerieId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CountryId = table.Column<Guid>(type: "uuid", nullable: false)
+                    CountryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CountryId1 = table.Column<Guid>(type: "uuid", nullable: true),
+                    SerieId1 = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -568,12 +620,24 @@ namespace Netflex.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_tblSerieCountries_tblCountrys_CountryId1",
+                        column: x => x.CountryId1,
+                        principalSchema: "dbo",
+                        principalTable: "tblCountrys",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_tblSerieCountries_tblSeries_SerieId",
                         column: x => x.SerieId,
                         principalSchema: "dbo",
                         principalTable: "tblSeries",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblSerieCountries_tblSeries_SerieId1",
+                        column: x => x.SerieId1,
+                        principalSchema: "dbo",
+                        principalTable: "tblSeries",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -582,7 +646,10 @@ namespace Netflex.Migrations
                 columns: table => new
                 {
                     SerieId = table.Column<Guid>(type: "uuid", nullable: false),
-                    GenreId = table.Column<Guid>(type: "uuid", nullable: false)
+                    GenreId = table.Column<Guid>(type: "uuid", nullable: false),
+                    GenreId1 = table.Column<Guid>(type: "uuid", nullable: true),
+                    GenreId2 = table.Column<Guid>(type: "uuid", nullable: true),
+                    SerieId1 = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -595,12 +662,30 @@ namespace Netflex.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_tblSerieGenres_tblGenres_GenreId1",
+                        column: x => x.GenreId1,
+                        principalSchema: "dbo",
+                        principalTable: "tblGenres",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_tblSerieGenres_tblGenres_GenreId2",
+                        column: x => x.GenreId2,
+                        principalSchema: "dbo",
+                        principalTable: "tblGenres",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_tblSerieGenres_tblSeries_SerieId",
                         column: x => x.SerieId,
                         principalSchema: "dbo",
                         principalTable: "tblSeries",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tblSerieGenres_tblSeries_SerieId1",
+                        column: x => x.SerieId1,
+                        principalSchema: "dbo",
+                        principalTable: "tblSeries",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -622,10 +707,40 @@ namespace Netflex.Migrations
                 column: "ActorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_tblFilmActors_ActorId1",
+                schema: "dbo",
+                table: "tblFilmActors",
+                column: "ActorId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblFilmActors_FilmId1",
+                schema: "dbo",
+                table: "tblFilmActors",
+                column: "FilmId1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_tblFilmCountries_CountryId",
                 schema: "dbo",
                 table: "tblFilmCountries",
                 column: "CountryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblFilmCountries_CountryId1",
+                schema: "dbo",
+                table: "tblFilmCountries",
+                column: "CountryId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblFilmCountries_FilmId1",
+                schema: "dbo",
+                table: "tblFilmCountries",
+                column: "FilmId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblFilmGenres_FilmId1",
+                schema: "dbo",
+                table: "tblFilmGenres",
+                column: "FilmId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblFilmGenres_GenreId",
@@ -683,16 +798,58 @@ namespace Netflex.Migrations
                 column: "ActorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_tblSerieActors_ActorId1",
+                schema: "dbo",
+                table: "tblSerieActors",
+                column: "ActorId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblSerieActors_SerieId1",
+                schema: "dbo",
+                table: "tblSerieActors",
+                column: "SerieId1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_tblSerieCountries_CountryId",
                 schema: "dbo",
                 table: "tblSerieCountries",
                 column: "CountryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_tblSerieCountries_CountryId1",
+                schema: "dbo",
+                table: "tblSerieCountries",
+                column: "CountryId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblSerieCountries_SerieId1",
+                schema: "dbo",
+                table: "tblSerieCountries",
+                column: "SerieId1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_tblSerieGenres_GenreId",
                 schema: "dbo",
                 table: "tblSerieGenres",
                 column: "GenreId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblSerieGenres_GenreId1",
+                schema: "dbo",
+                table: "tblSerieGenres",
+                column: "GenreId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblSerieGenres_GenreId2",
+                schema: "dbo",
+                table: "tblSerieGenres",
+                column: "GenreId2");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblSerieGenres_SerieId1",
+                schema: "dbo",
+                table: "tblSerieGenres",
+                column: "SerieId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblSeries_AgeCategoryId",
