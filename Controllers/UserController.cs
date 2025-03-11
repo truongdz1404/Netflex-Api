@@ -69,31 +69,48 @@ namespace Netflex.Controllers
                     break;
             }
 
-            var models = await users.Select(b => new UserViewModels()
+            var usersList = await users.ToListAsync();
+
+            var models = new List<UserViewModels>();
+            foreach (var user in usersList)
             {
-                Id = b.Id,
-                UserName = b.UserName,
-                Email = b.Email,
-                PhoneNumber = b.PhoneNumber,
-                LockoutEnd = b.LockoutEnd,
-                LockoutEnabled = b.LockoutEnabled,
-            }).ToListAsync();
+                var roles = await _userManager.GetRolesAsync(user);
+                models.Add(new UserViewModels()
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    LockoutEnd = user.LockoutEnd,
+                    LockoutEnabled = user.LockoutEnabled,
+                    Roles = string.Join(", ", roles)
+                });
+            }
 
             var pagedModels = models.ToPagedList(pageNumber, PAGE_SIZE);
 
             return View(pagedModels);
         }
-        public IActionResult ExportToExcel()
+        public async Task<IActionResult> ExportToExcel()
         {
             var users = _userManager.Users.AsQueryable();
-            var userList = users.Select(u => new UserViewModels
-            {
-                Id = u.Id,
-                UserName = u.UserName,
-                Email = u.Email,
-                PhoneNumber = u.PhoneNumber
-            }).ToList();
+            var usersList = await users.ToListAsync();
 
+            var models = new List<UserViewModels>();
+            foreach (var user in usersList)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                models.Add(new UserViewModels()
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    LockoutEnd = user.LockoutEnd,
+                    LockoutEnabled = user.LockoutEnabled,
+                    Roles = string.Join(", ", roles)
+                });
+            }
             // Tạo file Excel
             using (var package = new ExcelPackage())
             {
@@ -104,14 +121,20 @@ namespace Netflex.Controllers
                 worksheet.Cells[1, 2].Value = "User Name";
                 worksheet.Cells[1, 3].Value = "Email";
                 worksheet.Cells[1, 4].Value = "Phone Number";
+                worksheet.Cells[1, 5].Value = "Role";
+                worksheet.Cells[1, 6].Value = "Status";
 
                 // Thêm dữ liệu vào các hàng
-                for (int i = 0; i < userList.Count; i++)
+                for (int i = 0; i < models.Count; i++)
                 {
-                    worksheet.Cells[i + 2, 1].Value = userList[i].Id;
-                    worksheet.Cells[i + 2, 2].Value = userList[i].UserName;
-                    worksheet.Cells[i + 2, 3].Value = userList[i].Email;
-                    worksheet.Cells[i + 2, 4].Value = userList[i].PhoneNumber;
+                    worksheet.Cells[i + 2, 1].Value = models[i].Id;
+                    worksheet.Cells[i + 2, 2].Value = models[i].UserName;
+                    worksheet.Cells[i + 2, 3].Value = models[i].Email;
+                    worksheet.Cells[i + 2, 4].Value = models[i].PhoneNumber;
+                    worksheet.Cells[i + 2, 5].Value = models[i].Roles;
+
+                    var status = models[i].LockoutEnabled ? "Non-Active" : "Active";
+                    worksheet.Cells[i + 2, 6].Value = status;
                 }
 
                 worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
@@ -120,37 +143,6 @@ namespace Netflex.Controllers
                 return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "UserData.xlsx");
             }
         }
-
-
-        // public async Task<IActionResult> Index(int? page)
-        // {
-        //     int pageNumber = page ?? 1;
-
-        //     // Lấy tất cả người dùng
-        //     var users = await _userManager.Users.ToListAsync();
-
-        //     // Tạo danh sách các tác vụ bất đồng bộ để lấy vai trò cho từng người dùng
-        //     var userViewModelsTasks = users.Select(async b =>
-        //     {
-        //         var roles = await _userManager.GetRolesAsync(b);  // Lấy các vai trò cho mỗi người dùng
-        //         return new UserViewModels()
-        //         {
-        //             Id = b.Id,
-        //             UserName = b.UserName,
-        //             Email = b.Email,
-        //             PhoneNumber = b.PhoneNumber,
-        //             SelectedRoles = roles.ToList()
-        //         };
-        //     }).ToList();
-
-        //     // Đợi tất cả các tác vụ bất đồng bộ hoàn thành
-        //     var userViewModels = await Task.WhenAll(userViewModelsTasks);
-
-        //     // Phân trang dữ liệu
-        //     var pagedUsers = userViewModels.ToPagedList(pageNumber, PAGE_SIZE);
-
-        //     return View(pagedUsers);  // Trả về view với dữ liệu đã phân trang
-        // }
 
         // GET: UserController/Details/5
         public async Task<IActionResult> Details(string id)
@@ -248,7 +240,7 @@ namespace Netflex.Controllers
             var roles = await _roleManager.Roles.ToListAsync();
             var currentRoles = await _userManager.GetRolesAsync(user);
 
-            var model = new UserViewModels
+            var model = new EditUserViewModels
             {
                 UserName = user.UserName,
                 Email = user.Email,
@@ -256,14 +248,14 @@ namespace Netflex.Controllers
                 AvailableRoles = roles.Select(r => r.Name ?? string.Empty).ToList(),
                 SelectedRoles = currentRoles.ToList()
             };
-
+            ViewBag.SelectedRoles = model.SelectedRoles;
             return View(model);
         }
 
         // POST: UserController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, UserViewModels model)
+        public async Task<IActionResult> Edit(string id, EditUserViewModels model)
         {
             if (id != model.Id)
             {
@@ -318,40 +310,7 @@ namespace Netflex.Controllers
             return View(model);
         }
 
-        // // GET: UserController/Lock/5
-        // public async Task<IActionResult> Lock(string id)
-        // {
-        //     var user = await _userManager.FindByIdAsync(id);
-        //     if (user == null)
-        //     {
-        //         return NotFound();
-        //     }
 
-        //     var result = await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddDays(1));
-        //     if (result.Succeeded)
-        //     {
-        //         return RedirectToAction(nameof(Index));
-        //     }
-        //     return View();
-        // }
-
-        // // GET: UserController/Unlock/5
-        // public async Task<IActionResult> Unlock(string id)
-        // {
-        //     var user = await _userManager.FindByIdAsync(id);
-        //     if (user == null)
-        //     {
-        //         return NotFound();
-        //     }
-
-        //     var result = await _userManager.SetLockoutEndDateAsync(user, null);
-        //     if (result.Succeeded)
-        //     {
-        //         return RedirectToAction(nameof(Index));
-        //     }
-        //     return View();
-        // }
-        // GET: UserController/Lock/5
         public async Task<IActionResult> Lock(string id)
         {
             var user = await _userManager.FindByIdAsync(id);

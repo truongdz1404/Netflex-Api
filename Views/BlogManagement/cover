@@ -177,66 +177,101 @@
 
 
 
-        // public IActionResult Index(int? page, string searchTerm, string createrId, DateTime? createdAt, string sortOrder)
-        // {
-        //     int pageNumber = page ?? 1;
+// public IActionResult Index(int? page, string searchTerm, string createrId, DateTime? createdAt, string sortOrder)
+// {
+//     int pageNumber = page ?? 1;
 
-        //     var blogsQuery = _unitOfWork.Repository<Blog>().Entities.AsQueryable();
+//     var blogsQuery = _unitOfWork.Repository<Blog>().Entities.AsQueryable();
 
-        //     if (!string.IsNullOrEmpty(searchTerm))
-        //     {
-        //         blogsQuery = blogsQuery.Where(b => b.Title.Contains(searchTerm));
-        //     }
+//     if (!string.IsNullOrEmpty(searchTerm))
+//     {
+//         blogsQuery = blogsQuery.Where(b => b.Title.Contains(searchTerm));
+//     }
 
-        //     if (!string.IsNullOrEmpty(createrId))
-        //     {
-        //         blogsQuery = blogsQuery.Where(b => b.CreaterId == createrId);
-        //     }
+//     if (!string.IsNullOrEmpty(createrId))
+//     {
+//         blogsQuery = blogsQuery.Where(b => b.CreaterId == createrId);
+//     }
 
-        //     if (createdAt.HasValue)
-        //     {
-        //         var utcCreatedAt = createdAt.Value.Kind == DateTimeKind.Utc ? createdAt.Value : createdAt.Value.ToUniversalTime();
-        //         blogsQuery = blogsQuery.Where(b => b.CreatedAt.Date == utcCreatedAt.Date);
-        //     }
+//     if (createdAt.HasValue)
+//     {
+//         var utcCreatedAt = createdAt.Value.Kind == DateTimeKind.Utc ? createdAt.Value : createdAt.Value.ToUniversalTime();
+//         blogsQuery = blogsQuery.Where(b => b.CreatedAt.Date == utcCreatedAt.Date);
+//     }
 
 
-        //     switch (sortOrder)
-        //     {
-        //         case "title_desc":
-        //             blogsQuery = blogsQuery.OrderByDescending(b => b.Title);
-        //             break;
-        //         case "created_at":
-        //             blogsQuery = blogsQuery.OrderBy(b => b.CreatedAt);
-        //             break;
-        //         case "created_at_desc":
-        //             blogsQuery = blogsQuery.OrderByDescending(b => b.CreatedAt);
-        //             break;
-        //         case "creater_id":
-        //             blogsQuery = blogsQuery.OrderBy(b => b.CreaterId);
-        //             break;
-        //         case "creater_id_desc":
-        //             blogsQuery = blogsQuery.OrderByDescending(b => b.CreaterId);
-        //             break;
-        //         default:
-        //             blogsQuery = blogsQuery.OrderBy(b => b.Title);
-        //             break;
-        //     }
+//     switch (sortOrder)
+//     {
+//         case "title_desc":
+//             blogsQuery = blogsQuery.OrderByDescending(b => b.Title);
+//             break;
+//         case "created_at":
+//             blogsQuery = blogsQuery.OrderBy(b => b.CreatedAt);
+//             break;
+//         case "created_at_desc":
+//             blogsQuery = blogsQuery.OrderByDescending(b => b.CreatedAt);
+//             break;
+//         case "creater_id":
+//             blogsQuery = blogsQuery.OrderBy(b => b.CreaterId);
+//             break;
+//         case "creater_id_desc":
+//             blogsQuery = blogsQuery.OrderByDescending(b => b.CreaterId);
+//             break;
+//         default:
+//             blogsQuery = blogsQuery.OrderBy(b => b.Title);
+//             break;
+//     }
 
-        //     var models = blogsQuery.Select(b => new BlogViewModel()
-        //     {
-        //         Id = b.Id,
-        //         Title = b.Title,
-        //         Content = b.Content,
-        //         Thumbnail = b.Thumbnail,
-        //         CreatedAt = b.CreatedAt,
-        //         CreaterId = b.CreaterId,
-        //     })
-        //     .ToPagedList(pageNumber, PAGE_SIZE);
+//     var models = blogsQuery.Select(b => new BlogViewModel()
+//     {
+//         Id = b.Id,
+//         Title = b.Title,
+//         Content = b.Content,
+//         Thumbnail = b.Thumbnail,
+//         CreatedAt = b.CreatedAt,
+//         CreaterId = b.CreaterId,
+//     })
+//     .ToPagedList(pageNumber, PAGE_SIZE);
 
-        //     ViewBag.SearchTerm = searchTerm;
-        //     ViewBag.CreaterId = createrId;
-        //     ViewBag.CreatedAt = createdAt;
-        //     ViewBag.SortOrder = sortOrder;
+//     ViewBag.SearchTerm = searchTerm;
+//     ViewBag.CreaterId = createrId;
+//     ViewBag.CreatedAt = createdAt;
+//     ViewBag.SortOrder = sortOrder;
 
-        //     return View(models);
-        // }
+//     return View(models);
+// }
+
+// // GET: UserController/Lock/5
+// public async Task<IActionResult> Lock(string id)
+// {
+//     var user = await _userManager.FindByIdAsync(id);
+//     if (user == null)
+//     {
+//         return NotFound();
+//     }
+
+//     var result = await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddDays(1));
+//     if (result.Succeeded)
+//     {
+//         return RedirectToAction(nameof(Index));
+//     }
+//     return View();
+// }
+
+// // GET: UserController/Unlock/5
+// public async Task<IActionResult> Unlock(string id)
+// {
+//     var user = await _userManager.FindByIdAsync(id);
+//     if (user == null)
+//     {
+//         return NotFound();
+//     }
+
+//     var result = await _userManager.SetLockoutEndDateAsync(user, null);
+//     if (result.Succeeded)
+//     {
+//         return RedirectToAction(nameof(Index));
+//     }
+//     return View();
+// }
+// GET: UserController/Lock/5

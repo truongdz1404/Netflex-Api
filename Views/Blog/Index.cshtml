@@ -4,32 +4,43 @@
     ViewData["Title"] = "Blogs";
     Layout = "_Layout";
 }
-
-<h1 class="text-light">Danh sách Blog</h1>
+<style>
+    .card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transform: translateY(-5px);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+</style>
+<h1 class="text-light text-center">Danh sách Blog</h1>
 
 <div class="container">
-    @foreach (var blog in Model)
-    {
-        <div class="row align-items-center border-bottom py-3" style="background-color: rgba(15, 15, 15, .9);">
-            <div class="col-md-2 text-center text-light">
-                <h2 class="fw-bold" style="color:aliceblue">@blog.CreatedAt.Day</h2>
-                <small class="d-block text-uppercase" style="color:grey;">
-                    @blog.CreatedAt.ToString("MMMM")
-                </small>
+    <div class="row">
+        @foreach (var blog in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card" style="background-color: rgba(15, 15, 15, .9); border: none;">
+                    <img src="@blog.Thumbnail" alt="Blog Thumbnail" class="card-img-top"
+                        style="border-radius: 8px; object-fit: cover; height: 200px;">
+                    <div class="card-body">
+                        <a href="@Url.Action("Details", "Blog", new { id = blog.Id })">
+                            <h5 class="card-title" style="color: aliceblue;">
+                                @Html.Raw(blog.Title.Length > 50 ? blog.Title.Substring(0, 50) + "..." : blog.Title)
+                            </h5>
+                        </a>
+                        <p class="card-text" style="color: rgb(0, 81, 255);">
+                            <strong>@blog.CreatorName</strong>
+                        </p>
+                        <p class="card-text text-muted">
+                            @blog.CreatedAt.ToString("dd/MM/yyyy")
+                        </p>
+                        <p class="text-light">
+                            @Html.Raw(blog.Content.Length > 100 ? blog.Content.Substring(0, 100) + "..." : blog.Content)
+                        </p>
+                        @* <a href="@Url.Action("Details", "Blog", new { id = blog.Id })" class="btn btn-outline-primary">Xem
+                            chi tiết</a> *@
+                    </div>
+                </div>
             </div>
-
-            <div class="col-md-10">
-                <h3 class="fw-bold" style="color:aliceblue">
-                    @Html.Raw(blog.Title.Length > 50 ? blog.Title.Substring(0, 50) + "..." : blog.Title)
-                </h3>
-                <p class="text-muted">
-                    Đăng bởi <strong>@blog.CreaterId</strong> vào ngày @blog.CreatedAt.ToString("dd/MM/yyyy")
-                </p>
-                <p class="text-light">
-                    @Html.Raw(blog.Content.Length > 200 ? blog.Content.Substring(0, 200) + "..." : blog.Content)
-                </p>
-                <a href="@Url.Action("Details", "Blog", new { id = blog.Id })" class="btn btn-outline-primary">Xem chi tiết</a>
-            </div>
-        </div>
-    }
+        }
+    </div>
 </div>

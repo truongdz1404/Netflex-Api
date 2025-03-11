@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 using Microsoft.EntityFrameworkCore;
 using Netflex.Database;
 using Netflex.Models.Blog;
@@ -17,9 +19,15 @@ namespace Netflex.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
+            int pageSize = 5;
+            var users = _context.Users.ToList();
+            ViewBag.Users = new SelectList(users, "Id", "UserName");
+
             var blogs = _context.Blogs
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(b => new BlogViewModel
                 {
                     Id = b.Id,
@@ -28,8 +36,9 @@ namespace Netflex.Controllers
                     Thumbnail = b.Thumbnail,
                     CreatedAt = b.CreatedAt,
                     CreaterId = b.CreaterId,
+                    CreatorName = _context.Users.Where(u => u.Id == b.CreaterId).Select(u => u.UserName).FirstOrDefault()
                 })
-                .OrderByDescending(b => b.CreatedAt) 
+                .OrderByDescending(b => b.CreatedAt)
                 .ToList();
 
             return View(blogs);
@@ -39,6 +48,9 @@ namespace Netflex.Controllers
         {
             if (id == null)
                 return NotFound();
+
+            var users = _context.Users.ToList();
+            ViewBag.Users = new SelectList(users, "Id", "UserName");
 
             var blog = _context.Blogs
                 .Where(b => b.Id == id)
@@ -50,6 +62,7 @@ namespace Netflex.Controllers
                     Thumbnail = b.Thumbnail,
                     CreatedAt = b.CreatedAt,
                     CreaterId = b.CreaterId,
+                    CreatorName = _context.Users.Where(u => u.Id == b.CreaterId).Select(u => u.UserName).FirstOrDefault()
                 })
                 .FirstOrDefault();
 
