@@ -2,82 +2,38 @@
 @{
     ViewData["Title"] = "Home Page";
 }
-<style>
-    .title-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .vertical-line {
-        width: 3.5px;
-        height: 30px;
-        background-color: #00aaff;
-        margin-right: 15px;
-    }
-
-    .text-light {
-        font-size: 1.5em;
-    }
-
-    .btn-link {
-        color: #fff;
-        /* Keeps the button text color white */
-        text-decoration: none;
-        /* Remove underline */
-        font-size: 1.2em;
-        /* Optional: Set button font size */
-    }
-
-    .btn-link:hover {
-        text-decoration: underline;
-        /* Optional: Underline on hover */
-    }
-</style>
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
 
 
-<div class="container">
-    <div class="title-container d-flex justify-content-between align-items-center mt-5 mb-5">
+<div class="container list-items-blogs">
+    <div class="d-flex justify-content-between align-items-center my-3">
         <div class="d-flex align-items-center">
             <div class="vertical-line"></div>
-            <h1 class="text-light ml-3 mb-0">Tin tức</h1>
+            <p class="ms-2 mb-0 text-md text-white fw-bold">Tin tức</p>
         </div>
-        <a href="@Url.Action("Index", "Blog")" class="btn btn-link text-light">Xem thêm</a>
+        <a href="@Url.Action("index", "blog")">Xem thêm</a>
     </div>
     @foreach (var blog in Model)
     {
-        <div class="row align-items-center border-bottom py-3" style="background-color: rgba(15, 15, 15, .9);">
-            <div class="col-md-2 text-center text-light">
-                <h2 class="fw-bold" style="color:aliceblue">@blog.CreatedAt.Day</h2>
-                <small class="d-block text-uppercase" style="color:grey;">
+        <div class="row align-items-center home-blog-post">
+            <div class="col-md-1 text-center">
+                <p class="text-md fw-bold mb-0">@blog.CreatedAt.Day</p>
+                <small class="text-xs text-uppercase">
                     @blog.CreatedAt.ToString("MMMM")
                 </small>
             </div>
 
-            <div class="col-md-10">
+            <div class="col-md-11 text-smm ">
                 <a href="@Url.Action("Details", "Blog", new { id = blog.Id })">
-                    <h3 class="fw-bold" style="color:aliceblue">
-                        @Html.Raw(blog.Title.Length > 50 ? blog.Title.Substring(0, 50) + "..." : blog.Title)
-                    </h3>
+                    <p class="text-base text-white-70 mb-1">
+                        @Html.Raw(blog.Title.Length > 100 ? blog.Title.Substring(0, 100) + "..." : blog.Title)
+                    </p>
                 </a>
-                <p class="card-text" style="color: rgb(0, 81, 255);">
-                    <strong>@blog.CreatorName</strong>
-                </p>
-                <p class="card-text text-muted">
-                    @blog.CreatedAt.ToString("dd/MM/yyyy")
-                </p>
-                <p class="text-light">
-                    @Html.Raw(blog.Content.Length > 200 ? blog.Content.Substring(0, 200) + "..." : blog.Content)
-                </p>
-
+                @Html.Raw(blog.Content.Length > 200 ? blog.Content.Substring(0, 200) + "..." : blog.Content)
             </div>
-            @* <div class="col-md-2">
-                <img src="@blog.Thumbnail" alt="Thumbnail" class="img-thumbnail bg-dark border border-dark">
-            </div> *@
         </div>
     }
 </div>

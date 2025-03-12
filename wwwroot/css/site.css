@@ -43,12 +43,17 @@ a {
 .text-smm{
   font-size: 0.9rem !important;
 }
-
 .text-xs{
   font-size: 0.7rem !important;
 }
+.text-md{
+  font-size: 1.2rem !important;
+}
 .text-base{
   font-size: 1rem !important;
+}
+.text-white-70{
+  color: #d9d9d9 !important;
 }
 
 .form-group.required .control-label:after {

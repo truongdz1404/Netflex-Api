@@ -4,222 +4,54 @@
     ViewData["Title"] = "Blogs";
     Layout = "_Layout";
 }
-<style>
-    .card:hover {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        transform: translateY(-5px);
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .title-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .vertical-line {
-        width: 3.5px;
-        height: 30px;
-        background-color: #00aaff;
-        margin-right: 15px;
-    }
-
-    .text-light {
-        font-size: 1.5em;
-    }
-
-    /* Custom pagination styles */
-    .custom-pagination {
-        display: flex;
-        list-style-type: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .custom-pagination .page-item {
-        margin: 0 5px;
-    }
-
-    .custom-pagination .page-link {
-        padding: 10px 15px;
-        font-size: 14px;
-        color: white;
-        background-color: #343a40;
-        /* Dark gray */
-        border: 1px solid #495057;
-        /* Slightly lighter gray */
-        border-radius: 5px;
-        transition: all 0.3s ease;
-    }
-
-    .custom-pagination .page-item.active .page-link {
-        background-color: #c5c5c54b;
-        /* Highlight active page */
-        border-color: #c5c5c54b;
-    }
-
-    .custom-pagination .page-link:hover {
-        background-color: #495057;
-        /* Lighter gray on hover */
-        border-color: #343a40;
-    }
-
-    .custom-pagination .page-item.disabled .page-link {
-        background-color: #6c757d;
-        /* Disabled gray */
-        border-color: #6c757d;
-        cursor: not-allowed;
-    }
-
-    .custom-pagination .page-link:focus {
-        outline: none;
-    }
-
-    /* Load More Button */
-    .btn-load-more {
-        padding: 10px 20px;
-        background-color: #343a40;
-        /* Dark gray */
-        color: white;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .btn-load-more:hover {
-        background-color: #495057;
-        /* Hover effect */
-    }
-</style>
-
 
 <div class="container">
-    <div class="title-container d-flex justify-content-between align-items-center mt-5 mb-5">
+    <div class="d-flex justify-content-between align-items-center my-3">
         <div class="d-flex align-items-center">
             <div class="vertical-line"></div>
-            <h1 class="text-light ml-3 mb-0">Tin tức</h1>
+            <p class="ms-2 mb-0 text-md text-white fw-bold">Tin tức</p>
         </div>
     </div>
     <div class="row">
         @foreach (var blog in Model)
         {
-            <div class="col-md-4 mb-4">
-                <div class="card" style="background-color: rgba(15, 15, 15, .9); border: none;">
-                    <img src="@blog.Thumbnail" alt="Blog Thumbnail" class="card-img-top"
-                        style="border-radius: 8px; object-fit: cover; height: 200px;">
-                    <div class="card-body">
-                        <a href="@Url.Action("Details", "Blog", new { id = blog.Id })">
-                            <h5 class="card-title" style="color: aliceblue;">
-                                @Html.Raw(blog.Title.Length > 50 ? blog.Title.Substring(0, 50) + "..." : blog.Title)
-                            </h5>
+            <div class="col-12 col-md-6 col-lg-4 mb-4">
+                <div>
+                    <img src="@blog.Thumbnail" alt="Blog Thumbnail" class="card-img-top rounded-0">
+                    <div class="mt-2 text-smm">
+                        <a href="@Url.Action("Details", "Blog", new { id = blog.Id })" class="text-white text-base">
+                            @Html.Raw(blog.Title.Length > 50 ? blog.Title.Substring(0, 50) + "..." : blog.Title)
                         </a>
-                        <p class="card-text" style="color: rgb(0, 81, 255);">
-                            <strong>@blog.CreatorName</strong>
-                        </p>
-                        <p class="card-text text-muted">
-                            @blog.CreatedAt.ToString("dd/MM/yyyy")
-                        </p>
-                        <p class="text-light">
-                            @Html.Raw(blog.Content.Length > 100 ? blog.Content.Substring(0, 100) + "..." : blog.Content)
-                        </p>
-                        @* <a href="@Url.Action("Details", "Blog", new { id = blog.Id })" class="btn btn-outline-primary">Xem
-                            chi tiết</a> *@
+                        <br />
+                        <div class="my-1">
+                            <strong class="text-sm">@blog.CreatorName</strong>
+                            <span class="text-sm fst-italic">@blog.CreatedAt.ToString("MMMM d, yyyy")</span>
+                        </div>
+                        @Html.Raw(blog.Content.Length > 100 ? blog.Content.Substring(0, 100) + "..." : blog.Content)
                     </div>
                 </div>
             </div>
         }
     </div>
-    @* <div class="row">
-        <!-- Pagination -->
-        <div class="d-flex justify-content-center mt-4">
-            <ul class="pagination">
-                <!-- Previous Page Link -->
-                @if (Model.HasPreviousPage)
-                {
-                    <li class="page-item">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
-                    </li>
-                }
-                else
-                {
-                    <li class="page-item disabled">
-                        <span class="page-link">Previous</span>
-                    </li>
-                }
-
-                <!-- Page Number Links -->
-                @for (var i = 1; i <= Model.PageCount; i++)
-                {
-                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                        <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
-                    </li>
-                }
-
-                <!-- Next Page Link -->
-                @if (Model.HasNextPage)
-                {
-                    <li class="page-item">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
-                    </li>
-                }
-                else
-                {
-                    <li class="page-item disabled">
-                        <span class="page-link">Next</span>
-                    </li>
-                }
-            </ul>
-        </div>
-    </div> *@
 
     <div class="row">
-        <!-- Pagination -->
-        <div class="d-flex justify-content-center mt-4">
-            <ul class="pagination custom-pagination">
-                <!-- Previous Page Link -->
-                @if (Model.HasPreviousPage)
-                {
-                    <li class="page-item">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })"
-                            aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                }
-                else
-                {
-                    <li class="page-item disabled">
-                        <span class="page-link" aria-hidden="true">&laquo;</span>
-                    </li>
-                }
+        <nav class="text-sm">
+            <ul class="pagination d-flex gap-2">
+                <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("index", new { page = Model.PageNumber - 1 })">‹</a>
+                </li>
 
-                <!-- Page Number Links -->
-                @for (var i = 1; i <= Model.PageCount; i++)
+                @for (int i = 1; i <= Model.PageCount; i++)
                 {
                     <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                        <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                        <a class="page-link" href="@Url.Action("index", new { page = i })">@i</a>
                     </li>
                 }
 
-                <!-- Next Page Link -->
-                @if (Model.HasNextPage)
-                {
-                    <li class="page-item">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })"
-                            aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                }
-                else
-                {
-                    <li class="page-item disabled">
-                        <span class="page-link" aria-hidden="true">&raquo;</span>
-                    </li>
-                }
+                <li class="page-item @(Model.PageNumber == Model.PageCount ? "disabled" : "") ">
+                    <a class="page-link" href="@Url.Action("index", new { page = Model.PageNumber + 1 })">›</a>
+                </li>
             </ul>
-        </div>
+        </nav>
     </div>
 </div>

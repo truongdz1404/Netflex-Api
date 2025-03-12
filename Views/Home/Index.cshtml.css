@@ -1,0 +1,14 @@
+.vertical-line {
+    width: 3.2px;
+    height: 24px;
+    background-color: #00aaff;
+}
+
+
+.home-blog-post {
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.list-items-blogs .home-blog-post:last-child {
+    border-bottom: 0;
+}
