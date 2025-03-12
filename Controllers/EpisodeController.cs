@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ public class EpisodeController(IStorageService storage, IUnitOfWork unitOfWork, 
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ApplicationDbContext _context = context;
     private const int PAGE_SIZE = 3;
+    [Authorize(Roles = "admin")]
     public IActionResult Index(int? page, Guid serieId)
     {
         int pageNumber = page ?? 1;
@@ -61,7 +63,7 @@ public class EpisodeController(IStorageService storage, IUnitOfWork unitOfWork, 
         ViewData["SerieId"] = serie.Id;
         return View(model);
     }
-
+    [Authorize(Roles = "admin")]
     [HttpDelete]
     public async Task<IActionResult> Delete(Guid? id)
     {
@@ -78,7 +80,7 @@ public class EpisodeController(IStorageService storage, IUnitOfWork unitOfWork, 
         return RedirectToAction("Index", "Episode", new { serieId = serie.Id });
 
     }
-
+    [Authorize(Roles = "admin")]
     public IActionResult Edit(Guid? id)
     {
         if (id == null)
@@ -96,7 +98,7 @@ public class EpisodeController(IStorageService storage, IUnitOfWork unitOfWork, 
         };
         return View(model);
     }
-
+    [Authorize(Roles = "admin")]
     [HttpPost]
     public async Task<IActionResult> Edit(EditEpisodeViewModel update)
     {
@@ -127,7 +129,7 @@ public class EpisodeController(IStorageService storage, IUnitOfWork unitOfWork, 
         ViewData["SerieId"] = serieId;
         return View();
     }
-
+    [Authorize(Roles = "admin")]
     [HttpPost]
     public async Task<IActionResult> Create(CreateEpisodeModel episode)
     {

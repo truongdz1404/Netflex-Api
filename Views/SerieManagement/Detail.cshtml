@@ -51,20 +51,6 @@
     </div>
 
     <div class="movie-card py-3 border-top border-bottom border-dark border-2">
-        <h4 class="mb-4" style="color: whitesmoke;">Chọn tập phim</h4>
-        <div class="d-flex gap-2 mb-4">
-            @for (int i = 1; i <= ViewBag.Episodes.Count; i++)
-            {
-                <div class="rounded-pill">
-                    <a asp-controller="episode" asp-action="detail" asp-route-id="@ViewBag.Episodes[i - 1].Id"
-                        class="border border-dark rounded-3 episode-link bg-secondary text-white py-2 px-3"
-                       >
-                        Tập @ViewBag.Episodes[i - 1].Number
-                    </a>
-
-                </div>
-            }
-        </div>
         <ul class="nav nav-pills mb-3 text-smm" id="pills-tab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active tab" id="pills-info-tab" data-bs-toggle="pill"

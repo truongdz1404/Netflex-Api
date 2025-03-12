@@ -9,9 +9,12 @@ using System.Linq;
 using X.PagedList.Extensions;
 using OfficeOpenXml;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Netflex.Controllers
 {
+[Authorize(Roles = "admin")]
+
     public class BlogManagementController(ApplicationDbContext context,
     IStorageService storage,
     IUnitOfWork unitOfWork,

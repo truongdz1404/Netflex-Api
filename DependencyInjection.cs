@@ -7,6 +7,7 @@ using Netflex.Exceptions.Handler;
 using Netflex.Models.Configs;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.Extensions.Options;
 
 namespace Netflex;
 public static class DependencyInjection
@@ -51,13 +52,13 @@ public static class DependencyInjection
         .AddGoogle(options =>
         {
             options.ClientId = configuration["Authentication:Google:ClientId"] ?? throw new InvalidOperationException("ClientId is not configured");
-            options.ClientSecret = configuration["Authentication:Google:ClientSecret"]  ?? throw new InvalidOperationException("ClientSecret is not configured");
+            options.ClientSecret = configuration["Authentication:Google:ClientSecret"] ?? throw new InvalidOperationException("ClientSecret is not configured");
             options.CallbackPath = "/signin-google";
         })
         .AddFacebook(options =>
         {
-            options.AppId = configuration["Authentication:Facebook:AppId"]  ?? throw new InvalidOperationException("ClientSecret is not configured");
-            options.AppSecret = configuration["Authentication:Facebook:AppSecret"]  ?? throw new InvalidOperationException("ClientSecret is not configured");
+            options.AppId = configuration["Authentication:Facebook:AppId"] ?? throw new InvalidOperationException("ClientSecret is not configured");
+            options.AppSecret = configuration["Authentication:Facebook:AppSecret"] ?? throw new InvalidOperationException("ClientSecret is not configured");
             options.Events = new OAuthEvents
             {
                 OnRemoteFailure = context =>
@@ -77,6 +78,10 @@ public static class DependencyInjection
       {
           options.CheckConsentNeeded = context => false;
           options.MinimumSameSitePolicy = SameSiteMode.Lax;
+      });
+      services.ConfigureApplicationCookie(options => {
+        options.LoginPath = "/Identity/Account/Login";
+        options.AccessDeniedPath = "/Identity/Account/AccessDenied";
       });
         return services;
     }

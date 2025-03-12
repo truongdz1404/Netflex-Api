@@ -1,7 +1,7 @@
 @model EditSerieModel
 @{
     ViewData["Title"] = "Edit Serie";
-    Layout = "_Layout";
+    Layout = "_AdminLayout";
 }
 
 @section Styles {
@@ -25,16 +25,16 @@
     </style>
 }
 
-<div class="container">
+<div class="container col-md-8 offset-md-2">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-controller="serie" asp-action="index">Serie phim</a></li>
+            <li class="breadcrumb-item"><a asp-controller="SerieManagement" asp-action="index">Serie phim</a></li>
             <li class="breadcrumb-item active" aria-current="page">Edit Film</li>
         </ol>
     </nav>
-    <div class="row">
-        <div class="col-md-6">
-            <form method="POST" enctype="multipart/form-data" asp-controller="serie" asp-action="edit"
+    <div class="row card border-light shadow-lg">
+        <div class="card-body bg-light">
+            <form method="POST" enctype="multipart/form-data" asp-controller="SerieManagement" asp-action="edit"
                 asp-route-id="@Model.Id">
                 <input type="hidden" asp-for="Id" />
 
@@ -104,7 +104,7 @@
 
                 <br />
                 <button type="submit" class="btn btn-primary mb-3">Save Changes</button>
-                <a asp-controller="serie" asp-action="index" class="btn btn-secondary mb-3">Cancel</a>
+                <a asp-controller="SerieManagement" asp-action="index" class="btn btn-secondary mb-3">Cancel</a>
             </form>
         </div>
     </div>

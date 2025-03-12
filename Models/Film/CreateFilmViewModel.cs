@@ -14,7 +14,7 @@ public class CreateFilmViewModel
     [Required, Range(1, int.MaxValue, ErrorMessage = "Production year must be greater than 0")]
     public int ProductionYear { get; set; }
     [Required(ErrorMessage = "The Age category field is required.")]
-    public string? AgeCategoryId { get; set; }
+    public string AgeCategoryId { get; set; } = string.Empty;
     [MaxFileSize(5 * 1024 * 1024), AllowedExtensions([".jpg", ".png", ".jpeg"])]
     public IFormFile? Poster { get; set; }
     [MaxFileSize(5 * 1024 * 1024), AllowedExtensions([".m3u8"])]

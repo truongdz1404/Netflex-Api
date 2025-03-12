@@ -2,56 +2,159 @@
 
 @{
     ViewData["Title"] = ViewData["SerieTitle"];
-    Layout = "_Layout";
+    Layout = "_AdminLayout";
 }
 
-<div class="contain mt-2">
-    <h5>@ViewData["SerieTitle"]</h5>
-    <p>
-        <a asp-controller="episode" asp-action="create" asp-route-serieId="@ViewData["SerieId"]" asp-route-serieTitle="@ViewData["SerieTitle"]">Create New</a>
-    </p>
+<div class="container-fluid px-4">
+    <form id="filterForm" method="get" action="@Url.Action("Index", "Episode")">
+        <input type="hidden" id="hiddenSearchTerm" name="searchTerm" />
+        <input type="hidden" id="hiddenSortOrder" name="sortOrder" />
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>About</th>
-                <th>Number</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.ActionLink(item.Title, "detail", "episode", new { id = item.Id })
-                    </td>
-                 
-                    <td>
-                        @Html.DisplayFor(modelItem => item.About)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Number)
-                    </td>
-                
-                    <td>
-                        @Html.ActionLink("Edit", "edit", new { id = item.Id }) |
-                        <a class="btn btn-danger delete" data-id="@item.Id" data-controller="episode" data-action="delete"
-                            data-body-message="Bạn có muốn xóa tập phim này">Delete</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    <div class="row">
-        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions()
-   {
-       DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
-       DisplayLinkToNextPage = PagedListDisplayMode.Always,
-       LiElementClasses = new string[] { "page-item" },
-       PageClasses = new string[] { "page-link" }
-   })
-    </div>
+        <div class="d-flex justify-content-between align-items-center my-4">
+            <h2 class="fw-bold text-primary">🎬 Episode Management</h2>
+            <div>
+                <a class="btn btn-success btn-lg" asp-controller="Episode" asp-action="create"
+                    asp-route-serieId="@ViewData["SerieId"]" asp-route-serieTitle="@ViewData["SerieTitle"]"><i
+                        class="fa fa-plus"></i> Create New</a>
+            </div>
+        </div>
 
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <input type="text" id="searchInput" class="form-control border-primary shadow-sm"
+                    placeholder="🔍 Search by title..." />
+            </div>
+            <div class="col-md-3">
+                <button type="button" class="btn btn-outline-secondary w-100" onclick="resetFilters()">Reset
+                    Filters</button>
+            </div>
+            <div class="col-md-3">
+                <button type="button" class="btn btn-outline-secondary w-100" id="filterButton">Apply Filters</button>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <select id="sortOrderSelect" class="form-control" onchange="setSortOrder(this.value)">
+                    <option value="title">Title (Ascending)</option>
+                    <option value="title_desc">Title (Descending)</option>
+                    <option value="number">Number (Ascending)</option>
+                    <option value="number_desc">Number (Descending)</option>
+                </select>
+            </div>
+        </div>
+    </form>
+
+    @if (Model.Count > 0)
+    {
+        <div class="table-responsive-lg" style="max-height: 600px; overflow-y: auto;">
+            <table class="table table-hover table-bordered align-middle shadow-lg table-lg">
+                <thead class="table-dark position-sticky top-0">
+                    <tr>
+                        <th>Title</th>
+                        <th>About</th>
+                        <th>Number</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.ActionLink(item.Title, "detail", "episode", new { id = item.Id })</td>
+                            <td>@Html.DisplayFor(modelItem => item.About)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Number)</td>
+                            <td>
+                                <a class="btn btn-warning btn-sm" asp-controller="Episode" asp-action="edit"
+                                    asp-route-id="@item.Id">Edit</a>
+                                <a class="btn btn-danger btn-sm delete" data-id="@item.Id" data-controller="episode"
+                                    data-action="delete" data-body-message="Bạn có muốn xóa tập phim này">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item"><a class="page-link"
+                            href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a></li>
+                }
+                else
+                {
+                    <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                }
+
+                @for (var i = 1; i <= Model.PageCount; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")"><a class="page-link"
+                            href="@Url.Action("Index", new { page = i })">@i</a></li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item"><a class="page-link"
+                            href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a></li>
+                }
+                else
+                {
+                    <li class="page-item disabled"><span class="page-link">Next</span></li>
+                }
+            </ul>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">
+            <p class="mb-0">Không có tập phim nào</p>
+        </div>
+    }
 </div>
+
+@section Scripts {
+    <script>
+        document.getElementById('filterButton').addEventListener('click', function () {
+            document.getElementById('hiddenSearchTerm').value = document.getElementById('searchInput').value;
+            submitForm();
+        });
+
+        document.getElementById('searchInput').addEventListener('input', function () {
+            document.getElementById('hiddenSearchTerm').value = this.value;
+        });
+
+        function submitForm() {
+            document.getElementById('filterForm').submit();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('hiddenSearchTerm').value = '';
+            submitForm();
+        }
+
+        function setSortOrder(order) {
+            document.getElementById('hiddenSortOrder').value = order;
+            submitForm();
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteButtons = document.querySelectorAll('.delete');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const id = this.getAttribute('data-id');
+                    const controller = this.getAttribute('data-controller');
+                    const action = this.getAttribute('data-action');
+                    const message = this.getAttribute('data-body-message');
+
+                    if (confirm(message)) {
+                        window.location.href = `/${controller}/${action}/${id}`;
+                    }
+                });
+            });
+        });
+    </script>
+}

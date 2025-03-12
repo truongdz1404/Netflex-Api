@@ -1,60 +1,71 @@
 @model IPagedList<FilmViewModel>
-
+@using X.PagedList.Mvc.Core
 @{
     ViewData["Title"] = "Phim lẻ";
     Layout = "_Layout";
 }
 
-<div class="contain mt-2">
-    <h5>Phim lẻ</h5>
-    <p>
-        <a asp-controller="film" asp-action="create">Create New</a>
-    </p>
+<div class="container">
+    <h2 class="text-white text-center mt-3">Phim lẻ</h2>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Poster</th>
-                <th>Trailer</th>
-                <th>ProductionYear</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
+    <!-- Carousel Phim Nổi Bật -->
+    <div id="highlightCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            @for (var i = 0; i < Model.Count(); i += 2)
             {
-                <tr>
-                    <td>
-                        @Html.ActionLink(item.Title, "detail", "film", new { id = item.Id })
-                    </td>
-                    <td>
-                        <img src="@item.Poster" class="img-thumbnail" alt="this is a poster"
-                            style="width: 100px; height: 100px; object-fit: cover;">
-                    </td>
-                    <td>
-                        <a href="@item.Trailer" target="_blank">Link</a>
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ProductionYear)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Edit", "edit", new { id = item.Id }) |
-                        <a class="btn btn-danger delete" data-id="@item.Id" data-controller="film" data-action="delete"
-                            data-body-message="Bạn có muốn xóa phim lẻ này">Delete</a>
-                    </td>
-                </tr>
+                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                        <div class="row">
+                            @for (var j = 0; j < 2 && (i + j) < Model.Count(); j++)
+                            {
+                                    var film = Model[i + j];
+                                    <div class="col-md-6">
+                     <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
+
+                                        <div class="position-relative">
+                                            <img src="@film.Poster" class="d-block w-100 rounded" alt="@film.Title">
+                                            <div class="carousel-caption text-start">
+                                                <h5 class="bg-dark bg-opacity-50 p-1 rounded">@film.Title</h5>
+                                            </div>
+                                            <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span>
+                                        </div>
+                     </a>
+                                    </div>
+                            }
+                        </div>
+                    </div>
             }
-        </tbody>
-    </table>
-    <div class="row">
-        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions()
-        {
-            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
-                DisplayLinkToNextPage = PagedListDisplayMode.Always,
-                LiElementClasses = new string[] { "page-item" },
-                PageClasses = new string[] { "page-link" }
-                })
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#highlightCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#highlightCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
     </div>
 
+    <!-- Danh sách phim -->
+    <h3 class="text-white mt-4">Phim lẻ mới cập nhật</h3>
+    <div class="row">
+        @foreach (var film in Model)
+        {
+                <div class="col-md-2 mb-4">
+                     <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
+                    <div class="position-relative">
+                        <img src="@film.Poster" class="img-fluid rounded" alt="@film.Title">
+                        <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span>
+                    </div>
+                    <p class="text-white text-truncate" style="max-width: 100%;">@(film.Title.Length > 20 ? film.Title.Substring(0, 20) + "..." : film.Title)</p>
+                    </a>
+                </div>
+        }
+    </div>
+
+    <!-- Phân trang -->
+    <nav class="d-flex justify-content-center mt-3">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
+        {
+                LiElementClasses = new string[] { "page-item" },
+                        PageClasses = new string[] { "page-link" }
+                })
+    </nav>
 </div>

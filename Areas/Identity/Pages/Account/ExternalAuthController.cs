@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,15 +11,18 @@ namespace Netflex.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<ExternalAuthController> _logger;
 
         public ExternalAuthController(
             SignInManager<User> signInManager,
             UserManager<User> userManager,
+            RoleManager<IdentityRole> roleManager,
             ILogger<ExternalAuthController> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _roleManager = roleManager;
             _logger = logger;
         }
 
@@ -39,8 +37,8 @@ namespace Netflex.Areas.Identity.Pages.Account
         [HttpGet]
         public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null, string? remoteError = null)
         {
-           try
-           {
+            try
+            {
                 if (remoteError != null || Request.Query["error"].Count > 0)
                 {
                     _logger.LogWarning($"External login error: {remoteError ?? Request.Query["error"]}");
@@ -48,15 +46,6 @@ namespace Netflex.Areas.Identity.Pages.Account
                     return RedirectToAction("Login", "Account");
                 }
 
-                if (returnUrl == null)
-                {
-                    return RedirectToAction("Login", "Account");
-                }
-
-                if (returnUrl == null)
-                {
-                    return RedirectToAction("Login", "Account");
-                }
                 var info = await _signInManager.GetExternalLoginInfoAsync();
                 if (info == null)
                 {
@@ -67,9 +56,13 @@ namespace Netflex.Areas.Identity.Pages.Account
                 var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
                 if (result.Succeeded)
                 {
-                    return LocalRedirect(returnUrl ?? "/");
+                    var user = await _userManager.FindByEmailAsync(info.Principal.FindFirstValue(ClaimTypes.Email) ?? throw new Exception("User email is null"));
+                    if (user != null)
+                    {
+                        await LogUserRole(user);
+                        return RedirectToRoleBasedPage(user, returnUrl);
+                    }
                 }
-
                 var email = info.Principal.FindFirstValue(ClaimTypes.Email);
 
                 if (email != null)
@@ -87,16 +80,24 @@ namespace Netflex.Areas.Identity.Pages.Account
                         var createResult = await _userManager.CreateAsync(user);
                         if (createResult.Succeeded)
                         {
+                            if (!await _roleManager.RoleExistsAsync("User"))
+                            {
+                                await _roleManager.CreateAsync(new IdentityRole("User"));
+                            }
+                            await _userManager.AddToRoleAsync(user, "User");
+
                             await _userManager.AddLoginAsync(user, info);
                             await _signInManager.SignInAsync(user, isPersistent: false);
-                            return LocalRedirect(returnUrl ?? "/");
+                            await LogUserRole(user); 
+                            return RedirectToRoleBasedPage(user, returnUrl);
                         }
                     }
                     else
                     {
                         await _userManager.AddLoginAsync(user, info);
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl ?? "/");
+                        await LogUserRole(user); 
+                        return RedirectToRoleBasedPage(user, returnUrl);
                     }
                 }
 
@@ -108,6 +109,25 @@ namespace Netflex.Areas.Identity.Pages.Account
                 TempData["ErrorMessage"] = "Đăng nhập không thành công.";
                 return RedirectToAction("Login", "Account");
             }
+        }
+
+        private async Task LogUserRole(User user)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            var roleList = string.Join(", ", roles);
+
+            Console.WriteLine($"[AUTH] User {user.Email} có các role: {roleList}");
+
+            _logger.LogInformation($"[AUTH] User {user.Email} có các role: {roleList}");
+        }
+
+
+        private IActionResult RedirectToRoleBasedPage(User user, string? returnUrl)
+        {
+            if (user == null) return RedirectToAction("Login", "Account");
+
+            var returnUrlFinal = returnUrl ?? "/";
+            return User.IsInRole("Admin") ? RedirectToAction("Dashboard", "Admin") : LocalRedirect(returnUrlFinal);
         }
     }
 }

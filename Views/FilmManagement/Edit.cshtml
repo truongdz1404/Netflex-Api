@@ -1,7 +1,7 @@
 @model EditFilmViewModel
 @{
     ViewData["Title"] = "Edit Film";
-    Layout = "_Layout";
+    Layout = "_AdminLayout";
 }
 @section Styles {
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -23,16 +23,16 @@
         }
     </style>
 }
-<div class="container">
+<div class="container col-md-8 offset-md-2">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-controller="film" asp-action="index">Phim lẻ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="FilmManagement" asp-action="index">Phim lẻ</a></li>
             <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
         </ol>
     </nav>
-    <div class="row">
-        <div class="col-md-4">
-            <form method="POST" enctype="multipart/form-data" asp-controller="film" asp-action="edit">
+    <div class="row card border-light shadow-lg">
+        <div class="card-body bg-light">
+            <form method="POST" enctype="multipart/form-data" asp-controller="FilmManagement" asp-action="edit">
                 <input type="hidden" asp-for="Id" />
                 <input type="hidden" asp-for="PosterUrl" />
                 <input type="hidden" asp-for="FileUrl" />
