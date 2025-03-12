@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Netflex.Models.Blog.BlogViewModel>
+﻿@model IPagedList<Netflex.Models.Blog.BlogViewModel>
 
 @{
     ViewData["Title"] = "Blogs";
@@ -10,10 +10,98 @@
         transform: translateY(-5px);
         transition: transform 0.3s, box-shadow 0.3s;
     }
+
+    .title-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .vertical-line {
+        width: 3.5px;
+        height: 30px;
+        background-color: #00aaff;
+        margin-right: 15px;
+    }
+
+    .text-light {
+        font-size: 1.5em;
+    }
+
+    /* Custom pagination styles */
+    .custom-pagination {
+        display: flex;
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .custom-pagination .page-item {
+        margin: 0 5px;
+    }
+
+    .custom-pagination .page-link {
+        padding: 10px 15px;
+        font-size: 14px;
+        color: white;
+        background-color: #343a40;
+        /* Dark gray */
+        border: 1px solid #495057;
+        /* Slightly lighter gray */
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .custom-pagination .page-item.active .page-link {
+        background-color: #c5c5c54b;
+        /* Highlight active page */
+        border-color: #c5c5c54b;
+    }
+
+    .custom-pagination .page-link:hover {
+        background-color: #495057;
+        /* Lighter gray on hover */
+        border-color: #343a40;
+    }
+
+    .custom-pagination .page-item.disabled .page-link {
+        background-color: #6c757d;
+        /* Disabled gray */
+        border-color: #6c757d;
+        cursor: not-allowed;
+    }
+
+    .custom-pagination .page-link:focus {
+        outline: none;
+    }
+
+    /* Load More Button */
+    .btn-load-more {
+        padding: 10px 20px;
+        background-color: #343a40;
+        /* Dark gray */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-load-more:hover {
+        background-color: #495057;
+        /* Hover effect */
+    }
 </style>
-<h1 class="text-light text-center">Danh sách Blog</h1>
+
 
 <div class="container">
+    <div class="title-container d-flex justify-content-between align-items-center mt-5 mb-5">
+        <div class="d-flex align-items-center">
+            <div class="vertical-line"></div>
+            <h1 class="text-light ml-3 mb-0">Tin tức</h1>
+        </div>
+    </div>
     <div class="row">
         @foreach (var blog in Model)
         {
@@ -42,5 +130,96 @@
                 </div>
             </div>
         }
+    </div>
+    @* <div class="row">
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+                <!-- Previous Page Link -->
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                }
+
+                <!-- Page Number Links -->
+                @for (var i = 1; i <= Model.PageCount; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                    </li>
+                }
+
+                <!-- Next Page Link -->
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div> *@
+
+    <div class="row">
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            <ul class="pagination custom-pagination">
+                <!-- Previous Page Link -->
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })"
+                            aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&laquo;</span>
+                    </li>
+                }
+
+                <!-- Page Number Links -->
+                @for (var i = 1; i <= Model.PageCount; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                    </li>
+                }
+
+                <!-- Next Page Link -->
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })"
+                            aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                    </li>
+                }
+            </ul>
+        </div>
     </div>
 </div>

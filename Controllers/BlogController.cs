@@ -7,6 +7,8 @@ using Netflex.Models.Blog;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using X.PagedList.Extensions;
+
 
 namespace Netflex.Controllers
 {
@@ -18,16 +20,15 @@ namespace Netflex.Controllers
         {
             _context = context;
         }
+        private const int PAGE_SIZE = 6;
 
-        public IActionResult Index(int page = 1)
+        public IActionResult Index(int? page)
         {
-            int pageSize = 5;
+            int pageNumber = page ?? 1;
             var users = _context.Users.ToList();
             ViewBag.Users = new SelectList(users, "Id", "UserName");
 
             var blogs = _context.Blogs
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
                 .Select(b => new BlogViewModel
                 {
                     Id = b.Id,
@@ -39,7 +40,7 @@ namespace Netflex.Controllers
                     CreatorName = _context.Users.Where(u => u.Id == b.CreaterId).Select(u => u.UserName).FirstOrDefault()
                 })
                 .OrderByDescending(b => b.CreatedAt)
-                .ToList();
+                .ToPagedList(pageNumber, PAGE_SIZE);
 
             return View(blogs);
         }
