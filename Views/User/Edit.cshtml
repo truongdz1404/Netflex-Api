@@ -1,4 +1,4 @@
-﻿@model Netflex.Models.User.UserViewModels
+﻿@model Netflex.Models.User.EditUserViewModels
 
 @{
     ViewData["Title"] = "Create User";
@@ -15,10 +15,10 @@
         <!-- Card với màu sắc đen và xám, viền sáng -->
         <div class="card border-light shadow-lg">
             <div class="card-header bg-dark text-white">
-                <strong>Edit Blog</strong>
+                <strong>Edit User</strong>
             </div>
             <div class="card-body bg-light">
-                <form method="POST" enctype="multipart/form-data" asp-controller="blogmanagement" asp-action="edit">
+                <form method="POST" enctype="multipart/form-data" asp-controller="user" asp-action="edit">
 
                     <div class="form-group mb-4">
                         <label asp-for="UserName" class="control-label text-dark">UserName</label>
@@ -28,27 +28,43 @@
 
                     <div class="form-group mb-4">
                         <label asp-for="Email" class="control-label text-dark">Email</label>
-                        <textarea asp-for="Email" id="tiny" class="form-control border-dark"
-                            placeholder="Enter blog content"></textarea>
+                        <input asp-for="Email" id="tiny" class="form-control border-dark"
+                            placeholder="Enter blog content">
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
 
                     <div class="form-group mb-4">
                         <label asp-for="PhoneNumber" class="control-label text-dark">PhoneNumber</label>
-                        <input asp-for="PhoneNumber" class="form-control border-dark"/>
+                        <input asp-for="PhoneNumber" class="form-control border-dark" />
                         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                     </div>
 
                     <div class="form-group mb-4">
-                        <label asp-for="AvailableRoles" class="control-label text-dark">CreAvailableRolesator</label>
-                        <select asp-for="AvailableRoles" class="form-control border-dark" asp-items="ViewBag.AvailableRoles"
-                            id="CreaterIdDropdown">
-                            <option value="">-- Select Creator --</option>
+                        <label asp-for="SelectedRoles" class="control-label text-dark">Assign Roles</label>
+
+                        <div id="currentRoles" class="form-control border-dark" style="cursor:pointer;">
+                            @if (Model.SelectedRoles != null && Model.SelectedRoles.Any())
+                            {
+                                @string.Join(", ", Model.SelectedRoles)
+                            }
+                            else
+                            {
+                                <span>-- Click to select roles --</span>
+                            }
+                        </div>
+
+                        <select asp-for="SelectedRoles" class="form-control border-dark" id="RolesDropdown"
+                            multiple="multiple" style="display:none;">
+                            @foreach (var role in Model.AvailableRoles ?? new List<string>())
+                            {
+                                <option value="@role">@role</option>
+                            }
                         </select>
-                        <span asp-validation-for="AvailableRoles" class="text-danger"></span>
+
+                        <span asp-validation-for="SelectedRoles" class="text-danger"></span>
                     </div>
 
-                    <!-- Nút Save -->
+
                     <div class="form-group text-center mb-4">
                         <input type="submit" value="Save" class="btn btn-lg btn-dark text-light" />
                     </div>
@@ -71,18 +87,27 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            var createrDropdown = document.getElementById("CreaterIdDropdown");
-            var createrNameInput = document.getElementById("CreaterName");
+            var rolesDropdown = document.getElementById("RolesDropdown");
+            var currentRoles = document.getElementById("currentRoles");
+            var selectedRoles = @Html.Raw(Json.Serialize(ViewBag.SelectedRoles ?? new List<string>()));
 
-            var createrData = @Html.Raw(Json.Serialize(ViewBag.CreaterList));
-
-            createrDropdown.addEventListener("change", function () {
-                var selectedId = createrDropdown.value;
-                createrNameInput.value = createrData[selectedId] || "";
+            Array.from(rolesDropdown.options).forEach(function (option) {
+                if (selectedRoles.includes(option.value)) {
+                    option.selected = true;
+                }
             });
 
-            var initialId = createrDropdown.value;
-            createrNameInput.value = createrData[initialId] || "";
+            currentRoles.addEventListener('click', function () {
+                currentRoles.style.display = 'none';
+                rolesDropdown.style.display = 'block';
+            });
+
+            rolesDropdown.addEventListener('change', function () {
+                var selectedValues = Array.from(rolesDropdown.selectedOptions).map(option => option.value);
+                currentRoles.innerText = selectedValues.length ? selectedValues.join(', ') : '-- Click to select roles --';
+            });
         });
     </script>
+
+
 }

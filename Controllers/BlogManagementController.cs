@@ -177,8 +177,11 @@ namespace Netflex.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateBlogViewModels blogViewModel)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid) {
+                ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName");
                 return View(blogViewModel);
+            }
+                
 
             var thumbnailUri = blogViewModel.Thumbnail != null ? await _storage.UploadFileAsync("thumbnail", blogViewModel.Thumbnail) : null;
 

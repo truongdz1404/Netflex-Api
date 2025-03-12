@@ -7,42 +7,51 @@
 
 <style>
     .comment-section {
-        color:white;
+        color: white;
         margin-top: 40px;
         padding: 20px;
-        background: rgba(15, 15, 15, .9);
+        background: rgba(255, 255, 255, 0.9);
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-        .comment-section h3 {
-            color: #333;
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
+    .comment-section h3 {
+        color: #333;
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
 
     .fb-comments-wrapper {
         color: white;
         padding: 10px;
-        background: rgba(15, 15, 15, .9);
+        background: rgba(255, 255, 255, 0.9);
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
+    
 </style>
-<div class="container">
-    <h1>@Model.Title</h1>
-    <p class="text-muted">Đăng bởi <strong>@Model.CreaterId</strong> vào ngày @Model.CreatedAt.ToString("dd/MM/yyyy")</p>
+<div class="container mt-5">
+    <h1 class="text-light">@Model.Title</h1>
+    <p class="card-text" style="color: rgb(0, 81, 255);">
+        <strong>@Model.CreatorName</strong>
+    </p>
+    <p class="card-text text-muted">
+        @Model.CreatedAt.ToString("dd/MM/yyyy")
+    </p>
     <hr />
     <p>@Html.Raw(Model.Content)</p>
-    <a href="@Url.Action("Index", "Blog")" class="btn btn-secondary">Quay lại</a>
+    <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Trang Chủ</a>
+    <a href="@Url.Action("Index", "Blog")" class="btn btn-secondary">Trang Tin Tức</a>
 </div>
 
 <div class="comment-section">
     <h3>Bình luận</h3>
     <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v22.0&appId=1589497395335451"></script>
-    <div class="fb-comments" data-href="https://localhost:8081" data-width="100%" data-numposts="5" data-colorscheme="dark" data-lazy="true"></div>
+    <script async defer crossorigin="anonymous"
+        src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v22.0&appId=1589497395335451"></script>
+    <div class="fb-comments" data-href="https://localhost:8081" data-width="100%" data-numposts="5"
+        data-colorscheme="light" data-lazy="true"></div>
 </div>
 
 <script>
@@ -59,4 +68,3 @@
         });
     });
 </script>
-

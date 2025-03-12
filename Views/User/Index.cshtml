@@ -88,6 +88,7 @@
                     <th style="min-width: 300px;">UserName</th>
                     <th style="min-width: 300px;">Email</th>
                     <th style="min-width: 100px;">PhoneNumber</th>
+                    <th style="min-width: 150px;">Role</th>
                     <th style="min-width: 150px;">Status</th>
                     <th style="min-width: 120px; text-align: center;">Actions</th>
                 </tr>
@@ -107,6 +108,9 @@
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.PhoneNumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Roles)
                         </td>
                         <td>
                             @if (item.LockoutEnabled == false)

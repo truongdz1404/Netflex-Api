@@ -18,7 +18,7 @@
                 <strong>Create User</strong>
             </div>
             <div class="card-body bg-light">
-                <form method="POST" enctype="multipart/form-data" asp-controller="UserController" asp-action="Create">
+                <form method="POST" enctype="multipart/form-data" asp-controller="User" asp-action="Create">
 
                     <!-- UserName -->
                     <div class="form-group mb-4">
@@ -37,36 +37,52 @@
                     <!-- Phone Number -->
                     <div class="form-group mb-4">
                         <label asp-for="PhoneNumber" class="control-label text-dark">Phone Number</label>
-                        <input asp-for="PhoneNumber" class="form-control border-dark" placeholder="Enter phone number" />
+                        <input asp-for="PhoneNumber" class="form-control border-dark"
+                            placeholder="Enter phone number" />
                         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                     </div>
 
                     <!-- Password -->
                     <div class="form-group mb-4">
                         <label asp-for="Password" class="control-label text-dark">Password</label>
-                        <input asp-for="Password" type="password" class="form-control border-dark" placeholder="Enter password" />
+                        <input asp-for="Password" type="password" class="form-control border-dark"
+                            placeholder="Enter password" />
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
 
                     <!-- Confirm Password -->
                     <div class="form-group mb-4">
                         <label asp-for="ConfirmPassword" class="control-label text-dark">Confirm Password</label>
-                        <input asp-for="ConfirmPassword" type="password" class="form-control border-dark" placeholder="Confirm password" />
+                        <input asp-for="ConfirmPassword" type="password" class="form-control border-dark"
+                            placeholder="Confirm password" />
                         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                     </div>
 
                     <!-- Roles -->
                     <div class="form-group mb-4">
-                        <label class="control-label text-dark">Roles</label>
-                        <select asp-for="SelectedRoles" class="form-control border-dark" multiple="multiple">
-                            @foreach (var role in Model.AvailableRoles)
+                        <label asp-for="SelectedRoles" class="control-label text-dark">Assign Roles</label>
+
+                        <div id="currentRoles" class="form-control border-dark" style="cursor:pointer;">
+                            @if (Model.SelectedRoles != null && Model.SelectedRoles.Any())
+                            {
+                                @string.Join(", ", Model.SelectedRoles)
+                            }
+                            else
+                            {
+                                <span>-- Click to select roles --</span>
+                            }
+                        </div>
+
+                        <select asp-for="SelectedRoles" class="form-control border-dark" id="RolesDropdown"
+                            multiple="multiple" style="display:none;">
+                            @foreach (var role in Model.AvailableRoles ?? new List<string>())
                             {
                                 <option value="@role">@role</option>
                             }
                         </select>
+
                         <span asp-validation-for="SelectedRoles" class="text-danger"></span>
                     </div>
-
                     <!-- Nút Save -->
                     <div class="form-group text-center mb-4">
                         <input type="submit" value="Create" class="btn btn-lg btn-dark text-light" />
@@ -89,8 +105,26 @@
     }
 
     <script>
-        $(document).ready(function () {
-            // Add any necessary JavaScript for role management or preview image handling if required
+        document.addEventListener("DOMContentLoaded", function () {
+            var rolesDropdown = document.getElementById("RolesDropdown");
+            var currentRoles = document.getElementById("currentRoles");
+            var selectedRoles = @Html.Raw(Json.Serialize(ViewBag.SelectedRoles ?? new List<string>()));
+
+            Array.from(rolesDropdown.options).forEach(function (option) {
+                if (selectedRoles.includes(option.value)) {
+                    option.selected = true;
+                }
+            });
+
+            currentRoles.addEventListener('click', function () {
+                currentRoles.style.display = 'none';
+                rolesDropdown.style.display = 'block';
+            });
+
+            rolesDropdown.addEventListener('change', function () {
+                var selectedValues = Array.from(rolesDropdown.selectedOptions).map(option => option.value);
+                currentRoles.innerText = selectedValues.length ? selectedValues.join(', ') : '-- Click to select roles --';
+            });
         });
     </script>
 }

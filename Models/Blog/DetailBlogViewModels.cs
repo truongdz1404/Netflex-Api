@@ -10,8 +10,9 @@
 
         public string? Thumbnail { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow; 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public string CreaterId { get; set; } = null!;
+        public string? CreatorName { get; set; }
     }
 }
