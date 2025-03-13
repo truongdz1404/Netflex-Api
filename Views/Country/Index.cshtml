@@ -1,12 +1,22 @@
-﻿@model List<Netflex.Entities.Country>
+﻿@model X.PagedList.IPagedList<Netflex.Entities.Country>
+@using X.PagedList.Mvc;
 
 <h2>Danh sách Quốc gia</h2>
-<a asp-action="Create" class="btn btn-success">Thêm mới</a>
 
-<table class="table">
+<form method="get" class="mb-3">
+    <div class="input-group" style="width: 300px;">
+        <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control" placeholder="Tìm kiếm quốc gia..." />
+        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+    </div>
+</form>
+
+<a asp-action="Create" class="btn btn-success mb-3">Thêm mới</a>
+
+<table class="table table-bordered">
     <thead>
         <tr>
             <th>Tên Quốc gia</th>
+            <th>Hành động</th>
         </tr>
     </thead>
     <tbody>
@@ -22,3 +32,12 @@
         }
     </tbody>
 </table>
+
+<div class="d-flex justify-content-center mt-3">
+    <style>
+        .pagination li {
+            margin-right: 5px;
+        }
+    </style>
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchString = ViewBag.SearchString }))
+</div>

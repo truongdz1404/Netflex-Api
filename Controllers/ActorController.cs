@@ -1,56 +1,70 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Netflex.Database.Repositories.Abstractions;
 using Netflex.Models.Actor;
+using X.PagedList;
+using X.PagedList.Extensions;
 
 namespace Netflex.Web.Controllers
 {
     public class ActorController : Controller
     {
         private readonly IActorRepository _actorRepository;
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IStorageService _storage;
+        private const int PageSize = 5;
 
-        public ActorController(IActorRepository actorRepository, IWebHostEnvironment webHostEnvironment)
+        public ActorController(IActorRepository actorRepository, IStorageService storage)
         {
             _actorRepository = actorRepository;
-            _webHostEnvironment = webHostEnvironment;
+            _storage = storage;
         }
 
-        // Hiển thị danh sách diễn viên
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString, int? page)
         {
             var actors = await _actorRepository.GetAllAsync();
-            return View(actors);
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                actors = actors
+                    .Where(a => a.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            int pageNumber = page ?? 1;
+            var pagedActors = actors.ToPagedList(pageNumber, PageSize);
+
+            ViewBag.SearchString = searchString;
+            return View(pagedActors);
         }
 
-        
         public IActionResult Create()
         {
             return View();
         }
 
-        
         [HttpPost]
         public async Task<IActionResult> Create(CreateActorViewModel actor, IFormFile? photoFile)
         {
             if (!ModelState.IsValid) return View(actor);
 
+            string? photoUrl = null;
             if (photoFile != null)
             {
-                actor.Photo = await SavePhotoAsync(photoFile);
+                var photoUri = await _storage.UploadFileAsync("actor-photos", photoFile);
+                photoUrl = photoUri?.ToString();
             }
-            var newactor = new Actor()
+
+            var newActor = new Actor()
             {
                 Id = Guid.NewGuid(),
                 Name = actor.Name,
                 About = actor.About,
-                Photo = actor.Photo,
+                Photo = photoUrl
             };
-            await _actorRepository.AddAsync(newactor);
+            await _actorRepository.AddAsync(newActor);
             await _actorRepository.SaveChangeAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        
         public async Task<IActionResult> Details(Guid id)
         {
             var actor = await _actorRepository.GetByIdAsync(id);
@@ -58,15 +72,18 @@ namespace Netflex.Web.Controllers
             return View(actor);
         }
 
-        // Form chỉnh sửa diễn viên
         public async Task<IActionResult> Edit(Guid id)
         {
             var actor = await _actorRepository.GetByIdAsync(id);
             if (actor == null) return NotFound();
-            return View(actor);
+            return View(new EditActorViewModel
+            {
+                Name = actor.Name,
+                About = actor.About,
+                Photo = actor.Photo
+            });
         }
 
-        // Xử lý cập nhật diễn viên
         [HttpPost]
         public async Task<IActionResult> Edit(Guid id, EditActorViewModel actor, IFormFile? photoFile)
         {
@@ -74,24 +91,22 @@ namespace Netflex.Web.Controllers
 
             var existingActor = await _actorRepository.GetByIdAsync(id);
             if (existingActor == null) return NotFound();
+
             existingActor.Name = actor.Name;
             existingActor.About = actor.About;
-            existingActor.Photo = actor.Photo;
+
             if (photoFile != null)
             {
-                actor.Photo = await SavePhotoAsync(photoFile);
+                var photoUri = await _storage.UploadFileAsync("actor-photos", photoFile);
+                existingActor.Photo = photoUri?.ToString();
             }
-            else
-            {
-                actor.Photo = existingActor.Photo;
-            }
-            
+
             await _actorRepository.UpdateAsync(existingActor);
             await _actorRepository.SaveChangeAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
-        // Form xác nhận xóa diễn viên
         public async Task<IActionResult> Delete(Guid id)
         {
             var actor = await _actorRepository.GetByIdAsync(id);
@@ -99,7 +114,6 @@ namespace Netflex.Web.Controllers
             return View(actor);
         }
 
-        // Xử lý xóa diễn viên
         [HttpDelete]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
@@ -110,21 +124,6 @@ namespace Netflex.Web.Controllers
             await _actorRepository.SaveChangeAsync();
 
             return Json(new { success = true });
-        }
-
-        private async Task<string> SavePhotoAsync(IFormFile photoFile)
-        {
-            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
-            Directory.CreateDirectory(uploadsFolder);
-            var fileName = $"{Guid.NewGuid()}_{photoFile.FileName}";
-            var filePath = Path.Combine(uploadsFolder, fileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await photoFile.CopyToAsync(fileStream);
-            }
-
-            return "/uploads/" + fileName;
         }
     }
 }

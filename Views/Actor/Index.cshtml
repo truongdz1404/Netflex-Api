@@ -1,14 +1,26 @@
-﻿@model List<Netflex.Entities.Actor>
+﻿@model X.PagedList.IPagedList<Netflex.Entities.Actor>
+@using X.PagedList.Mvc;
 
 <h2>Danh sách diễn viên</h2>
-<a asp-action="Create" class="btn btn-primary">Thêm mới</a>
 
-<table class="table">
-    <thead>
+<!-- Form tìm kiếm -->
+<form method="get" class="mb-3 d-flex justify-content-end" style="width: 300px;">
+    <div class="input-group input-group-sm">
+        <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control" placeholder="Tìm kiếm diễn viên..." />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
+<a asp-action="Create" class="btn btn-success mb-3">Thêm mới</a>
+
+<!-- Bảng hiển thị diễn viên -->
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
         <tr>
             <th>Ảnh</th>
             <th>Tên</th>
             <th>About</th>
+            <th>Hành động</th>
         </tr>
     </thead>
     <tbody>
@@ -21,14 +33,23 @@
                         <img src="@actor.Photo" alt="Ảnh diễn viên" width="80" />
                     }
                 </td>
-                <td>@actor.Name</td>
+                <td class="fw-bold">@actor.Name</td>
                 <td>@actor.About</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@actor.Id" class="btn btn-info">Chi tiết</a>
-                    <a asp-action="Edit" asp-route-id="@actor.Id" class="btn btn-warning">Sửa</a>
-                    <a asp-action="Delete" asp-route-id="@actor.Id" class="btn btn-danger">Xóa</a>
+                    <a asp-action="Details" asp-route-id="@actor.Id" class="btn btn-info btn-sm">Chi tiết</a>
+                    <a asp-action="Edit" asp-route-id="@actor.Id" class="btn btn-warning btn-sm">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@actor.Id" class="btn btn-danger btn-sm">Xóa</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<div class="d-flex justify-content-center mt-3">
+    <style>
+        .pagination li {
+            margin-right: 5px; 
+        }
+    </style>
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchString = ViewBag.SearchString }))
+</div>

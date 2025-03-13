@@ -2,17 +2,38 @@
 using Netflex.Database.Repositories.Abstractions;
 using Netflex.Database.Repositories.Implements;
 using Netflex.Models.Country;
+using X.PagedList;
+using X.PagedList.Extensions;
 
 namespace Netflex.Controllers
 {
-    public class CountryController(ICountryRepository countryRepository) : Controller
+    public class CountryController : Controller
     {
-        private readonly ICountryRepository _countryRepository = countryRepository;
+        private readonly ICountryRepository _countryRepository;
+        private const int PageSize = 5; 
 
-        public async Task<IActionResult> Index()
+        public CountryController(ICountryRepository countryRepository)
+        {
+            _countryRepository = countryRepository;
+        }
+
+        public async Task<IActionResult> Index(string? searchString, int? page)
         {
             var countries = await _countryRepository.GetAllAsync();
-            return View(countries);
+
+            // Tìm kiếm nếu có từ khóa
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                countries = countries.Where(c => c.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            // Phân trang
+            var pageNumber = page ?? 1;
+            var pagedCountries = countries.ToPagedList(pageNumber, PageSize);
+
+            ViewBag.SearchString = searchString; 
+
+            return View(pagedCountries);
         }
 
         public IActionResult Create() => View();
@@ -22,11 +43,12 @@ namespace Netflex.Controllers
         {
             if (!ModelState.IsValid) return View(country);
 
-            var newcountry = new Country(){
+            var newCountry = new Country
+            {
                 Id = Guid.NewGuid(),
                 Name = country.Name
             };
-            await _countryRepository.AddAsync(newcountry);
+            await _countryRepository.AddAsync(newCountry);
             await _countryRepository.SaveChangeAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -46,7 +68,7 @@ namespace Netflex.Controllers
             var existingCountry = await _countryRepository.GetByIdAsync(id);
             if (existingCountry == null) return NotFound();
 
-            existingCountry.Name = country.Name; 
+            existingCountry.Name = country.Name;
 
             await _countryRepository.UpdateAsync(existingCountry);
             await _countryRepository.SaveChangeAsync();
