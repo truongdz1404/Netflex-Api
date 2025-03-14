@@ -78,6 +78,7 @@ namespace Netflex.Web.Controllers
             if (actor == null) return NotFound();
             return View(new EditActorViewModel
             {
+                Id = actor.Id,
                 Name = actor.Name,
                 About = actor.About,
                 Photo = actor.Photo
@@ -99,6 +100,10 @@ namespace Netflex.Web.Controllers
             {
                 var photoUri = await _storage.UploadFileAsync("actor-photos", photoFile);
                 existingActor.Photo = photoUri?.ToString();
+            }
+            else
+            {
+                existingActor.Photo = actor.Photo; 
             }
 
             await _actorRepository.UpdateAsync(existingActor);
