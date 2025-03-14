@@ -10,12 +10,12 @@ using X.PagedList.Extensions;
 
 namespace Netflex.Controllers
 {
-    public class FilmController : Controller
+    public class FilmController : BaseController
     {
         private const int PAGE_SIZE = 10;
         private readonly IUnitOfWork _unitOfWork;
 
-        public FilmController(IUnitOfWork unitOfWork)
+        public FilmController(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

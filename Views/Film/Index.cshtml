@@ -8,7 +8,6 @@
 <div class="container">
     <h2 class="text-white text-center mt-3">Phim lẻ</h2>
 
-    <!-- Carousel Phim Nổi Bật -->
     <div id="highlightCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             @for (var i = 0; i < Model.Count(); i += 2)
@@ -22,11 +21,12 @@
                      <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
 
                                         <div class="position-relative">
-                                            <img src="@film.Poster" class="d-block w-100 rounded" alt="@film.Title">
+                                            <img src="@film.Poster" class="img-6x9 rounded" alt="@film.Title">
                                             <div class="carousel-caption text-start">
-                                                <h5 class="bg-dark bg-opacity-50 p-1 rounded">@film.Title</h5>
+                                                <h5 class="">@film.Title</h5>
+                                                <h6 class="">@film.ProductionYear</h6>
                                             </div>
-                                            <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span>
+                                            @* <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span> *@
                                         </div>
                      </a>
                                     </div>
@@ -43,18 +43,17 @@
         </button>
     </div>
 
-    <!-- Danh sách phim -->
-    <h3 class="text-white mt-4">Phim lẻ mới cập nhật</h3>
+    <h4 class="text-white mt-4 mb-4">Phim lẻ mới cập nhật</h4>
     <div class="row">
         @foreach (var film in Model)
         {
                 <div class="col-md-2 mb-4">
                      <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
                     <div class="position-relative">
-                        <img src="@film.Poster" class="img-fluid rounded" alt="@film.Title">
-                        <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span>
+                        <img src="@film.Poster" class="img-6x9 rounded" alt="@film.Title">
+                        @* <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span> *@
                     </div>
-                    <p class="text-white text-truncate" style="max-width: 100%;">@(film.Title.Length > 20 ? film.Title.Substring(0, 20) + "..." : film.Title)</p>
+                    <p class="text-white text-truncate mt-2" style="max-width: 100%;">@(film.Title.Length > 20 ? film.Title.Substring(0, 20) + "..." : film.Title)</p>
                     </a>
                 </div>
         }

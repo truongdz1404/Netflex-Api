@@ -9,7 +9,7 @@ using X.PagedList.Extensions;
 namespace Netflex.Controllers;
 
 public class EpisodeController(IStorageService storage, IUnitOfWork unitOfWork, ApplicationDbContext context)
-    : Controller
+    : BaseController(unitOfWork)
 {
     private readonly IStorageService _storage = storage;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;

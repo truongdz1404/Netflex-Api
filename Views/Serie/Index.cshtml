@@ -1,14 +1,13 @@
 @model IPagedList<SerieViewModel>
 @using X.PagedList.Mvc.Core
 @{
-    ViewData["Title"] = "Phim lẻ";
+    ViewData["Title"] = "Phim bộ";
     Layout = "_Layout";
 }
 
 <div class="container">
-    <h2 class="text-white text-center mt-3">Phim lẻ</h2>
+    <h2 class="text-white text-center mt-3">Phim bộ</h2>
 
-    <!-- Carousel Phim Nổi Bật -->
     <div id="highlightCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             @for (var i = 0; i < Model.Count(); i += 2)
@@ -22,7 +21,7 @@
                      <a href="@Url.Action("Detail", "Serie", new { id = serie.Id })" class="text-decoration-none">
 
                                         <div class="position-relative">
-                                            <img src="@serie.Poster" class="d-block w-100 rounded" alt="@serie.Title">
+                                             <img src="@serie.Poster" class="img-6x9 rounded" alt="@serie.Title">
                                             <div class="carousel-caption text-start">
                                                 <h5 class="bg-dark bg-opacity-50 p-1 rounded">@serie.Title</h5>
                                             </div>
@@ -43,15 +42,14 @@
         </button>
     </div>
 
-    <!-- Danh sách phim -->
-    <h3 class="text-white mt-4">Phim lẻ mới cập nhật</h3>
+    <h3 class="text-white mt-4">Phim bộ mới cập nhật</h3>
     <div class="row">
         @foreach (var serie in Model)
         {
                 <div class="col-md-2 mb-4">
                      <a href="@Url.Action("Detail", "Serie", new { id = serie.Id })" class="text-decoration-none">
                     <div class="position-relative">
-                        <img src="@serie.Poster" class="img-fluid rounded" alt="@serie.Title">
+                        <img src="@serie.Poster" class="img-fluid rounded img-6x9" alt="@serie.Title">
                         <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span>
                     </div>
                     <p class="text-white text-truncate" style="max-width: 100%;">@(serie.Title.Length > 20 ? serie.Title.Substring(0, 20) + "..." : serie.Title)</p>
@@ -60,7 +58,6 @@
         }
     </div>
 
-    <!-- Phân trang -->
     <nav class="d-flex justify-content-center mt-3">
         @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
         {

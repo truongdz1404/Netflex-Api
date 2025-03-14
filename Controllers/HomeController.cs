@@ -10,13 +10,14 @@ using System.Collections.Generic;
 
 namespace Netflex.Controllers;
 
-public class HomeController : Controller
+public class HomeController : BaseController
 
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<HomeController> _logger;
 
-    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context,
+    IUnitOfWork unitOfWork) : base(unitOfWork)
     {
         _logger = logger;
         _context = context;

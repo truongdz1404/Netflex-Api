@@ -16,3 +16,10 @@
     font-size: 12px;
     padding: 5px 10px;
 }
+
+.img-6x9 {
+    width: 100%;          
+    aspect-ratio: 2 / 3; 
+    object-fit: cover;  
+}
+

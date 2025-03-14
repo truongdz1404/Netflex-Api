@@ -12,11 +12,11 @@ using X.PagedList.Extensions;
 
 namespace Netflex.Controllers
 {
-    public class BlogController : Controller
+    public class BlogController : BaseController
     {
         private readonly ApplicationDbContext _context;
 
-        public BlogController(ApplicationDbContext context)
+        public BlogController(ApplicationDbContext context, IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _context = context;
         }
