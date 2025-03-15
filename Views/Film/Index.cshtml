@@ -9,39 +9,39 @@
     <h2 class="text-white text-center mt-3">Phim lẻ</h2>
 
     <div id="highlightCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            @for (var i = 0; i < Model.Count(); i += 2)
-            {
-                    <div class="carousel-item @(i == 0 ? "active" : "")">
-                        <div class="row">
-                            @for (var j = 0; j < 2 && (i + j) < Model.Count(); j++)
-                            {
-                                    var film = Model[i + j];
-                                    <div class="col-md-6">
-                     <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
-
-                                        <div class="position-relative">
-                                            <img src="@film.Poster" class="img-6x9 rounded" alt="@film.Title">
-                                            <div class="carousel-caption text-start">
-                                                <h5 class="">@film.Title</h5>
-                                                <h6 class="">@film.ProductionYear</h6>
-                                            </div>
-                                            @* <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span> *@
-                                        </div>
-                     </a>
-                                    </div>
-                            }
-                        </div>
-                    </div>
-            }
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#highlightCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#highlightCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
+    <div class="carousel-indicators">
+        @for (var i = 0; i < Model.Count(); i += 2)
+        {
+            <button type="button" data-bs-target="#highlightCarousel" data-bs-slide-to="@((i/2).ToString())" class="@(i == 0 ? "active" : "")"></button>
+        }
     </div>
+
+    <div class="carousel-inner">
+        @for (var i = 0; i < Model.Count(); i += 2)
+        {
+            <div class="carousel-item @(i == 0 ? "active" : "")">
+                <div class="row">
+                    @for (var j = 0; j < 2 && (i + j) < Model.Count(); j++)
+                    {
+                        var film = Model[i + j];
+                        <div class="col-md-6">
+                            <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
+                                <div class="position-relative">
+                                    <img src="@film.Poster" class="img-6x9 rounded" alt="@film.Title">
+                                    <div class="carousel-caption text-start">
+                                        <h5>@film.Title</h5>
+                                        <h6>@film.ProductionYear</h6>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
 
     <h4 class="text-white mt-4 mb-4">Phim lẻ mới cập nhật</h4>
     <div class="row">

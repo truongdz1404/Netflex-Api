@@ -12,3 +12,55 @@
 .list-items-blogs .home-blog-post:last-child {
     border-bottom: 0;
 }
+/* 
+.carousel-caption {
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+} */
+
+.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.badge {
+    font-size: 12px;
+    padding: 5px 10px;
+}
+
+.img-6x9 {
+    width: 100%;          
+    aspect-ratio: 2 / 3; 
+    object-fit: cover;  
+}
+
+.carousel-indicators {
+    position: absolute;
+    bottom: -50px; 
+    left: 50%;
+    transform: translateX(-120%);
+    z-index: 10;
+}
+
+.carousel-indicators .active {
+    opacity: 1;
+    background-color: #007bff;
+}
+
+
+.navigation-buttons i {
+    font-size: 24px;
+    cursor: pointer; 
+    padding: 4px;
+}
+
+.navigation-buttons i:hover {
+    color: #f8f9fa;
+}
+
+
+
