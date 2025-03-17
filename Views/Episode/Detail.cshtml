@@ -50,7 +50,7 @@
                 <p class="text-white-50 text-sm mb-1">@Model.Title @Model.ProductionYear</p>
                 <p class="text-sm"><span class="date">Dec. 31, 2023</span>&nbsp;&nbsp;&nbsp;China&nbsp;&nbsp;&nbsp;</p>
             </div> *@
-            
+
             <div class="mt-2 genres">
                 @foreach (var genre in ViewBag.Genres)
                 {
@@ -110,12 +110,18 @@
             </div>
         </div>
     </div>
-
+    <div class="comment-section mt-3">
+        <div class="fb-comments" data-href="@ViewData["Domain"]/Episode/Details/@Model.Number" data-width="100%"
+            data-numposts="5"></div>
+    </div>
     <div class="movie-card mt-2">
         <p class="text-base text-white">Phim liên quan</p>
     </div>
 </div>
-
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous"
+    src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v22.0&appId=1589497395335451"></script>
+<script>
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>

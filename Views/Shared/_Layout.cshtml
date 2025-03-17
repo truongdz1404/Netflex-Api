@@ -299,6 +299,16 @@
         function scrollToTop() {
             $(window).scrollTop(0);
         }
+
+        const ngrokUrl = "https://6c05-2401-d800-14e-6870-ccd4-a808-4169-9027.ngrok-free.app";
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('[data-href]').forEach(function (element) {
+                const dataHref = element.getAttribute('data-href');
+                if (dataHref && dataHref.includes('http://localhost:8080')) {
+                    element.setAttribute('data-href', dataHref.replace('http://localhost:8080', ngrokUrl));
+                }
+            });
+        });
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)

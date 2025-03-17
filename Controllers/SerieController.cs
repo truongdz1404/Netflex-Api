@@ -67,8 +67,6 @@ namespace Netflex.Controllers
 
             };
             ViewBag.Episodes = _unitOfWork.Repository<Episode>().Entities.Where(e => e.SerieId == id).ToList();
-
-
             return View(model);
         }
     }

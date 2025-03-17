@@ -55,7 +55,7 @@ namespace Netflex.Controllers
 
             var blog = _context.Blogs
                 .Where(b => b.Id == id)
-                .Select(b => new BlogViewModel
+                .Select(b => new DetailBlogViewModels
                 {
                     Id = b.Id,
                     Title = b.Title,
@@ -69,7 +69,7 @@ namespace Netflex.Controllers
 
             if (blog == null)
                 return NotFound();
-
+                
             return View(blog);
         }
     }

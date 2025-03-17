@@ -110,63 +110,68 @@
             </div>
         </div>
     </div>
-
+    <div class="comment-section mt-3">
+        <div class="fb-comments" data-href="@ViewData["Domain"]/Film/Details/@Model.Id" data-width="100%" data-numposts="5"></div>
+    </div>
     <div class="movie-card mt-2">
         <p class="text-base text-white">Phim liên quan</p>
     </div>
 </div>
-
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous"
+    src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v22.0&appId=1589497395335451"></script>
+<script>
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+            <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
         $(document).ready(function () {
             let stars = $(".rating-stars i");
-            let selected = $("#selected-rating");
-            let ratings = Math.floor(@Ratings);
+        let selected = $("#selected-rating");
+        let ratings = Math.floor(@Ratings);
 
-            highlight(ratings);
+        highlight(ratings);
 
-            stars.on("mouseover", function () {
-                let value = $(this).data("value");
-                highlight(value);
+        stars.on("mouseover", function () {
+            let value = $(this).data("value");
+        highlight(value);
+                    });
+
+        stars.on("mouseout", function () {
+            let currentValue = selected.text().trim() === "0" ? ratings : selected.text();
+        highlight(currentValue);
+                    });
+
+        stars.on("click", function () {
+            selected.text($(this).data("value"));
+                    });
+
+        function highlight(value) {
+            stars.each(function () {
+                let starValue = parseInt($(this).data("value"));
+                $(this).toggleClass("fas", starValue <= value);
+                $(this).toggleClass("far", starValue > value);
             });
-
-            stars.on("mouseout", function () {
-                let currentValue = selected.text().trim() === "0" ? ratings : selected.text();
-                highlight(currentValue);
-            });
-
-            stars.on("click", function () {
-                selected.text($(this).data("value"));
-            });
-
-            function highlight(value) {
-                stars.each(function () {
-                    let starValue = parseInt($(this).data("value"));
-                    $(this).toggleClass("fas", starValue <= value);
-                    $(this).toggleClass("far", starValue > value);
+                    }
                 });
-            }
-        });
     </script>
     <script>
         $(document).ready(function () {
             let video = $("#video").get(0);
-            video.disablePictureInPicture = true;
-            video.addTextTrack("captions");
+        video.disablePictureInPicture = true;
+        video.addTextTrack("captions");
 
-            if (Hls.isSupported()) {
-                let hls = new Hls({
-                    debug: true,
+        if (Hls.isSupported()) {
+            let hls = new Hls({
+            debug: true,
+                        });
+        hls.loadSource(@Html.Raw(Json.Serialize(Model.Path)));
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+            video.muted = true;
+                        });
+                    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = @Html.Raw(Json.Serialize(Model.Path));
+                    }
                 });
-                hls.loadSource(@Html.Raw(Json.Serialize(Model.Path)));
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-                    video.muted = true;
-                });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = @Html.Raw(Json.Serialize(Model.Path));
-            }
-        });
     </script>
 }

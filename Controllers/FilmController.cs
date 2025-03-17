@@ -34,7 +34,7 @@ namespace Netflex.Controllers
                     Trailer = film.Trailer,
                     ProductionYear = film.ProductionYear,
                     CreatedAt = film.CreatedAt
-                    
+
                 }
             ).OrderBy(f => f.CreatedAt)
             .ToPagedList(pageNumber, PAGE_SIZE);
@@ -58,7 +58,6 @@ namespace Netflex.Controllers
                 Trailer = film.Trailer,
                 ProductionYear = film.ProductionYear
             };
-
             return View(model);
         }
     }
