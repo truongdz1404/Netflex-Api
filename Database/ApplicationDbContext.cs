@@ -17,6 +17,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public virtual DbSet<FilmActor> FilmActors { get; set; }
     public virtual DbSet<FilmGenre> FilmGenres { get; set; }
     public virtual DbSet<FilmCountry> FilmCountries { get; set; }
+    public virtual DbSet<Follow> Follows { get; set; }
+    public virtual DbSet<Serie> Series { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

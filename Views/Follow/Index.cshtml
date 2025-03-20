@@ -1,0 +1,51 @@
+﻿@model IPagedList<Netflex.Models.Follow.FollowViewModel>
+@using X.PagedList.Mvc.Core
+@{
+    ViewData["Title"] = "Phim yêu thích";
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <h4 class="text-white mt-4 mb-4">Phim lẻ và Series yêu thích</h4>
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            if (item.FollowedFilms != null)
+            {
+                var film = item.FollowedFilms;
+                <div class="col-md-2 mb-4">
+                     <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
+                    <div class="position-relative">
+                        <img src="@film.Poster" class="img-6x9 rounded" alt="@film.Title">
+                        @* <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span> *@
+                    </div>
+                    <p class="text-white text-truncate mt-2" style="max-width: 100%;">@(film.Title.Length > 20 ? film.Title.Substring(0, 20) + "..." : film.Title)</p>
+                    </a>
+                </div>
+            }
+            else if (item.FollowedSeries != null)
+            {
+                var serie = item.FollowedSeries;
+                <div class="col-md-2 mb-4">
+                     <a href="@Url.Action("Detail", "Film", new { id = serie.Id })" class="text-decoration-none">
+                    <div class="position-relative">
+                        <img src="@serie.Poster" class="img-6x9 rounded" alt="@serie.Title">
+                        @* <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span> *@
+                    </div>
+                    <p class="text-white text-truncate mt-2" style="max-width: 100%;">@(serie.Title.Length > 20 ? serie.Title.Substring(0, 20) + "..." : serie.Title)</p>
+                    </a>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+    <!-- Phân trang -->
+    <nav class="d-flex justify-content-center mt-3">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
+        {
+            LiElementClasses = new string[] { "page-item" },
+            PageClasses = new string[] { "page-link" }
+        })
+    </nav>
+</div>

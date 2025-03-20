@@ -29,7 +29,21 @@
         <img src="@Model.Poster" class="poster" alt="Movie Poster">
 
         <div class="flex-grow-1">
-            <h4 class="mb-0" style="color: whitesmoke;">@Model.Title</h4>
+            <div
+                class="d-flex align-items-center py-2 border-top border-bottom border-dark gap-2 flex-column flex-md-row">
+                <h4 class="mb-0" style="color: whitesmoke;">@Model.Title</h4>
+                <form method="GET" enctype="multipart/form-data" asp-controller="follow" asp-action="addfilm">
+                    <input type="hidden" name="filmId" value="@Model.Id" />
+                    <input type="hidden" name="serieId" value="8d73a442-87fa-4d97-939a-e44a71b15c42" />
+                    <div>
+                        <button class="nav-link tab follow-btn" id="pills-actor-tab" data-bs-toggle="pill"
+                            data-bs-target="#pills-actor" type="submit" role="tab" aria-controls="pills-actor"
+                            aria-selected="false">
+                            <i class="fa-solid fa-bookmark"></i> Theo dõi phim
+                        </button>
+                    </div>
+                </form>
+            </div>
             <div>
                 <p class="text-white-50 text-sm mb-1">@Model.Title @Model.ProductionYear</p>
                 <p class="text-sm"><span class="date">Dec. 31, 2023</span>&nbsp;&nbsp;&nbsp;China&nbsp;&nbsp;&nbsp;</p>
@@ -111,7 +125,8 @@
         </div>
     </div>
     <div class="comment-section mt-3">
-        <div class="fb-comments" data-href="@ViewData["Domain"]/Film/Details/@Model.Id" data-width="100%" data-numposts="5"></div>
+        <div class="fb-comments" data-href="@ViewData["Domain"]/Film/Details/@Model.Id" data-width="100%"
+            data-numposts="5"></div>
     </div>
     <div class="movie-card mt-2">
         <p class="text-base text-white">Phim liên quan</p>
@@ -134,16 +149,16 @@
         stars.on("mouseover", function () {
             let value = $(this).data("value");
         highlight(value);
-                    });
+                                        });
 
         stars.on("mouseout", function () {
             let currentValue = selected.text().trim() === "0" ? ratings : selected.text();
         highlight(currentValue);
-                    });
+                                        });
 
         stars.on("click", function () {
             selected.text($(this).data("value"));
-                    });
+                                        });
 
         function highlight(value) {
             stars.each(function () {
@@ -151,8 +166,8 @@
                 $(this).toggleClass("fas", starValue <= value);
                 $(this).toggleClass("far", starValue > value);
             });
-                    }
-                });
+                                        }
+                                    });
     </script>
     <script>
         $(document).ready(function () {
@@ -163,15 +178,15 @@
         if (Hls.isSupported()) {
             let hls = new Hls({
             debug: true,
-                        });
+                                            });
         hls.loadSource(@Html.Raw(Json.Serialize(Model.Path)));
         hls.attachMedia(video);
         hls.on(Hls.Events.MEDIA_ATTACHED, function () {
             video.muted = true;
-                        });
-                    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                                            });
+                                        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
             video.src = @Html.Raw(Json.Serialize(Model.Path));
-                    }
-                });
+                                        }
+                                    });
     </script>
 }

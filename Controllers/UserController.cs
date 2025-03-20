@@ -193,11 +193,9 @@ namespace Netflex.Controllers
                     PhoneNumber = model.PhoneNumber
                 };
 
-                // Create user with password
                 var result = await _userManager.CreateAsync(user, model.Password ?? string.Empty);
                 if (result.Succeeded)
                 {
-                    // Add selected roles
                     if (model.SelectedRoles != null && model.SelectedRoles.Any())
                     {
                         var addRoleResult = await _userManager.AddToRolesAsync(user, model.SelectedRoles);
@@ -221,7 +219,6 @@ namespace Netflex.Controllers
                 }
             }
 
-            // If model state is invalid or any error occurs, return view
             var roles = await _roleManager.Roles.ToListAsync();
             model.AvailableRoles = roles.Select(r => r.Name ?? string.Empty).ToList();
             return View(model);
