@@ -1,19 +1,38 @@
 @model EditFilmViewModel
 @{
     ViewData["Title"] = "Edit Film";
-    Layout = "_Layout";
+    Layout = "_AdminLayout";
 }
+@section Styles {
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .select2-container--default .select2-selection--multiple {
+            min-height: 38px;
+        }
 
-<div class="container">
+        .select2-container--default .select2-results__option {
+            color: black !important;
+        }
+
+        .select2-container--default .select2-results__option--highlighted {
+            background-color: #d1d1d1 !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            color: black;
+        }
+    </style>
+}
+<div class="container col-md-8 offset-md-2">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-controller="film" asp-action="index">Phim lẻ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="FilmManagement" asp-action="index">Phim lẻ</a></li>
             <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
         </ol>
     </nav>
-    <div class="row">
-        <div class="col-md-4">
-            <form method="POST" enctype="multipart/form-data" asp-controller="film" asp-action="edit">
+    <div class="row card border-light shadow-lg">
+        <div class="card-body bg-light">
+            <form method="POST" enctype="multipart/form-data" asp-controller="FilmManagement" asp-action="edit">
                 <input type="hidden" asp-for="Id" />
                 <input type="hidden" asp-for="PosterUrl" />
                 <input type="hidden" asp-for="FileUrl" />
@@ -53,15 +72,54 @@
                     </select>
                     <span asp-validation-for="AgeCategoryId" class="text-danger"></span>
                 </div> *@
+                <div class="form-group required">
+                    <label class="control-label">Age Category</label>
+                    <select asp-for="AgeCategoryId" class="form-select">
+                        @foreach (var age in ViewBag.AgeCategories)
+                        {
+                            <option value="@age.Id" selected="@(Model.AgeCategoryId == age.Id ? "selected" : null)">
+                                @age.Name</option>
+                        }
+
+                    </select>
+                </div>
                 <div class="form-group">
                     <label asp-for="Poster" class="control-label"></label>
-                    <input asp-for="Poster" type="file" class="form-control" />
+                    <input asp-for="Poster" type="file" class="form-control" id="posterUpload" />
                     <span asp-validation-for="Poster" class="text-danger"></span>
+
                     <div class="mt-2">
-                        <img id="posterPreview" src="@Model.PosterUrl" alt="Preview Image"
+                        @if (!string.IsNullOrEmpty(Model.PosterUrl))
+                        {
+                            <img id="posterCurrentImage" src="@Url.Content(Model.PosterUrl)" alt="Current Poster"
+                                class="img-fluid rounded shadow-sm mw-100 mb-2">
+                        }
+                        <img id="posterPreview" src="#" alt="Preview Image"
                             class="img-fluid rounded shadow-sm d-none mw-100">
                     </div>
+
+                    <input type="hidden" asp-for="PosterUrl" id="posterUrlInput" />
+                    <input type="hidden" name="KeepExistingPoster" id="keepExistingPoster" value="true" />
                 </div>
+
+                <div class="form-group required">
+                    <label class="control-label">Actors</label>
+                    <select asp-for="ActorIds" class="form-select select2-multiple" asp-items="ViewBag.Actors"
+                        multiple></select>
+                </div>
+
+                <div class="form-group required">
+                    <label class="control-label">Genres</label>
+                    <select asp-for="GenreIds" class="form-select select2-multiple" asp-items="ViewBag.Genres"
+                        multiple></select>
+                </div>
+
+                <div class="form-group required">
+                    <label class="control-label">Countries</label>
+                    <select asp-for="CountryIds" class="form-select select2-multiple" asp-items="ViewBag.Countries"
+                        multiple></select>
+                </div>
+                
                 <div class="form-group">
                     <label asp-for="File" class="control-label">File .m3u8</label>
                     <input asp-for="File" type="file" class="form-control" />
@@ -76,10 +134,14 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function () {
-            if ($("#posterPreview").attr("src") != null && $("#posterPreview").attr("src") != "")
-                $("#posterPreview").removeClass("d-none");
+            $('.select2-multiple').select2({
+                placeholder: "Select options",
+                allowClear: true,
+                width: '100%'
+            });
 
             $("#posterUpload").change(function () {
                 let input = this;
@@ -87,8 +149,14 @@
                     let reader = new FileReader();
                     reader.onload = function (e) {
                         $("#posterPreview").attr("src", e.target.result).removeClass("d-none");
+                        $("#posterCurrentImage").addClass("d-none");
+                        $("#keepExistingPoster").val("false");
                     };
                     reader.readAsDataURL(input.files[0]);
+                } else {
+                    $("#posterPreview").addClass("d-none");
+                    $("#posterCurrentImage").removeClass("d-none");
+                    $("#keepExistingPoster").val("true");
                 }
             });
         });

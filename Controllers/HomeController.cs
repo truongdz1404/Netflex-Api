@@ -1,21 +1,51 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Netflex.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Netflex.Database;
+using Netflex.Models.Blog;
+using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Netflex.Controllers;
 
-public class HomeController : Controller
+public class HomeController : BaseController
+
 {
+    private readonly ApplicationDbContext _context;
     private readonly ILogger<HomeController> _logger;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context,
+    IUnitOfWork unitOfWork) : base(unitOfWork)
     {
         _logger = logger;
+        _context = context;
     }
 
-    public IActionResult Index()
+    public IActionResult Index(int page = 1)
     {
-        return View();
+        int pageSize = 5;
+        var users = _context.Users.ToList();
+        ViewBag.Users = new SelectList(users, "Id", "UserName");
+
+        var blogs = _context.Blogs
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(b => new BlogViewModel
+            {
+                Id = b.Id,
+                Title = b.Title,
+                Content = b.Content,
+                Thumbnail = b.Thumbnail,
+                CreatedAt = b.CreatedAt,
+                CreaterId = b.CreaterId,
+                CreatorName = _context.Users.Where(u => u.Id == b.CreaterId).Select(u => u.UserName).FirstOrDefault()
+            })
+            .OrderByDescending(b => b.CreatedAt)
+            .ToList();
+
+        return View(blogs);
     }
 
     public IActionResult Privacy()

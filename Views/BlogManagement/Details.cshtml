@@ -1,0 +1,109 @@
+﻿@model Netflex.Models.Blog.DetailBlogViewModels
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    #toggle-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 14px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    #toggle-button:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+    }
+
+    #toggle-button:focus {
+        outline: none;
+    }
+</style>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header bg-dark text-white">
+            <h4 class="text-center mb-0">Blog Details</h4>
+        </div>
+        <div class="card-body bg-light">
+            <dl class="row text-dark">
+                <!-- Title -->
+                <dt class="col-sm-3">
+                    <strong>@Html.DisplayNameFor(model => model.Title)</strong>
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.Title)
+                </dd>
+
+                <!-- Content -->
+                <dt class="col-sm-3">
+                    <strong>@Html.DisplayNameFor(model => model.Content)</strong>
+                </dt>
+                <dd class="col-sm-9">
+                    <span id="content-full" style="display:none;">
+                        @Html.Raw(Model.Content)
+                    </span>
+                    <button id="toggle-button" onclick="toggleContent()">Show more</button>
+                </dd>
+
+                <!-- Thumbnail -->
+                <dt class="col-sm-3">
+                    <strong>@Html.DisplayNameFor(model => model.Thumbnail)</strong>
+                </dt>
+                <dd class="col-sm-9">
+                    @if (!string.IsNullOrEmpty(Model.Thumbnail))
+                    {
+                        <img src="@Model.Thumbnail" alt="Thumbnail" class="img-fluid rounded" />
+                    }
+                    else
+                    {
+                        <span class="text-muted">No thumbnail available</span>
+                    }
+                </dd>
+
+                <!-- CreatedAt -->
+                <dt class="col-sm-3">
+                    <strong>@Html.DisplayNameFor(model => model.CreatedAt)</strong>
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.CreatedAt)
+                </dd>
+
+                <!-- Creator -->
+                <dt class="col-sm-3">
+                    <strong>@Html.DisplayNameFor(model => model.CreaterId)</strong>
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.CreaterId)
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer text-center">
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning btn-sm">Edit</a>
+            <a asp-action="Index" class="btn btn-secondary btn-sm">Back to List</a>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function toggleContent() {
+        var fullContent = document.getElementById('content-full');
+        var previewContent = document.getElementById('content-preview');
+        var button = document.getElementById('toggle-button');
+
+        if (fullContent.style.display === "none") {
+            fullContent.style.display = "inline";
+            button.textContent = "Show less";
+        } else {
+            fullContent.style.display = "none";
+            button.textContent = "Show more";
+        }
+    }
+</script>

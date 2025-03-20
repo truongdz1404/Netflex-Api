@@ -4,6 +4,7 @@ namespace Netflex.Models.Episode;
 
 public class EditEpisodeViewModel
 {
+    public Guid Id { get; set; }
     [Required]
     public int Number { get; set; }
     [Required, StringLength(100, MinimumLength = 3)]
@@ -11,5 +12,6 @@ public class EditEpisodeViewModel
     [StringLength(1000)]
     public string? About { get; set; }
     public IFormFile? File { get; set; }
-    public required string SerieId { get; set; }
+    public string FileUrl { get; set; } = string.Empty;
+    public required Guid SerieId { get; set; }
 }

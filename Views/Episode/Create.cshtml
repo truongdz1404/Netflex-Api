@@ -1,0 +1,66 @@
+@model CreateEpisodeModel
+@{
+    ViewData["Title"] = "Create Episode";
+    Layout = "_AdminLayout";
+}
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="episode" asp-action="index"
+                    asp-route-serieId="@ViewData["SerieId"]">@ViewData["SerieTitle"]</a></li>
+            <li class="breadcrumb-item active" aria-current="page">New Episode</li>
+        </ol>
+    </nav>
+    <div class="row">
+        <div class="col-md-6">
+            <form method="POST" enctype="multipart/form-data" asp-controller="episode" asp-action="create">
+                <input type="hidden" asp-for="SerieId"/>
+                <div class="form-group required">
+                    <label asp-for="Title" class="control-label"></label>
+                    <input asp-for="Title" type="text" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="form-group required">
+                    <label asp-for="Number" class="control-label"></label>
+                    <input asp-for="Number" type="number" class="form-control" />
+                    <span asp-validation-for="Number" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="About" class="control-label"></label>
+                    <textarea asp-for="About" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="About" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="File" class="control-label">File .m3u8</label>
+                    <input asp-for="File" type="file" class="form-control" />
+                    <span asp-validation-for="File" class="text-danger"></span>
+                </div>
+
+                <br />
+                <button type="submit" class="btn btn-primary mb-3">Create</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#posterUpload").change(function () {
+                let input = this;
+                if (input.files && input.files[0]) {
+                    let reader = new FileReader();
+                    reader.onload = function (e) {
+                        $("#posterPreview").attr("src", e.target.result).removeClass("d-none");
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            });
+        });
+    </script>
+}

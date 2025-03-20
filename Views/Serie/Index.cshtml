@@ -1,0 +1,68 @@
+@model IPagedList<SerieViewModel>
+@using X.PagedList.Mvc.Core
+@{
+    ViewData["Title"] = "Phim bộ";
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <h2 class="text-white text-center mt-3">Phim bộ</h2>
+
+    <div id="highlightCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            @for (var i = 0; i < Model.Count(); i += 2)
+            {
+                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                        <div class="row">
+                            @for (var j = 0; j < 2 && (i + j) < Model.Count(); j++)
+                            {
+                                    var serie = Model[i + j];
+                                    <div class="col-md-6">
+                     <a href="@Url.Action("Detail", "Serie", new { id = serie.Id })" class="text-decoration-none">
+
+                                        <div class="position-relative">
+                                             <img src="@serie.Poster" class="img-6x9 rounded" alt="@serie.Title">
+                                            <div class="carousel-caption text-start">
+                                                <h5 class="bg-dark bg-opacity-50 p-1 rounded">@serie.Title</h5>
+                                            </div>
+                                            <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span>
+                                        </div>
+                     </a>
+                                    </div>
+                            }
+                        </div>
+                    </div>
+            }
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#highlightCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#highlightCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+
+    <h3 class="text-white mt-4">Phim bộ mới cập nhật</h3>
+    <div class="row">
+        @foreach (var serie in Model)
+        {
+                <div class="col-md-2 mb-4">
+                     <a href="@Url.Action("Detail", "Serie", new { id = serie.Id })" class="text-decoration-none">
+                    <div class="position-relative">
+                        <img src="@serie.Poster" class="img-fluid rounded img-6x9" alt="@serie.Title">
+                        <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span>
+                    </div>
+                    <p class="text-white text-truncate" style="max-width: 100%;">@(serie.Title.Length > 20 ? serie.Title.Substring(0, 20) + "..." : serie.Title)</p>
+                    </a>
+                </div>
+        }
+    </div>
+
+    <nav class="d-flex justify-content-center mt-3">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
+        {
+                LiElementClasses = new string[] { "page-item" },
+                        PageClasses = new string[] { "page-link" }
+                })
+    </nav>
+</div>

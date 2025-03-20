@@ -1,0 +1,208 @@
+@model IPagedList<FilmViewModel>
+
+@{
+    ViewData["Title"] = "Film Management";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid px-4">
+    <!-- Filter & Search Form -->
+    <form id="filterForm" method="get" action="@Url.Action("Index", "Film")">
+        <input type="hidden" id="hiddenSearchTerm" name="searchTerm" />
+        <input type="hidden" id="hiddenProductionYear" name="productionYear" />
+        <input type="hidden" id="hiddenSortOrder" name="sortOrder" />
+
+        <div class="d-flex justify-content-between align-items-center my-4">
+            <h2 class="fw-bold text-primary">🎬 Film Management</h2>
+            <div>
+                <a class="btn btn-success btn-lg" asp-controller="FilmManagement" asp-action="create"><i
+                        class="fa fa-plus"></i>
+                    Create New</a>
+                <a href="@Url.Action("ExportToExcel", new { searchTerm = ViewBag.SearchTerm, productionYear = ViewBag.ProductionYear, sortOrder = ViewBag.SortOrder })"
+                    class="btn btn-info btn-lg ms-2">
+                    <i class="fa fa-download"></i> Export to Excel
+                </a>
+            </div>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="row mb-4">
+            <!-- Search by Title -->
+            <div class="col-md-4">
+                <input type="text" id="searchInput" class="form-control border-primary shadow-sm"
+                    placeholder="🔍 Search by title..." />
+            </div>
+
+            <!-- Filter by Production Year -->
+            <div class="col-md-3">
+                <input type="number" id="productionYearInput" class="form-control border-secondary shadow-sm"
+                    placeholder="🔍 Filter by Production Year..." />
+            </div>
+
+            <!-- Reset Filters Button -->
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-secondary w-100" onclick="resetFilters()">Reset
+                    Filters</button>
+            </div>
+            <div class="col-md-3">
+                <button type="button" class="btn btn-outline-secondary w-100" id="filterButton">Apply Filters</button>
+            </div>
+        </div>
+
+        <!-- Sorting Options -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <select id="sortOrderSelect" class="form-control" onchange="setSortOrder(this.value)">
+                    <option value="title">Title (Ascending)</option>
+                    <option value="title_desc">Title (Descending)</option>
+                    <option value="production_year">Production Year (Ascending)</option>
+                    <option value="production_year_desc">Production Year (Descending)</option>
+                </select>
+            </div>
+        </div>
+    </form>
+
+    <!-- Responsive Table with Fixed Header -->
+    <div class="table-responsive-lg" style="max-height: 600px; overflow-y: auto;">
+        <table class="table table-hover table-bordered align-middle shadow-lg table-lg">
+            <thead class="table-dark position-sticky top-0">
+                <tr>
+                    <th style="min-width: 150px;">Title</th>
+                    <th style="min-width: 150px; text-align: center;">Poster</th>
+                    <th style="min-width: 150px;">Trailer</th>
+                    <th style="min-width: 150px;">Production Year</th>
+                    <th style="min-width: 120px; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="text-truncate" style="max-width: 250px;">
+                            @Html.ActionLink(item.Title, "detail", "FilmManagement", new { id = item.Id })
+                        </td>
+                        <td class="text-center">
+                            @if (!string.IsNullOrEmpty(item.Poster))
+                            {
+                                <img src="@item.Poster" alt="Poster" class="img-fluid rounded"
+                                    style="max-width: 100px; height: auto;" />
+                            }
+                        </td>
+                        <td>
+                            <a href="@item.Trailer" target="_blank" class="btn btn-sm btn-primary">
+                                <i class="fa fa-play-circle"></i> Watch Trailer
+                            </a>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProductionYear)
+                        </td>
+                        <td class="text-center action-column">
+                            <a class="btn btn-warning btn-sm" asp-controller="FilmManagement" asp-action="edit"
+                                asp-route-id="@item.Id">Edit</a>
+                            <a class="btn btn-info btn-sm" asp-controller="FilmManagement" asp-action="detail"
+                                asp-route-id="@item.Id">Details</a>
+                            <a class="btn btn-danger btn-sm delete" data-id="@item.Id" data-controller="FilmManagement"
+                                data-action="delete" data-body-message="Bạn có muốn xóa phim lẻ này">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row">
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+                <!-- Previous Page Link -->
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                }
+
+                <!-- Page Number Links -->
+                @for (var i = 1; i <= Model.PageCount; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                    </li>
+                }
+
+                <!-- Next Page Link -->
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('filterButton').addEventListener('click', function () {
+            document.getElementById('hiddenSearchTerm').value = document.getElementById('searchInput').value;
+            document.getElementById('hiddenProductionYear').value = document.getElementById('productionYearInput').value;
+            submitForm();
+        });
+
+        document.getElementById('searchInput').addEventListener('input', function () {
+            document.getElementById('hiddenSearchTerm').value = this.value;
+        });
+
+        document.getElementById('productionYearInput').addEventListener('input', function () {
+            document.getElementById('hiddenProductionYear').value = this.value;
+        });
+
+        function submitForm() {
+            document.getElementById('filterForm').submit();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('productionYearInput').value = '';
+            document.getElementById('hiddenSearchTerm').value = '';
+            document.getElementById('hiddenProductionYear').value = '';
+            submitForm();
+        }
+
+        function setSortOrder(order) {
+            document.getElementById('hiddenSortOrder').value = order;
+            submitForm();
+        }
+
+        // Delete confirmation handling for delete buttons
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteButtons = document.querySelectorAll('.delete');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const id = this.getAttribute('data-id');
+                    const controller = this.getAttribute('data-controller');
+                    const action = this.getAttribute('data-action');
+                    const message = this.getAttribute('data-body-message');
+
+                    if (confirm(message)) {
+                        window.location.href = `/${controller}/${action}/${id}`;
+                    }
+                });
+            });
+        });
+    </script>
+}

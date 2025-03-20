@@ -12,6 +12,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDependencyInjection(builder.Configuration);
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
