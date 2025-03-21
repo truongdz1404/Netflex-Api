@@ -8,7 +8,10 @@ public class FollowConfiguration
 {
     public void Configure(EntityTypeBuilder<Follow> builder)
     {
-        builder.ToTable("tblFollows").HasKey(x => new { x.FollowerId, x.FilmId, x.SerieId });
+        builder.ToTable("tblFollows").HasKey(x => x.Id);
+        builder.Property(x => x.FollowerId).IsRequired();
         builder.Property(x => x.FollowedAt).IsRequired();
+        builder.Property(x => x.FilmId);
+        builder.Property(x => x.SerieId);
     }
 }
