@@ -53,14 +53,26 @@
 
 
 .navigation-buttons i {
-    font-size: 24px;
     cursor: pointer; 
-    padding: 4px;
 }
 
 .navigation-buttons i:hover {
     color: #f8f9fa;
 }
 
+.movie-banner-content{
+    text-shadow: 0 0 10px #000;
+}
+
+.movie-banner img{
+    width: 100%;
+    height: 20rem;
+    object-fit: cover;
+    object-position: top;
+}
 
 
+.content-items {
+    border-bottom: solid 1px;
+    border-color: rgba(255, 255, 255, .08);
+}

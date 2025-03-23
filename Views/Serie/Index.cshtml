@@ -6,7 +6,7 @@
 }
 
 <div class="container">
-    <h2 class="text-white text-center mt-3">Phim bộ</h2>
+    <h3 class="text-white text-center my-3">Phim bộ</h3>
 
     <div id="highlightSerieCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-indicators">
@@ -27,11 +27,13 @@
                             var serie = Model[i + j];
                             <div class="col-md-6">
                                 <a href="@Url.Action("Detail", "Serie", new { id = serie.Id })" class="text-decoration-none">
-                                    <div class="position-relative">
-                                        <img src="@serie.Poster" class="img-6x9 rounded" alt="@serie.Title">
-                                        <div class="carousel-caption text-start">
-                                            <h5>@serie.Title</h5>
-                                            <h6>@serie.ProductionYear</h6>
+                                    <div class="position-relative  movie-banner">
+                                        <img src="@serie.Poster" alt="@serie.Title">
+                                        <div class="position-absolute bottom-0 movie-banner-content p-2">
+                                            <p class="m-0 text-white text-truncate" style="max-width:10rem;">
+                                                @serie.Title
+                                            </p>
+                                            <span class="p-0 text-white-50 text-smm">@serie.ProductionYear</span>
                                         </div>
                                     </div>
                                 </a>
@@ -42,26 +44,20 @@
             }
         </div>
 
-        <button class="carousel-control-prev" type="button" data-bs-target="#highlightSerieCarousel"
-            data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#highlightSerieCarousel"
-            data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
     </div>
-
-    <h3 class="text-white mt-4 mb-4">Phim bộ mới cập nhật</h3>
+    <div class="d-flex align-items-center my-3 mt-5">
+        <div class="vertical-line"></div>
+        <p class="ms-2 mb-0 text-md text-white fw-bold">Phim bộ mới cập nhật</p>
+    </div>
     <div class="row">
         @foreach (var serie in Model)
         {
-            <div class="col-md-2 mb-4">
+            <div class="col-4 col-md-3 col-xl-2 mb-2">
                 <a href="@Url.Action("Detail", "Serie", new { id = serie.Id })" class="text-decoration-none">
                     <div class="position-relative">
                         <img src="@serie.Poster" class="img-6x9 rounded" alt="@serie.Title">
                     </div>
-                    <p class="text-white text-truncate mt-2" style="max-width: 100%;">
+                    <p class="text-white text-truncate mt-2 text-smm" style="max-width: 100%;">
                         @(serie.Title.Length > 20 ? serie.Title.Substring(0, 20) + "..." : serie.Title)
                     </p>
                 </a>
@@ -71,9 +67,9 @@
 
     <nav class="d-flex justify-content-center mt-3">
         @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
-        {
-            LiElementClasses = new string[] { "page-item" },
-                PageClasses = new string[] { "page-link" }
-                })
+   {
+       LiElementClasses = new string[] { "page-item" },
+       PageClasses = new string[] { "page-link" }
+   })
     </nav>
 </div>

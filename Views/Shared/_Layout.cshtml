@@ -182,21 +182,22 @@
                     <i class="fa-solid fa-caret-down"></i>
                 </div>
                 <ul class="menu-year overflow-auto">
-                     @for (int i = DateTime.Now.Year; i >= 1981; i--)
+                    @for (int i = DateTime.Now.Year; i >= 1981; i--)
                     {
-                        <a class="dropdown-item" href="@Url.Action("index", "FilmRelease", new { year = i })">
-                            <i class="fa-solid fa-caret-right pe-2"></i>@i</a>
+                        <li><a href="@Url.Action("index", "FilmRelease", new { year = i })">@i</a></li>
                     }
                 </ul>
-                <a href="@Url.Action("Detail", "Serie", new { id = ViewBag.StarSeries[0].Id })" class="d-block movie-banner position-relative my-4">
+                <a href="@Url.Action("Detail", "Serie", new { id = ViewBag.StarSeries[0].Id })"
+                    class="d-block movie-banner position-relative my-4">
                     <div class="position-absolute bottom-0  movie-banner-content p-2">
-                        <p class="m-0 text-white text-truncate" style="max-width:10rem;">@ViewBag.StarSeries[0].Title</p>
+                        <p class="m-0 text-white text-truncate" style="max-width:10rem;">@ViewBag.StarSeries[0].Title
+                        </p>
                         <span class="p-0 text-white-50">@ViewBag.StarSeries[0].ProductionYear</span>
                     </div>
                     <img src="@ViewBag.StarSeries[0].Poster" alt="Movie Poster">
                 </a>
                 <div class="rank">
-                    @for(int i = 1; i < ViewBag.StarSeries.Count; i++)
+                    @for (int i = 1; i < ViewBag.StarSeries.Count; i++)
                     {
                         var item = ViewBag.StarSeries[i];
                         <a class="movie-item" href="@Url.Action("Detail", "Serie", new { id = item.Id })">
