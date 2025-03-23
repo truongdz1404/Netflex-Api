@@ -11,6 +11,7 @@ namespace Netflex.Database.Repositories
         Task<List<Follow>> GetByUserIdAsync(string userId);
         Task<List<Follow>> GetAllAsync();
         Task<Follow> AddAsync(Follow follow);
+        Task DeleteAsync(Follow follow);
         Task<int> Save(CancellationToken cancellationToken);
     }
 }

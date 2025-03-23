@@ -35,6 +35,12 @@ namespace Netflex.Database.Repositories.Implements
             return follow;
         }
 
+        public Task DeleteAsync(Follow follow)
+        {
+            _dbContext.Set<Follow>().Remove(follow);
+            return Task.CompletedTask;
+        }
+
         public async Task<List<Follow>> GetAllAsync()
         {
             return await _dbContext

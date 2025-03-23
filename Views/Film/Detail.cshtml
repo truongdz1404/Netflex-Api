@@ -32,17 +32,18 @@
             <div
                 class="d-flex align-items-center py-2 border-top border-bottom border-dark gap-2 flex-column flex-md-row">
                 <h4 class="mb-0" style="color: whitesmoke;">@Model.Title</h4>
-                <form method="GET" enctype="multipart/form-data" asp-controller="follow" asp-action="addfilm">
-                    <input type="hidden" name="filmId" value="@Model.Id" />
-                    <input type="hidden" name="serieId" value="8d73a442-87fa-4d97-939a-e44a71b15c42" />
-                    <div>
-                        <button class="nav-link tab follow-btn" id="pills-actor-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-actor" type="submit" role="tab" aria-controls="pills-actor"
-                            aria-selected="false">
-                            <i class="fa-solid fa-bookmark"></i> Theo dõi phim
-                        </button>
-                    </div>
-                </form>
+                <div class="nav-link tab follow-btn" id="followButton" data-film-id="@Model.Id" data-bs-toggle="pill"
+                    data-bs-target="#pills-actor" type="submit" role="tab" aria-controls="pills-actor"
+                    aria-selected="false" onclick="toggleFollow(this)">
+                    @if (Model.IsFollowed)
+                    {
+                        <i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>
+                    }
+                    else
+                    {
+                        <i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi phim</span>
+                    }
+                </div>
             </div>
             <div>
                 <p class="text-white-50 text-sm mb-1">@Model.Title @Model.ProductionYear</p>
@@ -156,16 +157,16 @@
         stars.on("mouseover", function () {
             let value = $(this).data("value");
         highlight(value);
-                                        });
+                                                            });
 
         stars.on("mouseout", function () {
             let currentValue = selected.text().trim() === "0" ? ratings : selected.text();
         highlight(currentValue);
-                                        });
+                                                            });
 
         stars.on("click", function () {
             selected.text($(this).data("value"));
-                                        });
+                                                            });
 
         function highlight(value) {
             stars.each(function () {
@@ -173,8 +174,8 @@
                 $(this).toggleClass("fas", starValue <= value);
                 $(this).toggleClass("far", starValue > value);
             });
-                                        }
-                                    });
+                                                            }
+                                                        });
     </script>
     <script>
         $(document).ready(function () {
@@ -185,15 +186,41 @@
         if (Hls.isSupported()) {
             let hls = new Hls({
             debug: true,
-                                            });
+                                                                });
         hls.loadSource(@Html.Raw(Json.Serialize(Model.Path)));
         hls.attachMedia(video);
         hls.on(Hls.Events.MEDIA_ATTACHED, function () {
             video.muted = true;
-                                            });
-                                        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                                                                });
+                                                            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
             video.src = @Html.Raw(Json.Serialize(Model.Path));
-                                        }
-                                    });
+                                                            }
+                                                        });
     </script>
+    <script>
+        async function toggleFollow(button) {
+                        const filmId = button.getAttribute("data-film-id");
+
+        const response = await fetch("/Follow/ToggleFollowFilm", {
+            method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+                            },
+        body: JSON.stringify(filmId)
+                        });
+
+        if (response.ok) {
+                            const result = await response.json();
+        if(result.isFollowed) {
+            button.innerHTML = '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>';
+                            } else {
+            button.innerHTML = '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi phim</span>';
+                            }
+                        } else {
+            console.error("Có lỗi xảy ra khi cập nhật trạng thái theo dõi");
+                        }
+                    }
+    </script>
+
 }

@@ -193,7 +193,7 @@
                     <i class="lni lni-grid-alt"></i>
                 </button>
                 <div class="sidebar-logo">
-                    <a asp-area="" asp-controller="Admin" asp-action="Index">NETFLEX</a>
+                    <a asp-area="" asp-controller="dashboard" asp-action="Index">NETFLEX</a>
                 </div>
             </div>
             <ul class="sidebar-nav">
@@ -209,24 +209,24 @@
                         <span>Blogs Management</span>
                     </a>
                 </li>
-                <li class="sidebar-item">
-                    <a href="#" class="sidebar-link">
+                <li class="sidebar-item" >
+                    <a class="sidebar-link" asp-area="" asp-controller="AgeCategory" asp-action="Index">
                         <i class="lni lni-agenda"></i>
-                        <span>Task</span>
+                        <span>Age Category Management</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                    <a class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
                         data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
                         <i class="lni lni-protection"></i>
-                        <span>Auth</span>
+                        <span>Film Management</span>
                     </a>
                     <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                         <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">Login</a>
+                            <a class="sidebar-link" asp-area="" asp-controller="FilmManagement" asp-action="Index">Film</a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="#" class="sidebar-link">Register</a>
+                            <a class="sidebar-link" asp-area="" asp-controller="Genre" asp-action="Index">Genre</a>
                         </li>
                     </ul>
                 </li>

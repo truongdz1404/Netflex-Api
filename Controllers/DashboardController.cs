@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Netflex.Controllers
 {
     [Authorize(Roles = "admin")]
-    public class AdminController : Controller
+    public class DashboardController : Controller
     {
         public IActionResult Index()
         {

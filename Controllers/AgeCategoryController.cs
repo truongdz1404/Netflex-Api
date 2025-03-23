@@ -14,6 +14,8 @@ namespace Netflex.Controllers
         {
             _unitOfWork = unitOfWork;
         }
+
+        [Route("/dashboard/age-category")]
         public IActionResult Index(string? SearchString, string? SortBy = "name", int PageNumber = 1)
         {
             var repository = _unitOfWork.Repository<AgeCategory>();
@@ -44,9 +46,11 @@ namespace Netflex.Controllers
         }
 
 
+        [Route("/dashboard/age-category/create")]
         public IActionResult Create() => View();
 
         [HttpPost]
+        [Route("/dashboard/age-category/create")]
         public async Task<IActionResult> Create(AgeCategoryEditModel model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -57,6 +61,7 @@ namespace Netflex.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Route("/dashboard/age-category/edit")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var category = await _unitOfWork.Repository<AgeCategory>().GetByIdAsync(id);
@@ -67,6 +72,7 @@ namespace Netflex.Controllers
         }
 
         [HttpPost]
+        [Route("/dashboard/age-category/edit")]
         public async Task<IActionResult> Edit(Guid id, AgeCategoryEditModel model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -81,6 +87,7 @@ namespace Netflex.Controllers
 
 
         [HttpPost]
+        [Route("/dashboard/age-category/delete")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var category = await _unitOfWork.Repository<AgeCategory>().GetByIdAsync(id);

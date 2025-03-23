@@ -19,7 +19,7 @@
         <div class="d-flex justify-content-between align-items-center my-4">
             <h2 class="fw-bold text-primary">📑 Blog Management</h2>
             <div>
-                <a class="btn btn-success btn-lg" asp-action="Create"><i class="fa fa-plus"></i> Create New</a>
+                <a class="btn btn-success btn-lg" asp-area="" asp-controller="BlogManagement" asp-action="Create"><i class="fa fa-plus"></i> Create New</a>
                 <a href="@Url.Action("ExportToExcel", new { searchTerm = ViewBag.SearchTerm, createrId = ViewBag.CreaterId, createdAt = ViewBag.CreatedAt, sortOrder = ViewBag.SortOrder })"
                     class="btn btn-info btn-lg ms-2">
                     <i class="fa fa-download"></i> Export to Excel

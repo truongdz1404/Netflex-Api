@@ -94,14 +94,3 @@
     justify-content: center;
     transition: background-color 0.3s ease, transform 0.3s ease; 
 }
-
-.follow-btn:hover {
-    color:rgb(62, 62, 62);
-    background-color: rgb(198, 198, 198);
-    border-color: rgb(198, 198, 198); 
-    transform: scale(1.05); 
-}
-
-.follow-btn i {
-    margin-right: 8px;
-}
