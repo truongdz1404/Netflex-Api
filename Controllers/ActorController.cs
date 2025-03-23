@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Netflex.Database.Repositories.Abstractions;
 using Netflex.Models.Actor;
-using X.PagedList;
 using X.PagedList.Extensions;
 
-namespace Netflex.Web.Controllers
+namespace Netflex.Controllers
 {
     public class ActorController : Controller
     {
@@ -103,7 +102,7 @@ namespace Netflex.Web.Controllers
             }
             else
             {
-                existingActor.Photo = actor.Photo; 
+                existingActor.Photo = actor.Photo;
             }
 
             await _actorRepository.UpdateAsync(existingActor);

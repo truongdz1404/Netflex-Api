@@ -10,7 +10,7 @@ namespace Netflex.Controllers
 {
     public class BaseController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        protected readonly IUnitOfWork _unitOfWork;
 
         public BaseController(IUnitOfWork unitOfWork)
         {

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
-namespace FStudyForum.API.Hubs
+namespace Netflex.Hubs
 {
     [Authorize]
     public class NotificationHub : Hub<INotificationClient>

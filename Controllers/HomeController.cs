@@ -17,7 +17,6 @@ public class HomeController : BaseController
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<HomeController> _logger;
-    private readonly IUnitOfWork _unitOfWork;
     private const int ListSize = 10;
 
     public HomeController(ILogger<HomeController> logger, ApplicationDbContext context,
@@ -25,7 +24,6 @@ public class HomeController : BaseController
     {
         _logger = logger;
         _context = context;
-        _unitOfWork = unitOfWork;
     }
 
     public IActionResult Index(int page = 1)

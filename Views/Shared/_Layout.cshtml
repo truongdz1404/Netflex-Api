@@ -221,6 +221,7 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/delete.js" asp-append-version="true"></script>
     <script src="https://cdn.tiny.cloud/1/25kiq8kjalzyqvwkno8j4sgazvesxspatked58wy320zismn/tinymce/7/tinymce.min.js"
@@ -266,6 +267,12 @@
         function scrollToTop() {
             $(window).scrollTop(0);
         }
+
+
+        $(() => {
+            var connection = new signalR.HubConnectionBuilder().withUrl("/notification-hub").build();
+            connection.start();
+        });
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)

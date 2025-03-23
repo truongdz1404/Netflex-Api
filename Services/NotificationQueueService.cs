@@ -1,13 +1,13 @@
 using System.Threading.Channels;
-using FStudyForum.API.Hubs;
+using Netflex.Hubs;
 using Microsoft.AspNetCore.SignalR;
-namespace FStudyForum.API.BackgroundServices;
+namespace Netflex.Services;
 
-public record Notification(IEnumerable<string> SendTo, string Message);
+public record Notify(IEnumerable<string> SendTo, string Message);
 
 public class NotificationQueueService : BackgroundService
 {
-    private readonly Channel<Notification> _channel;
+    private readonly Channel<Notify> _channel;
     private readonly IHubContext<NotificationHub, INotificationClient> _hubContext;
     private readonly ConnectionManager _connectionManager;
 
@@ -15,12 +15,12 @@ public class NotificationQueueService : BackgroundService
         IHubContext<NotificationHub, INotificationClient> hubContext,
         ConnectionManager connectionManager)
     {
-        _channel = Channel.CreateUnbounded<Notification>();
+        _channel = Channel.CreateUnbounded<Notify>();
         _hubContext = hubContext;
         _connectionManager = connectionManager;
     }
 
-    public ValueTask PushAsync(Notification notification)
+    public ValueTask PushAsync(Notify notification)
         => _channel.Writer.WriteAsync(notification);
 
 
@@ -33,7 +33,7 @@ public class NotificationQueueService : BackgroundService
         }
     }
 
-    private async Task HandleNotificationsAsync(Notification notification)
+    private async Task HandleNotificationsAsync(Notify notification)
     {
         var connectionIds = notification.SendTo.SelectMany(_connectionManager.GetConnections).Distinct();
         if (connectionIds == null || !connectionIds.Any()) return;

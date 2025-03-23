@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace FStudyForum.API.Hubs;
+namespace Netflex.Hubs;
 
 public class ConnectionManager
 {

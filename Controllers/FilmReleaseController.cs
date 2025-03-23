@@ -14,13 +14,11 @@ namespace Netflex.Controllers
     public class FilmReleaseController : BaseController
     {
         private const int PAGE_SIZE = 10;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly ApplicationDbContext _context;
 
         public FilmReleaseController(IUnitOfWork unitOfWork,
         ApplicationDbContext context) : base(unitOfWork)
         {
-            _unitOfWork = unitOfWork;
             _context = context;
         }
 

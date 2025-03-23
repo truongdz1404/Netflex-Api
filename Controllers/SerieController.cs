@@ -15,11 +15,9 @@ namespace Netflex.Controllers
     public class SerieController : BaseController
     {
         private const int PAGE_SIZE = 10;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly ApplicationDbContext _dbContext;
         public SerieController(IUnitOfWork unitOfWork, ApplicationDbContext dbContext) : base(unitOfWork)
         {
-            _unitOfWork = unitOfWork;
             _dbContext = dbContext;
         }
 
