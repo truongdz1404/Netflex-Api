@@ -125,7 +125,7 @@
             </div>
 
             <div class="col-md-11 text-smm ">
-                <a href="@Url.Action("Details", "Blog", new { id = blog.Id })">
+                <a href="@Url.Action("details", "blog", new { id = blog.Id })">
                     <p class="text-base text-white-70 mb-1">
                         @Html.Raw(blog.Title.Length > 100 ? blog.Title.Substring(0, 100) + "..." : blog.Title)
                     </p>

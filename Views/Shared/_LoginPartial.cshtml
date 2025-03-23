@@ -10,20 +10,31 @@
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton" role="button" data-bs-toggle="dropdown"
                 aria-expanded="false">
-                <img src="https://www.gravatar.com/avatar/" class="rounded-circle" height="30" alt="Avatar">
+                <img src="https://docs.gravatar.com/wp-content/uploads/2025/02/avatar-mysteryperson-20250210-256.png"
+                    class="rounded-circle" height="30" alt="Avatar">
             </a>
 
             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end p-0" aria-labelledby="dropdownMenuButton">
+                <li class="dropdown-item ">
+                    <a href="/admin" class="text-smm nav-link">
+                        <i class="fa-solid fa-bell me-2 position-relative">
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                style="font-size: 0.5rem">
+                                9+
+                            </span>
+                        </i>Thông báo</a>
+                </li>
                 @if (User.IsInRole("admin"))
                 {
                     <li class="dropdown-item">
-                        <a href="/admin" class="text-base nav-link">Dashboard</a>
+                        <a href="/admin" class="text-smm nav-link"><i class="fa-solid fa-chart-line me-2"></i>Dashboard</a>
                     </li>
                 }
                 <li class="dropdown-item">
                     <form class="form-inline" asp-area="identity" asp-page="/account/logout"
                         asp-route-returnUrl="@Url.Action("index", "home", new { area = "" })">
-                        <button id="logout" type="submit" class="btn-text text-base">Logout</button>
+                        <button id="logout" type="submit" class="btn-text text-smm text-danger"><i
+                                class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</button>
                     </form>
                 </li>
             </ul>
