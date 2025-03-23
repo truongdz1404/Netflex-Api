@@ -4,6 +4,10 @@ html {
   font-size: 14px;
 }
 
+.font-inter{
+  font-family: "Inter", Helvetica, Arial, sans-serif !important;
+}
+
 body {
   font-family: "Inter", Helvetica, Arial, sans-serif;
 }
