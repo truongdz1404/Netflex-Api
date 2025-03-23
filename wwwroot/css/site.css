@@ -94,6 +94,16 @@ video {
   color: whitesmoke !important;
 }
 
+.btn-text {
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, .55);
+  padding: .5rem;
+  width: 100%;
+  text-align: left;
+}
+
 .search-box {
   background: rgba(255, 255, 255, .1);
   border-radius: 5px;

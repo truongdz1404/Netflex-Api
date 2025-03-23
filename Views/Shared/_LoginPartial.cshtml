@@ -7,42 +7,32 @@
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
-        <li class="nav-item">
-            <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index"
-                title="Manage">Hello @UserManager.GetUserName(User)!</a>
-        </li>
-        <li class="nav-item">
-            <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout"
-                asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Logout</button>
-            </form>
-        </li>
-        <div class="dropdown ms-auto">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <img src="https://www.gravatar.com/avatar/" class="rounded-circle" height="30" alt="Avatar">
+            </a>
 
-            <button class="btn dropdown-toggle d-flex align-items-center border-0 bg-transparent" type="button"
-                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp" class="rounded-circle" height="30" alt="Avatar">
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end bg-dark text-white" aria-labelledby="dropdownMenuButton">
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end p-0" aria-labelledby="dropdownMenuButton">
                 @if (User.IsInRole("admin"))
                 {
-                    <li> <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
+                    <li class="dropdown-item">
+                        <a href="/admin" class="text-base nav-link">Dashboard</a>
                     </li>
-
                 }
-                <li><a class="dropdown-item" href="#">My Profile</a></li>
-                <li><a class="dropdown-item" href="#">Settings</a></li>
-                <li><a class="dropdown-item" href="#">Logout</a></li>
+                <li class="dropdown-item">
+                    <form class="form-inline" asp-area="identity" asp-page="/account/logout"
+                        asp-route-returnUrl="@Url.Action("index", "home", new { area = "" })">
+                        <button id="logout" type="submit" class="btn-text text-base">Logout</button>
+                    </form>
+                </li>
             </ul>
-        </div>
+        </li>
     }
     else
     {
-        <li class="nav-item">
-            <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        <li class="nav-item ps-2">
+            <a id="login" asp-area="identity" asp-page="/account/login">Login</a>
         </li>
     }
 </ul>

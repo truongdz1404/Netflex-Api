@@ -149,16 +149,13 @@
                                 </div>
                             </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Blog" asp-action="index">Blog</a>
-                        </li>
-
-                        @await Html.PartialAsync("_LoginPartial")
                     </ul>
                     <form class="d-none d-lg-flex search-box">
                         <input class="search" placeholder="Tìm kiếm..." aria-label="Search">
                         <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </form>
+                    @await Html.PartialAsync("_LoginPartial")
+
                 </div>
             </div>
         </nav>
