@@ -9,4 +9,6 @@ public class SerieViewModel
     public int ProductionYear { get; set; }
     public Guid? AgeCategoryId { get; set; }
     public string? Poster { get; set; }
+    public DateTime? CreatedAt { get; set; }
+
 }
