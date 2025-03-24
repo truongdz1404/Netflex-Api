@@ -15,11 +15,38 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ApplicationDbContext _dbContext = dbContext;
     private const int PAGE_SIZE = 3;
-    public IActionResult Index(int? page)
+    public IActionResult Index(int? page, string searchTerm, int? productionYear, string sortOrder)
     {
         int pageNumber = page ?? 1;
 
-        var models = _unitOfWork.Repository<Serie>().Entities.Select(
+        var query = _unitOfWork.Repository<Serie>().Entities.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+            query = query.Where(m => m.Title.Contains(searchTerm));
+
+        if (productionYear.HasValue){
+            query = query.Where(m => m.ProductionYear.ToString().Contains(productionYear.Value.ToString()));
+        }
+        switch (sortOrder)
+        {
+            case "title_desc":
+                query = query.OrderByDescending(m => m.Title);
+                break;
+            case "title":
+                query = query.OrderBy(m => m.Title);
+                break;
+            case "productionYear":
+                query = query.OrderBy(m => m.ProductionYear);
+                break;
+            case "productionYear_desc":
+                query = query.OrderByDescending(m => m.ProductionYear);
+                break;
+            default:
+                query = query.OrderBy(m => m.Title);
+                break;
+        }
+
+        var models = query.Select(
             serie => new SerieViewModel()
             {
                 Id = serie.Id,
@@ -30,6 +57,11 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
                 ProductionYear = serie.ProductionYear
             }
         ).ToPagedList(pageNumber, PAGE_SIZE);
+
+        ViewBag.SortOrder = sortOrder;
+        ViewBag.SearchTerm = searchTerm;
+        ViewBag.ProductionYear = productionYear;
+        ViewBag.CreatedAt = productionYear;
 
         return View(models);
     }
@@ -62,7 +94,7 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
         return View(model);
     }
 
-    [HttpDelete]
+    [HttpPost]
     public async Task<IActionResult> Delete(Guid? id)
     {
         if (id == null)

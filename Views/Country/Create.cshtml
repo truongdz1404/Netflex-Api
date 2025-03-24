@@ -1,0 +1,14 @@
+﻿@model Netflex.Entities.Country
+
+<h2>Thêm Quốc gia</h2>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label asp-for="Name">Tên Quốc gia</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Thêm</button>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</form>

@@ -61,6 +61,13 @@
         <div class="tab-content" id="pills-tabContent">
             <div class="tab-pane fade show active" id="pills-info" role="tabpanel" aria-labelledby="pills-info-tab">
                 <p class="text-smm">@Model.About</p>
+                @if (Model.Trailer is not null)
+                {
+                    <iframe width="560" height="315" src="@Model.Trailer" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
+                }
             </div>
             <div class="tab-pane fade" id="pills-actor" role="tabpanel" aria-labelledby="pills-actor-tab">
                 <div class="row g-3">

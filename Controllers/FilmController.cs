@@ -13,11 +13,8 @@ namespace Netflex.Controllers
     public class FilmController : BaseController
     {
         private const int PAGE_SIZE = 10;
-        private readonly IUnitOfWork _unitOfWork;
-
         public FilmController(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
-            _unitOfWork = unitOfWork;
         }
 
         public IActionResult Index(int? page)

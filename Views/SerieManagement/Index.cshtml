@@ -7,7 +7,7 @@
 
 <div class="container-fluid px-4">
     <!-- Filter & Search Form -->
-    <form id="filterForm" method="get" action="@Url.Action("Index", "Serie")">
+    <form id="filterForm" method="get" action="@Url.Action("Index", "SerieManagement")">
         <input type="hidden" id="hiddenSearchTerm" name="searchTerm" />
         <input type="hidden" id="hiddenProductionYear" name="productionYear" />
         <input type="hidden" id="hiddenSortOrder" name="sortOrder" />
@@ -40,8 +40,8 @@
 
             <!-- Reset Filters Button -->
             <div class="col-md-2">
-                <button type="button" class="btn btn-outline-secondary w-100" onclick="resetFilters()">Reset
-                    Filters</button>
+                <button type="button" class="btn btn-outline-secondary w-100" onclick="resetFilters()">
+                    Reset Filters</button>
             </div>
             <div class="col-md-3">
                 <button type="button" class="btn btn-outline-secondary w-100" id="filterButton">Apply Filters</button>
@@ -100,8 +100,12 @@
                                     asp-route-id="@item.Id">Edit</a>
                                 <a class="btn btn-info btn-sm" asp-controller="episode" asp-action="index"
                                     asp-route-SerieManagementId="@item.Id">Episodes</a>
-                                <a class="btn btn-danger btn-sm delete" data-id="@item.Id" data-controller="SerieManagement"
-                                    data-action="delete" data-body-message="Bạn có muốn xóa phim lẻ này">Delete</a>
+                                <form method="post" asp-controller="SerieManagement" asp-action="Delete"
+                                    onsubmit="return confirm('Bạn có muốn xóa phim này?')">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+
                             </td>
                         </tr>
                     }

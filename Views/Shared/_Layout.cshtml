@@ -84,22 +84,13 @@
                                 </div>
                             </div>
                         </li>
-                        @if (User.IsInRole("admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
-                            </li>
-                        }
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Blog" asp-action="index">Blog</a>
-                        </li>
-
-                        @await Html.PartialAsync("_LoginPartial")
                     </ul>
                     <form class="d-none d-lg-flex search-box" action="@Url.Action("SearchByTitle", "Film")">
                         <input class="search" placeholder="Tìm kiếm..." aria-label="Search" name="searchTitle">
                         <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </form>
+                    @await Html.PartialAsync("_LoginPartial")
+
                 </div>
             </div>
         </nav>
@@ -123,58 +114,34 @@
                     <i class="fa-solid fa-caret-down"></i>
                 </div>
                 <ul class="menu-year overflow-auto">
-                    @foreach (var item in ViewBag.FilmYearReleases)
+                    @for (int i = DateTime.Now.Year; i >= 1981; i--)
                     {
-                        <a class="dropdown-item" href="@Url.Action("index", "FilmRelease", new { year = item })">
-                            <i class="fa-solid fa-caret-right pe-2"></i>@item</a>
+                        <li><a href="@Url.Action("index", "FilmRelease", new { year = i })">@i</a></li>
                     }
                 </ul>
-                <a href="#" class="d-block movie-banner position-relative my-4">
+                <a href="@Url.Action("Detail", "Serie", new { id = ViewBag.StarSeries[0].Id })"
+                    class="d-block movie-banner position-relative my-4">
                     <div class="position-absolute bottom-0  movie-banner-content p-2">
-                        <p class="m-0 text-white text-truncate" style="max-width:10rem;">Movie name: Phần 1</p>
-                        <span class="p-0 text-white-50">2069</span>
+                        <p class="m-0 text-white text-truncate" style="max-width:10rem;">@ViewBag.StarSeries[0].Title
+                        </p>
+                        <span class="p-0 text-white-50">@ViewBag.StarSeries[0].ProductionYear</span>
                     </div>
-                    <img src="https://placehold.co/800X400/png" alt="Movie Poster">
+                    <img src="@ViewBag.StarSeries[0].Poster" alt="Movie Poster">
                 </a>
                 <div class="rank">
-                    <a class="movie-item" href="#">
-                        <img src="https://placehold.co/400X600/png" alt="Movie Poster">
-                        <div class="p-2">
-                            <p class="text-truncate" style="max-width:10rem;">Movie name: Phần 1
-                            </p>
-                            <span class="rating"><i class="fa-solid fa-star"></i>&nbsp;7.8</span> <span
-                                class="text-white-50">2024</span>
-                        </div>
-                    </a>
-                    <a class="movie-item" href="#">
-                        <img src="https://placehold.co/400X600/png" alt="Movie Poster">
-                        <div class="p-2">
-                            <p class="text-truncate" style="max-width:10rem;">Movie name: Phần 2
-                            </p>
-                            <span class="rating"><i class="fa-solid fa-star"></i>&nbsp;7.8</span> <span
-                                class="text-white-50">2024</span>
-                        </div>
-                    </a>
-
-					<a class="movie-item" href="#">
-						<img src="https://placehold.co/400X600/png" alt="Movie Poster">
-						<div class="p-2">
-							<p class="text-truncate" style="max-width:10rem;">
-								Movie name: Phần 3
-							</p>
-							<span class="rating"><i class="fa-solid fa-star"></i>&nbsp;7.8</span> <span class="text-white-50">2024</span>
-						</div>
-					</a>
-
-                    <a class="movie-item" href="#">
-                        <img src="https://placehold.co/400X600/png" alt="Movie Poster">
-                        <div class="p-2">
-                            <p class="text-truncate" style="max-width:10rem;">Movie name: Phần 4
-                            </p>
-                            <span class="rating"><i class="fa-solid fa-star"></i>&nbsp;7.8</span> <span
-                                class="text-white-50">2024</span>
-                        </div>
-                    </a>
+                    @for (int i = 1; i < ViewBag.StarSeries.Count; i++)
+                    {
+                        var item = ViewBag.StarSeries[i];
+                        <a class="movie-item" href="@Url.Action("Detail", "Serie", new { id = item.Id })">
+                            <img src=@item.Poster alt="Movie Poster">
+                            <div class="p-2">
+                                <p class="text-truncate" style="max-width:10rem;">@item.Title
+                                </p>
+                                <span class="rating"><i class="fa-solid fa-star"></i>&nbsp;7.8</span> <span
+                                    class="text-white-50">@item.ProductionYear</span>
+                            </div>
+                        </a>
+                    }
                 </div>
             </div>
 
@@ -187,8 +154,20 @@
         </div>
     </footer>
 
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notificationToast" class="toast align-items-center text-bg-primary border-0" role="alert"
+            aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body text-black" id="toastBody">
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/delete.js" asp-append-version="true"></script>
     <script src="https://cdn.tiny.cloud/1/25kiq8kjalzyqvwkno8j4sgazvesxspatked58wy320zismn/tinymce/7/tinymce.min.js"

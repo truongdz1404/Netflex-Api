@@ -5,24 +5,67 @@
 @inject UserManager<User> UserManager
 
 <ul class="navbar-nav">
-@if (SignInManager.IsSignedIn(User))
-{
-    <li class="nav-item">
-        <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
-    </li>
-    <li class="nav-item">
-        <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Logout</button>
-        </form>
-    </li>
-}
-else
-{
-    <li class="nav-item">
-        <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
-    </li>
-}
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <img src="https://docs.gravatar.com/wp-content/uploads/2025/02/avatar-mysteryperson-20250210-256.png"
+                    class="rounded-circle" height="30" alt="Avatar">
+            </a>
+
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end p-0" aria-labelledby="dropdownMenuButton">
+                <li class="dropdown-item ">
+                    <a href="/notification" class="text-smm nav-link">
+                        <i class="fa-solid fa-bell me-2 position-relative">
+                            <span id="unreadCount"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-normal p-1"
+                                style="font-size: 0.5rem;  display: none; width: 1rem; height: 1rem;">
+                            </span>
+                        </i>Thông báo</a>
+                </li>
+                @if (User.IsInRole("admin"))
+                {
+                    <li class="dropdown-item">
+                        <a href="/admin" class="text-smm nav-link"><i class="fa-solid fa-chart-line me-2"></i>Dashboard</a>
+                    </li>
+                }
+                <li class="dropdown-item">
+                    <form class="form-inline" asp-area="identity" asp-page="/account/logout"
+                        asp-route-returnUrl="@Url.Action("index", "home", new { area = "" })">
+                        <button id="logout" type="submit" class="btn-text text-smm text-danger"><i
+                                class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</button>
+                    </form>
+                </li>
+            </ul>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item ps-2">
+            <a id="login" asp-area="identity" asp-page="/account/login">Login</a>
+        </li>
+    }
 </ul>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let dropdownMenu = document.getElementById("dropdownMenuButton");
+
+        dropdownMenu.addEventListener("show.bs.dropdown", function () {
+            fetch("/notification/unread")
+                .then(response => response.json())
+                .then(count => {
+                    let unreadBadge = document.getElementById("unreadCount");
+                    if (count > 0) {
+                        unreadBadge.textContent = count > 9 ? "9+" : count;
+                        unreadBadge.style.display = "inline-block";
+                    } else {
+                        unreadBadge.style.display = "none";
+                    }
+                })
+                .catch(error => console.error("Error fetching unread count:", error));
+        });
+    });
+</script>

@@ -262,8 +262,8 @@ namespace Netflex.Database.Migrations
 
                     b.Property<string>("Path")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<Guid>("SerieId")
                         .HasColumnType("uuid");
@@ -300,8 +300,8 @@ namespace Netflex.Database.Migrations
                         .HasColumnType("interval");
 
                     b.Property<string>("Path")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<string>("Poster")
                         .HasMaxLength(200)
@@ -397,21 +397,28 @@ namespace Netflex.Database.Migrations
 
             modelBuilder.Entity("Netflex.Entities.Follow", b =>
                 {
-                    b.Property<string>("FollowerId")
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("FilmId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("SerieId")
+                    b.Property<Guid?>("FilmId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("FollowedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("FollowerId", "FilmId", "SerieId");
+                    b.Property<string>("FollowerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("SerieId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("FilmId");
+
+                    b.HasIndex("FollowerId");
 
                     b.HasIndex("SerieId");
 
@@ -460,21 +467,28 @@ namespace Netflex.Database.Migrations
 
             modelBuilder.Entity("Netflex.Entities.Review", b =>
                 {
-                    b.Property<Guid?>("FilmId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("CreaterId")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("SerieId")
+                    b.Property<Guid?>("FilmId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Rating")
                         .HasColumnType("integer");
 
-                    b.HasKey("FilmId", "CreaterId", "SerieId");
+                    b.Property<Guid?>("SerieId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("CreaterId");
+
+                    b.HasIndex("FilmId");
 
                     b.HasIndex("SerieId");
 
@@ -670,6 +684,9 @@ namespace Netflex.Database.Migrations
                     b.Property<Guid>("NotificationId")
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("HaveRead")
+                        .HasColumnType("boolean");
+
                     b.HasKey("UserId", "NotificationId");
 
                     b.HasIndex("NotificationId");
@@ -822,9 +839,7 @@ namespace Netflex.Database.Migrations
                 {
                     b.HasOne("Netflex.Entities.Film", null)
                         .WithMany()
-                        .HasForeignKey("FilmId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FilmId");
 
                     b.HasOne("Netflex.Entities.User", null)
                         .WithMany()
@@ -834,9 +849,7 @@ namespace Netflex.Database.Migrations
 
                     b.HasOne("Netflex.Entities.Serie", null)
                         .WithMany()
-                        .HasForeignKey("SerieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SerieId");
                 });
 
             modelBuilder.Entity("Netflex.Entities.Review", b =>
@@ -849,15 +862,11 @@ namespace Netflex.Database.Migrations
 
                     b.HasOne("Netflex.Entities.Film", null)
                         .WithMany()
-                        .HasForeignKey("FilmId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FilmId");
 
                     b.HasOne("Netflex.Entities.Serie", null)
                         .WithMany()
-                        .HasForeignKey("SerieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SerieId");
                 });
 
             modelBuilder.Entity("Netflex.Entities.Serie", b =>

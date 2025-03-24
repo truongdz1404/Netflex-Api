@@ -23,3 +23,51 @@
     object-fit: cover;  
 }
 
+.carousel-indicators {
+    position: absolute;
+    bottom: -50px; 
+    left: 50%;
+    transform: translateX(-120%);
+    z-index: 10;
+}
+
+.carousel-indicators .active {
+    opacity: 1;
+    background-color: #007bff;
+}
+
+
+.movie-banner-content{
+    text-shadow: 0 0 10px #000;
+}
+
+.movie-banner img{
+    width: 100%;
+    height: 20rem;
+    object-fit: cover;
+    object-position: top;
+}
+
+.vertical-line {
+    width: 3.2px;
+    height: 24px;
+    background-color: #00aaff;
+}
+
+.pagination .page-item.active .page-link {
+    background: rgba(0, 0, 0, .1);
+    border-color: rgba(0, 0, 0, .5);
+    border: 1px solid;
+}
+
+.pagination .page-link {
+    color: white;
+    background: rgba(0, 0, 0, .1);
+    border: 1px solid;
+    border-radius: 0;
+    border-color: rgba(0, 0, 0, .5);
+}
+
+.disabled{
+    display: none;
+}

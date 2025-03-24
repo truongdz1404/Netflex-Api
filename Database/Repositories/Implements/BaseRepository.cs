@@ -41,4 +41,9 @@ public class BaseRepository<T>(ApplicationDbContext dbContext)
     {
         return await _dbContext.Set<T>().FindAsync(id);
     }
+
+    public async Task SaveChangeAsync()
+    {
+        await _dbContext.SaveChangesAsync();
+    }
 }

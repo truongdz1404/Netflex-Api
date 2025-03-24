@@ -8,7 +8,7 @@
 <div class="container">
     <div class="row ">
         <div
-            class="position-absolute py-5 px-5 top-50 start-50 translate-middle col-12 col-sm-10 col-md-8 col-lg-4 shadow-lg rounded-3 bg-my-dark text-white-50">
+            class="position-absolute py-5 px-5 top-50 start-50 translate-middle col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 shadow-lg rounded bg-my-dark text-white-50">
             <section>
                 <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                     <h2 class="text-center">Welcom to Netflex.
@@ -38,8 +38,8 @@
                             placeholder="***********" />
                         <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                     </div>
-                    <button id="registerSubmit" type="submit"
-                        class="w-100 btn btn-md btn-dark fw-bold">REGISTER NOW</button>
+                    <button id="registerSubmit" type="submit" class="w-100 btn btn-md btn-dark fw-bold">REGISTER
+                        NOW</button>
                     @* <div class="d-flex justify-content-between">
                         <div class="checkbox mb-3">
                             <label asp-for="Input.RememberMe" class="form-label">
@@ -59,7 +59,7 @@
                         <span class="mx-2 text-secondary">Or</span>
                         <hr class="flex-grow-1">
                     </div>
-                   
+
 
                     @* <div>
 
@@ -74,7 +74,7 @@
                 <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
 
                 <button type="submit" name="provider" value="Google"
-                    class="w-100 btn btn-md btn-light rounded-3 shadow-sm fw-bold my-2">
+                    class="w-100 btn btn-md btn-light rounded fw-bold my-2">
                     <i class="fa-brands fa-google mx-2"></i>
                     <span class="me-2">Đăng nhập với Google</span>
                 </button>
@@ -84,7 +84,7 @@
                 <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
 
                 <button type="submit" name="provider" value="Facebook"
-                    class="w-100 btn btn-md btn-light rounded-3 shadow fw-bold mt-2">
+                    class="w-100 btn btn-md btn-light rounded fw-bold mt-2">
                     <i class="fa-brands fa-facebook mx-2"></i>
                     <span class="me-2">Đăng nhập với Facebook</span>
                 </button>

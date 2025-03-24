@@ -4,6 +4,10 @@ html {
   font-size: 14px;
 }
 
+.font-inter{
+  font-family: "Inter", Helvetica, Arial, sans-serif !important;
+}
+
 body {
   font-family: "Inter", Helvetica, Arial, sans-serif;
 }
@@ -55,6 +59,9 @@ a {
 .text-white-70{
   color: #d9d9d9 !important;
 }
+.text-white-smoke{
+  color: whitesmoke !important;
+}
 
 .form-group.required .control-label:after {
   content: " *";
@@ -88,6 +95,16 @@ video {
 }
 .dropdown-item:hover{
   color: whitesmoke !important;
+}
+
+.btn-text {
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, .55);
+  padding: .5rem;
+  width: 100%;
+  text-align: left;
 }
 
 .search-box {
@@ -129,4 +146,12 @@ video {
 
 .modal-header, .modal-footer{
   border: none !important;
+}
+
+.hover-blur {
+  transition: filter 0.3s ease-in-out;
+}
+
+.hover-blur:hover {
+  filter: blur(5px); 
 }

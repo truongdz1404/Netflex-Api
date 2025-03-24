@@ -15,11 +15,9 @@ namespace Netflex.Controllers
     public class SerieController : BaseController
     {
         private const int PAGE_SIZE = 10;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly ApplicationDbContext _dbContext;
         public SerieController(IUnitOfWork unitOfWork, ApplicationDbContext dbContext) : base(unitOfWork)
         {
-            _unitOfWork = unitOfWork;
             _dbContext = dbContext;
         }
 
@@ -47,10 +45,10 @@ namespace Netflex.Controllers
             if (id == null)
                 return NotFound();
             var serie = _unitOfWork.Repository<Serie>().Entities
-       .Include(s => s.SerieCountries)
-       .Include(s => s.SerieGenres)
-       .Include(s => s.SerieActors)
-       .FirstOrDefault(m => m.Id.Equals(id));
+                .Include(s => s.SerieCountries)
+                .Include(s => s.SerieGenres)
+                .Include(s => s.SerieActors)
+                .FirstOrDefault(m => m.Id.Equals(id));
             if (serie == null)
                 return NotFound();
             var model = new DetailSerieViewModel

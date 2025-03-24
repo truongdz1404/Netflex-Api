@@ -7,6 +7,8 @@ using Netflex.Models.Blog;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using Netflex.Models.Film;
+using Netflex.Models.Serie;
 
 namespace Netflex.Controllers;
 
@@ -15,6 +17,7 @@ public class HomeController : BaseController
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<HomeController> _logger;
+    private const int ListSize = 10;
 
     public HomeController(ILogger<HomeController> logger, ApplicationDbContext context,
     IUnitOfWork unitOfWork) : base(unitOfWork)
@@ -44,8 +47,48 @@ public class HomeController : BaseController
             })
             .OrderByDescending(b => b.CreatedAt)
             .ToList();
-
+        GetFeaturedFilms();
+        GetSerieFilms();
         return View(blogs);
+    }
+
+
+    public void GetFeaturedFilms()
+    {
+
+        var models = _unitOfWork.Repository<Film>().Entities.Select(
+            film => new FilmViewModel()
+            {
+                Id = film.Id,
+                Title = film.Title,
+                Poster = film.Poster,
+                Path = film.Path,
+                Trailer = film.Trailer,
+                ProductionYear = film.ProductionYear,
+                CreatedAt = film.CreatedAt
+
+            }
+        ).OrderBy(f => f.CreatedAt).Take(ListSize)
+        .ToList();
+
+        ViewBag.FeaturedFilms = models;
+        ViewBag.SingleFilms = models;
+    }
+    public void GetSerieFilms()
+    {
+
+        var models = _unitOfWork.Repository<Serie>().Entities.Select(
+            serie => new SerieViewModel()
+            {
+                Id = serie.Id,
+                Title = serie.Title,
+                Poster = serie.Poster,
+                ProductionYear = serie.ProductionYear,
+                CreatedAt = serie.CreatedAt
+            }
+        ).OrderBy(f => f.CreatedAt).Take(ListSize)
+        .ToList();
+        ViewBag.SeriesFilms = models;
     }
 
     public IActionResult Privacy()

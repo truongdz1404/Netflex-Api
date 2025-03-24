@@ -2,10 +2,108 @@
 @{
     ViewData["Title"] = "Home Page";
 }
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container py-4">
+    <div id="highlightCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            @for (var i = 0; i < ViewBag.FeaturedFilms.Count; i += 2)
+            {
+                <button type="button" data-bs-target="#highlightCarousel" data-bs-slide-to="@((i / 2).ToString())"
+                    class="@(i == 0 ? "active" : "")"></button>
+            }
+        </div>
+        <div class="carousel-inner">
+            @for (var i = 0; i < ViewBag.FeaturedFilms.Count; i += 2)
+            {
+                <div class="carousel-item @(i == 0 ? "active" : "")">
+                    <div class="row">
+                        @for (var j = 0; j < 2 && (i + j) < ViewBag.FeaturedFilms.Count; j++)
+                        {
+                            var film = ViewBag.FeaturedFilms[i + j];
+                            <div class="col-md-6">
+                                <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
+                                    <div class="position-relative movie-banner">
+                                        <img src="@film.Poster" alt="@film.Title">
+                                        <div class="position-absolute bottom-0 movie-banner-content p-2">
+                                            <p class="m-0 text-white text-truncate" style="max-width:10rem;">
+                                                @film.Title
+                                            </p>
+                                            <span class="p-0 text-white-50 text-smm">@film.ProductionYear</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>
+
+@{
+    var categories = new List<string> { "Phim mới nổi bật", "Phim lẻ mới cập nhật", "Phim bộ mới cập nhật" };
+}
+
+@for (int i = 0; i < categories.Count; i++)
+{
+    var category = categories[i];
+    var sliderId = $"slider{i}";
+
+    var films = i == 0 ? ViewBag.FeaturedFilms : (i == 1 ? ViewBag.SingleFilms : ViewBag.SeriesFilms);
+
+    <div class="container my-3" id="container-@sliderId">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center">
+                <div class="vertical-line"></div>
+                <p class="ms-2 mb-0 text-md text-white fw-bold">@category</p>
+            </div>
+            <div class="navigation-buttons d-flex align-items-center">
+                @if (i != 0)
+                {
+                    <a href="@Url.Action("Index", @i == 1? "Film" : "Serie")" class="text-decoration-none">
+                        <button type="button" class="btn btn-primary py-0 me-2 text-sm">Xem thêm</button>
+                    </a>
+                }
+                <i class="fa-solid fa-caret-left slider-prev text-md ps-2 pe-1" data-slider="@sliderId"></i>
+                <i class="fa-solid fa-caret-right slider-next text-md ps-1 pe-2" data-slider="@sliderId"></i>
+            </div>
+        </div>
+        <div class="position-relative content-items">
+            <div class="film-slider" style="overflow-x: hidden;">
+                <div class="film-container d-flex" id="films-@sliderId" style="transition: transform 0.3s ease;">
+                    @foreach (var film in films)
+                    {
+                        <div class="film-item me-3"
+                            style="min-width: calc(10% - 26px); width: calc(10% - 26px); flex: 0 0 calc(20% - 20px);">
+                            @if (i != 2)
+                            {
+                                <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
+                                    <div class="position-relative">
+                                        <img src="@film.Poster" class="img-6x9 w-100" alt="@film.Title">
+                                    </div>
+                                    <p class="text-white text-truncate mt-2 text-smm" style="max-width: 100%;">
+                                        @(film.Title.Length >
+                                            20 ?
+                                            film.Title.Substring(0, 20) + "..." : film.Title)</p>
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("Detail", "Serie", new { id = film.Id })" class="text-decoration-none">
+                                    <div class="position-relative">
+                                        <img src="@film.Poster" class="img-6x9 w-100" alt="@film.Title">
+                                    </div>
+                                    <p class="text-white text-truncate mt-2" style="max-width: 100%;">@(film.Title.Length > 20 ?
+                            film.Title.Substring(0, 20) + "..." : film.Title)</p>
+                                </a>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 
 <div class="container list-items-blogs">
@@ -27,7 +125,7 @@
             </div>
 
             <div class="col-md-11 text-smm ">
-                <a href="@Url.Action("Details", "Blog", new { id = blog.Id })">
+                <a href="@Url.Action("details", "blog", new { id = blog.Id })">
                     <p class="text-base text-white-70 mb-1">
                         @Html.Raw(blog.Title.Length > 100 ? blog.Title.Substring(0, 100) + "..." : blog.Title)
                     </p>
@@ -37,3 +135,107 @@
         </div>
     }
 </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeSliders();
+
+        function initializeSliders() {
+            const prevButtons = document.querySelectorAll('.slider-prev');
+            const nextButtons = document.querySelectorAll('.slider-next');
+
+            prevButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const sliderId = this.getAttribute('data-slider');
+                    moveSlider(sliderId, 'prev');
+                });
+            });
+
+            nextButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const sliderId = this.getAttribute('data-slider');
+                    moveSlider(sliderId, 'next');
+                });
+            });
+
+            // Khởi tạo trạng thái ban đầu cho mỗi slider
+            for (let i = 0; i < @categories.Count; i++) {
+                const sliderId = `slider${i}`;
+                setSliderState(sliderId, 0);
+            }
+        }
+
+        function moveSlider(sliderId, direction) {
+            const container = document.getElementById(`films-${sliderId}`);
+            if (!container) {
+                console.error(`Không tìm thấy container cho slider ${sliderId}`);
+                return;
+            }
+
+            const items = container.querySelectorAll('.film-item');
+            if (items.length === 0) {
+                console.error(`Không có phim nào trong slider ${sliderId}`);
+                return;
+            }
+
+            let currentPosition = parseInt(container.getAttribute('data-position') || '0');
+            const visibleItems = 5;
+
+            if (direction === 'prev' && currentPosition > 0) {
+                currentPosition--;
+            } else if (direction === 'next' && currentPosition < items.length - visibleItems) {
+                currentPosition++;
+            }
+
+            setSliderState(sliderId, currentPosition);
+        }
+
+        function setSliderState(sliderId, position) {
+            const container = document.getElementById(`films-${sliderId}`);
+            if (!container) return;
+
+            const items = container.querySelectorAll('.film-item');
+            if (items.length === 0) return;
+
+            container.setAttribute('data-position', position);
+
+            const itemWidth = items[0].offsetWidth + parseInt(getComputedStyle(items[0]).marginRight);
+
+            container.style.transform = `translateX(-${position * itemWidth}px)`;
+
+            const prevButton = document.querySelector(`.slider-prev[data-slider="${sliderId}"]`);
+            const nextButton = document.querySelector(`.slider-next[data-slider="${sliderId}"]`);
+
+            if (prevButton) {
+                prevButton.classList.toggle('disabled', position === 0);
+                prevButton.style.opacity = position === 0 ? '0.5' : '1';
+            }
+
+            if (nextButton) {
+                const visibleItems = 5;
+                const maxPosition = Math.max(0, items.length - visibleItems);
+                nextButton.classList.toggle('disabled', position >= maxPosition);
+                nextButton.style.opacity = position >= maxPosition ? '0.5' : '1';
+            }
+        }
+
+        window.addEventListener('resize', function () {
+            for (let i = 0; i < @categories.Count; i++) {
+                const sliderId = `slider${i}`;
+                const container = document.getElementById(`films-${sliderId}`);
+                if (!container) continue;
+
+                const position = parseInt(container.getAttribute('data-position') || '0');
+                const items = container.querySelectorAll('.film-item');
+                const visibleItems = 5;
+
+                if (position > items.length - visibleItems) {
+                    setSliderState(sliderId, Math.max(0, items.length - visibleItems));
+                } else {
+                    setSliderState(sliderId, position);
+                }
+            }
+        });
+    });
+</script>
