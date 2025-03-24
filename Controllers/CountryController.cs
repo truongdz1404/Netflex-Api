@@ -10,13 +10,13 @@ namespace Netflex.Controllers
     public class CountryController : Controller
     {
         private readonly ICountryRepository _countryRepository;
-        private const int PageSize = 5; 
+        private const int PageSize = 5;
 
         public CountryController(ICountryRepository countryRepository)
         {
             _countryRepository = countryRepository;
         }
-
+        [Route("/dashboard/country")]
         public async Task<IActionResult> Index(string? searchString, int? page)
         {
             var countries = await _countryRepository.GetAllAsync();
@@ -31,14 +31,16 @@ namespace Netflex.Controllers
             var pageNumber = page ?? 1;
             var pagedCountries = countries.ToPagedList(pageNumber, PageSize);
 
-            ViewBag.SearchString = searchString; 
+            ViewBag.SearchString = searchString;
 
-            return View(pagedCountries);
+            return View("~/Views/Dashboard/Country/Index.cshtml",pagedCountries);
         }
 
-        public IActionResult Create() => View();
+        [Route("/dashboard/country/create")]
+        public IActionResult Create() => View("~/Views/Dashboard/Country/Create.cshtml");
 
         [HttpPost]
+        [Route("/dashboard/country/create")]
         public async Task<IActionResult> Create(CreateCountryViewModel country)
         {
             if (!ModelState.IsValid) return View(country);
@@ -53,14 +55,16 @@ namespace Netflex.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Route("/dashboard/country/edit/{id}")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var country = await _countryRepository.GetByIdAsync(id);
             if (country == null) return NotFound();
-            return View(country);
+            return View("~/Views/Dashboard/Country/Edit.cshtml",country);
         }
 
         [HttpPost]
+        [Route("/dashboard/country/edit/{id}")]
         public async Task<IActionResult> Edit(Guid id, EditCountryViewModel country)
         {
             if (!ModelState.IsValid) return View(country);
@@ -76,14 +80,8 @@ namespace Netflex.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            var country = await _countryRepository.GetByIdAsync(id);
-            if (country == null) return NotFound();
-            return View(country);
-        }
-
         [HttpDelete]
+        [Route("/dashboard/country/delete/{id}")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var country = await _countryRepository.GetByIdAsync(id);
@@ -92,7 +90,7 @@ namespace Netflex.Controllers
             await _countryRepository.DeleteAsync(country);
             await _countryRepository.SaveChangeAsync();
 
-            return Json(new { success = true });
+            return RedirectToAction(nameof(Index));
         }
     }
 }

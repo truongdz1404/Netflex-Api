@@ -15,6 +15,7 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ApplicationDbContext _dbContext = dbContext;
     private const int PAGE_SIZE = 3;
+
     public IActionResult Index(int? page, string searchTerm, int? productionYear, string sortOrder)
     {
         int pageNumber = page ?? 1;

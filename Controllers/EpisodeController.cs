@@ -59,7 +59,7 @@ public class EpisodeController(IStorageService storage, IUnitOfWork unitOfWork, 
 
         ViewBag.Episodes = _unitOfWork.Repository<Episode>().Entities.Where(e => e.SerieId == episode.SerieId).ToList();
         ViewData["SerieTitle"] = serie.Title ?? "Không có serie";
-        ViewData["SerieId"] = serie.Id;
+        ViewData["SerieId"] = serie.Id;        
         return View(model);
     }
     [Authorize(Roles = "admin")]

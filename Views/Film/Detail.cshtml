@@ -29,7 +29,22 @@
         <img src="@Model.Poster" class="poster" alt="Movie Poster">
 
         <div class="flex-grow-1">
-            <h4 class="mb-0" style="color: whitesmoke;">@Model.Title</h4>
+            <div
+                class="d-flex align-items-center py-2 border-top border-bottom border-dark gap-2 flex-column flex-md-row">
+                <h4 class="mb-0" style="color: whitesmoke;">@Model.Title</h4>
+                <div class="nav-link tab follow-btn" id="followButton" data-film-id="@Model.Id" data-bs-toggle="pill"
+                    data-bs-target="#pills-actor" type="submit" role="tab" aria-controls="pills-actor"
+                    aria-selected="false" onclick="toggleFollow(this)">
+                    @if (Model.IsFollowed)
+                    {
+                        <i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>
+                    }
+                    else
+                    {
+                        <i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi phim</span>
+                    }
+                </div>
+            </div>
             <div>
                 <p class="text-white-50 text-sm mb-1">@Model.Title @Model.ProductionYear</p>
                 <p class="text-sm"><span class="date">Dec. 31, 2023</span>&nbsp;&nbsp;&nbsp;China&nbsp;&nbsp;&nbsp;</p>
@@ -118,63 +133,95 @@
             </div>
         </div>
     </div>
-
+    <div class="comment-section mt-3">
+        <div class="fb-comments" data-href="@ViewData["Domain"]/Film/Details/@Model.Id" data-width="100%"
+            data-numposts="5"></div>
+    </div>
     <div class="movie-card mt-2">
         <p class="text-base text-white">Phim liên quan</p>
     </div>
 </div>
-
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous"
+    src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v22.0&appId=1589497395335451"></script>
+<script>
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+            <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
         $(document).ready(function () {
             let stars = $(".rating-stars i");
-            let selected = $("#selected-rating");
-            let ratings = Math.floor(@Ratings);
+        let selected = $("#selected-rating");
+        let ratings = Math.floor(@Ratings);
 
-            highlight(ratings);
+        highlight(ratings);
 
-            stars.on("mouseover", function () {
-                let value = $(this).data("value");
-                highlight(value);
+        stars.on("mouseover", function () {
+            let value = $(this).data("value");
+        highlight(value);
+                                                            });
+
+        stars.on("mouseout", function () {
+            let currentValue = selected.text().trim() === "0" ? ratings : selected.text();
+        highlight(currentValue);
+                                                            });
+
+        stars.on("click", function () {
+            selected.text($(this).data("value"));
+                                                            });
+
+        function highlight(value) {
+            stars.each(function () {
+                let starValue = parseInt($(this).data("value"));
+                $(this).toggleClass("fas", starValue <= value);
+                $(this).toggleClass("far", starValue > value);
             });
-
-            stars.on("mouseout", function () {
-                let currentValue = selected.text().trim() === "0" ? ratings : selected.text();
-                highlight(currentValue);
-            });
-
-            stars.on("click", function () {
-                selected.text($(this).data("value"));
-            });
-
-            function highlight(value) {
-                stars.each(function () {
-                    let starValue = parseInt($(this).data("value"));
-                    $(this).toggleClass("fas", starValue <= value);
-                    $(this).toggleClass("far", starValue > value);
-                });
-            }
-        });
+                                                            }
+                                                        });
     </script>
     <script>
         $(document).ready(function () {
             let video = $("#video").get(0);
-            video.disablePictureInPicture = true;
-            video.addTextTrack("captions");
+        video.disablePictureInPicture = true;
+        video.addTextTrack("captions");
 
-            if (Hls.isSupported()) {
-                let hls = new Hls({
-                    debug: true,
-                });
-                hls.loadSource(@Html.Raw(Json.Serialize(Model.Path)));
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-                    video.muted = true;
-                });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = @Html.Raw(Json.Serialize(Model.Path));
-            }
-        });
+        if (Hls.isSupported()) {
+            let hls = new Hls({
+            debug: true,
+                                                                });
+        hls.loadSource(@Html.Raw(Json.Serialize(Model.Path)));
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+            video.muted = true;
+                                                                });
+                                                            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = @Html.Raw(Json.Serialize(Model.Path));
+                                                            }
+                                                        });
     </script>
+    <script>
+        async function toggleFollow(button) {
+                        const filmId = button.getAttribute("data-film-id");
+
+        const response = await fetch("/Follow/ToggleFollowFilm", {
+            method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+                            },
+        body: JSON.stringify(filmId)
+                        });
+
+        if (response.ok) {
+                            const result = await response.json();
+        if(result.isFollowed) {
+            button.innerHTML = '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>';
+                            } else {
+            button.innerHTML = '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi phim</span>';
+                            }
+                        } else {
+            console.error("Có lỗi xảy ra khi cập nhật trạng thái theo dõi");
+                        }
+                    }
+    </script>
+
 }

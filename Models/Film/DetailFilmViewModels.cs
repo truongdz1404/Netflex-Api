@@ -10,4 +10,5 @@ public class DetailFilmViewModel
     public string? Trailer { get; set; }
     public int ProductionYear { get; set; }
     public string? AgeCategory { get; set; }
+    public bool IsFollowed { get; set; }
 }
