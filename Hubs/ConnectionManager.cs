@@ -7,26 +7,26 @@ public class ConnectionManager
     private static readonly ConcurrentDictionary<string, UserConnection> _users =
             new(StringComparer.InvariantCultureIgnoreCase);
     public IEnumerable<string> OnlineUsers => _users.Keys;
-    public void AddConnection(string userName, string connectionId,
+    public void AddConnection(string userId, string connectionId,
         Action<string>? userConnected = null)
     {
-        var user = _users.GetOrAdd(userName, _ => new UserConnection
+        var user = _users.GetOrAdd(userId, _ => new UserConnection
         {
-            UserName = userName,
+            UserName = userId,
             ConnectionIds = new HashSet<string>()
         });
         lock (user.ConnectionIds)
         {
             user.ConnectionIds.Add(connectionId);
             if (user.ConnectionIds.Count == 1)
-                userConnected?.Invoke(userName);
+                userConnected?.Invoke(userId);
         }
     }
 
-    public void RemoveConnection(string userName, string connectionId,
+    public void RemoveConnection(string userId, string connectionId,
         Action<string>? userDisconneted = null)
     {
-        _users.TryGetValue(userName, out var user);
+        _users.TryGetValue(userId, out var user);
         if (user != null)
         {
             lock (user.ConnectionIds)
@@ -34,17 +34,17 @@ public class ConnectionManager
                 user.ConnectionIds.RemoveWhere(cid => cid.Equals(connectionId));
                 if (user.ConnectionIds.Count == 0)
                 {
-                    _users.TryRemove(userName, out var removedUser);
-                    userDisconneted?.Invoke(userName);
+                    _users.TryRemove(userId, out var removedUser);
+                    userDisconneted?.Invoke(userId);
                 }
             }
         }
     }
 
-    public HashSet<string> GetConnections(string userName)
+    public HashSet<string> GetConnections(string userId)
     {
         HashSet<string> conn = [];
-        _users.TryGetValue(userName, out var user);
+        _users.TryGetValue(userId, out var user);
         if (user != null)
         {
             lock (user.ConnectionIds)

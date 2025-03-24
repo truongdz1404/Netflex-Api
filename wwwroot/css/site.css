@@ -59,6 +59,9 @@ a {
 .text-white-70{
   color: #d9d9d9 !important;
 }
+.text-white-smoke{
+  color: whitesmoke !important;
+}
 
 .form-group.required .control-label:after {
   content: " *";
@@ -143,4 +146,12 @@ video {
 
 .modal-header, .modal-footer{
   border: none !important;
+}
+
+.hover-blur {
+  transition: filter 0.3s ease-in-out;
+}
+
+.hover-blur:hover {
+  filter: blur(5px); 
 }

@@ -9,15 +9,16 @@
     <div class="d-flex justify-content-between align-items-center my-3">
         <div class="d-flex align-items-center">
             <div class="vertical-line"></div>
-            <p class="ms-2 mb-0 text-md text-white fw-bold">Notification</p>
+            <p class="ms-2 mb-0 text-md text-white-smoke fw-bold">Thông báo</p>
         </div>
     </div>
     <div class="row mb-3">
         @foreach (var noti in Model)
         {
-            <div class="col-12">
-                @noti.Message
-            </div>
+            <a class="col-12 notification text-white-50" href="@noti.Link">
+                <p class="text-base @(noti.HaveRead ? "" : "text-white-70")">NETFLEX: @noti.Message</p>
+                <div class="text-sm">@noti.CreatedAt.ToString("MMMM d, yyyy")</div>
+            </a>
         }
     </div>
 

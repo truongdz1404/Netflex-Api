@@ -1,5 +1,7 @@
 using System.Security.Claims;
 using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Netflex.Database;
 using Netflex.Models.Notification;
@@ -12,12 +14,15 @@ namespace Netflex.Controllers
         private const string Read = "read";
         private const string Unread = "unread";
         private readonly ApplicationDbContext _context;
+        private readonly NotificationQueueService _notificationService;
 
         private const int PAGE_SIZE = 6;
 
-        public NotificationController(IUnitOfWork unitOfWork, ApplicationDbContext context) : base(unitOfWork)
+        public NotificationController(IUnitOfWork unitOfWork, ApplicationDbContext context,
+            NotificationQueueService notificationService) : base(unitOfWork)
         {
             _context = context;
+            _notificationService = notificationService;
         }
 
         private class JsonContent
@@ -26,14 +31,25 @@ namespace Netflex.Controllers
             public string Link { get; set; } = string.Empty;
         }
 
-        public IActionResult Index(int? page)
+
+        [HttpGet("/notification/unread")]
+        public IActionResult CountUnreadNotification()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var count = _context.UserNotifications
+                .Where(un => un.UserId == userId && un.HaveRead == false)
+                .Count();
+            return Json(count);
+        }
+
+        public IActionResult IndexAsync(int? page)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var notificationId = _context.UserNotifications
                 .Where(un => un.UserId == userId)
-                .Select(un => un.NotificationId).Distinct().ToList();
+                .Select(un => new { un.NotificationId, un.HaveRead }).Distinct().ToList();
 
-            var notifications = _context.Notifications.Where(n => notificationId.Contains(n.Id))
+            var notifications = _context.Notifications.Where(n => notificationId.Select(x => x.NotificationId).Contains(n.Id))
                 .OrderBy(x => x.CreatedAt).AsQueryable();
 
             int pageNumber = page ?? 1;
@@ -45,13 +61,30 @@ namespace Netflex.Controllers
                 if (content == null) continue;
                 models.Add(new NotificationViewModel
                 {
+                    Id = b.Id,
                     Message = content.Message,
                     Link = content.Link,
-                    Status = b.Status,
+                    HaveRead = notificationId.FirstOrDefault(x => x.NotificationId == b.Id)?.HaveRead ?? false,
                     CreatedAt = b.CreatedAt
                 });
             }
+            foreach (var model in models)
+            {
+                var userNotification = _context.UserNotifications.FirstOrDefault(un => un.UserId == userId && un.NotificationId == model.Id);
+                if (userNotification == null) continue;
+                userNotification.HaveRead = true;
+            }
+            _context.SaveChanges();
             return View(models.ToPagedList(pageNumber, PAGE_SIZE));
+        }
+
+        [HttpPost("/notification/test")]
+        public async Task<IActionResult> TestNotification()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId != null)
+                await _notificationService.PushAsync(new Message([userId], "You have a new notification"));
+            return Ok();
         }
     }
 }
