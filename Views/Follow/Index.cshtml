@@ -5,44 +5,81 @@
     Layout = "_Layout";
 }
 
-<div class="container">
-    <h4 class="text-white mt-4 mb-4">Yêu thích</h4>
-    
-    <div class="row">
-        @foreach (var item in Model)
-        {
-            if (item.FollowedFilms != null)
-            {
-                var film = item.FollowedFilms;
-                <div class="col-md-2 mb-4">
-                     <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
-                    <div class="position-relative">
-                        <img src="@film.Poster" class="img-6x9 rounded" alt="@film.Title">
-                    </div>
-                    <p class="text-white text-truncate mt-2" style="max-width: 100%;">@(film.Title.Length > 20 ? film.Title.Substring(0, 20) + "..." : film.Title)</p>
-                    </a>
-                </div>
-            }
-            else if (item.FollowedSeries != null)
-            {
-                var serie = item.FollowedSeries;
-                <div class="col-md-2 mb-4">
-                     <a href="@Url.Action("Detail", "Serie", new { id = serie.Id })" class="text-decoration-none">
-                    <div class="position-relative">
-                        <img src="@serie.Poster" class="img-6x9 rounded" alt="@serie.Title">
-                    </div>
-                    <p class="text-white text-truncate mt-2" style="max-width: 100%;">@(serie.Title.Length > 20 ? serie.Title.Substring(0, 20) + "..." : serie.Title)</p>
-                    </a>
-                </div>
-            }
-        }
+<div class="container list-items-blogs">
+    <div class="d-flex justify-content-between align-items-center my-3">
+        <div class="d-flex align-items-center">
+            <div class="vertical-line"></div>
+            <p class="ms-2 mb-0 text-md text-white fw-bold">Yêu thích</p>
+        </div>
     </div>
-</div>
-    <nav class="d-flex justify-content-center mt-3">
-        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
+    @foreach (var item in Model)
+    {
+        if (item.FollowedFilms != null)
         {
-            LiElementClasses = new string[] { "page-item" },
-            PageClasses = new string[] { "page-link" }
-        })
+            var film = item.FollowedFilms;
+            <div class="row align-items-center home-blog-post">
+                <div class="col-md-2 text-center position-relative">
+                    <img src="@film.Poster" class="img-6x9 rounded" alt="@film.Title">
+                    <div class="genre-overlay" style="background-color: #28a745; ">
+                        <p>Phim lẻ</p>
+                    </div>
+                </div>
+
+                <div class="col-md-10 text-smm ">
+                    <a href="@Url.Action("Detail", "Film", new { id = film.Id })">
+                        <p class="text-base text-white-70 mb-1">
+                            @(film.Title.Length > 100 ? film.Title.Substring(0, 100) + "..." : film.Title)
+                        </p>
+                    </a>
+                    <p>@film.ProductionYear</p>
+                    <p>@(film.About.Length > 100 ? film.About.Substring(0, 100) + "..." : film.About)</p>
+                </div>
+            </div>
+        }
+        else if (item.FollowedSeries != null)
+        {
+            var serie = item.FollowedSeries;
+            <div class="row align-items-center home-blog-post">
+                <div class="col-md-2 text-center position-relative">
+                    <img src="@serie.Poster" class="img-6x9 rounded" alt="@serie.Title">
+                    <div class="genre-overlay" style="background-color: #a72828; ">
+                        <p>Phim bộ</p>
+                    </div>
+                </div>
+
+                <div class="col-md-10 text-smm ">
+                    <a href="@Url.Action("Detail", "Serie", new { id = serie.Id })">
+                        <p class="text-base text-white-70 mb-1">
+                            @(serie.Title.Length > 100 ? serie.Title.Substring(0, 100) + "..." : serie.Title)
+                        </p>
+                    </a>
+                    <p>@serie.ProductionYear</p>
+                    <p>@(serie.About.Length > 100 ? serie.About.Substring(0, 100) + "..." : serie.About)</p>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<div class="row">
+    <nav class="text-sm">
+        <ul class="pagination d-flex gap-2">
+            <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("index", new { page = Model.PageNumber - 1 })"><i
+                        class="fa-solid fa-caret-left slider-prev text-md ps-2 pe-1"></i></a>
+            </li>
+
+            @for (int i = 1; i <= Model.PageCount; i++)
+            {
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("index", new { page = i })">@i</a>
+                </li>
+            }
+
+            <li class="page-item @(Model.PageNumber == Model.PageCount ? "disabled" : "") ">
+                <a class="page-link" href="@Url.Action("index", new { page = Model.PageNumber + 1 })"><i
+                        class="fa-solid fa-caret-right slider-next text-md ps-1 pe-2"></i></a>
+            </li>
+        </ul>
     </nav>
 </div>

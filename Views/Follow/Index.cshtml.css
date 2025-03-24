@@ -17,9 +17,167 @@
     padding: 5px 10px;
 }
 
-.img-6x9 {
-    width: 100%;          
-    aspect-ratio: 2 / 3; 
-    object-fit: cover;  
+.vertical-line {
+    width: 3.2px;
+    height: 24px;
+    background-color: #00aaff;
 }
 
+
+.home-blog-post {
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.list-items-blogs .home-blog-post:last-child {
+    border-bottom: 0;
+}
+
+
+.carousel-indicators {
+    position: absolute;
+    bottom: -50px; 
+    left: 50%;
+    transform: translateX(-120%);
+    z-index: 10;
+}
+
+.carousel-indicators .active {
+    opacity: 1;
+    background-color: #007bff;
+}
+
+
+.navigation-buttons i {
+    cursor: pointer; 
+}
+
+.navigation-buttons i:hover {
+    color: #f8f9fa;
+}
+
+.movie-banner-content{
+    text-shadow: 0 0 10px #000;
+}
+
+.movie-banner img{
+    width: 100%;
+    height: 20rem;
+    object-fit: cover;
+    object-position: top;
+}
+
+
+.content-items {
+    border-bottom: solid 1px;
+    border-color: rgba(255, 255, 255, .08);
+}
+
+.pagination {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    padding: 10px;
+}
+
+.pagination .page-item {
+    list-style: none;
+}
+
+.pagination .page-item.active .page-link {
+    background: rgba(0, 0, 0, .1);
+    border-color: rgba(0, 0, 0, .5);
+    border: 1px solid;
+}
+
+.pagination .page-link {
+    color: white;
+    background: rgba(0, 0, 0, .1);
+    border: 1px solid;
+    border-radius: 0;
+    border-color: rgba(0, 0, 0, .5);
+}
+
+.thumbnail-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+}
+
+.thumbnail-img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+
+.thumbnail-container:hover .overlay {
+    opacity: 1; /* Hiển thị overlay khi hover */
+}
+
+.film-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.film-type {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    background-color: rgba(255, 0, 0, 0.7);
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.film-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #fff;
+}
+
+.film-year {
+    font-size: 14px;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.film-about {
+    font-size: 14px;
+    margin-top: 5px;
+    color: #ddd;
+}
+
+.position-relative {
+    position: relative;
+}
+
+.position-relative {
+    position: relative;
+    display: inline-block; 
+}
+
+.img-6x9 {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 5px;  
+}
+
+.genre-overlay {
+    position: absolute;
+    top: 10px;         
+    right: 10px;          
+    color: white;         
+    padding: 5px 10px;    
+    border-radius: 5px;   
+    font-size: 15px;      
+    text-align: center;   
+    max-width: calc(100% - 20px); 
+}
+
+
+.genre-overlay p{
+    margin: 0 0 0 0;
+}

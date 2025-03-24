@@ -57,15 +57,15 @@ namespace Netflex.Controllers
             {
                 var filmDetails = _unitOfWork.Repository<Film>().Entities
                     .Where(f => f.Id == film.FilmId)
-                    .Select(f => new FilmViewModel()
+                    .Select(f => new DetailFilmViewModel()
                     {
                         Id = f.Id,
                         Title = f.Title,
+                        About = f.About,
                         Poster = f.Poster,
                         Path = f.Path,
                         Trailer = f.Trailer,
-                        ProductionYear = f.ProductionYear,
-                        CreatedAt = f.CreatedAt
+                        ProductionYear = f.ProductionYear,          
                     }).FirstOrDefault();
 
                 if (filmDetails != null)
