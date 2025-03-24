@@ -1,6 +1,4 @@
 ﻿@using Netflex.Models.Genre
-@model IPagedList<GenreViewModel>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -42,7 +40,7 @@
 							</a>
 							<div class="dropdown-menu dropdown-menu-dark">
 								<div class="dropdown-grid text-white-50">
-									@await Html.PartialAsync("_GenresPartial")
+                                    @await Html.PartialAsync("_GenresPartial", ViewData["Genres"] as List<GenreViewModel>)
 								</div>
 							</div>
 
@@ -98,8 +96,8 @@
 
                         @await Html.PartialAsync("_LoginPartial")
                     </ul>
-                    <form class="d-none d-lg-flex search-box">
-                        <input class="search" placeholder="Tìm kiếm..." aria-label="Search">
+                    <form class="d-none d-lg-flex search-box" action="@Url.Action("SearchByTitle", "Film")">
+                        <input class="search" placeholder="Tìm kiếm..." aria-label="Search" name="searchTitle">
                         <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </form>
                 </div>

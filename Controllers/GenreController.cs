@@ -54,7 +54,7 @@ namespace Netflex.Controllers
                     .OrderBy(g => g.Name)
                     .Select(g => new GenreViewModel { Id = g.Id, Name = g.Name })
                     .ToList();
-
+                ViewData["Genres"] = genres;
                 return PartialView("_GenresPartial", genres);
             }
             catch (Exception ex)
@@ -112,12 +112,6 @@ namespace Netflex.Controllers
         }
 
 
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            var repository = _unitOfWork.Repository<Genre>();
-            var genres = repository.Entities.OrderBy(x => x.Name).ToList();
-            ViewData["Genres"] = genres;
-            base.OnActionExecuting(context);
-        }
+       
     }
 }

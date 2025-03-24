@@ -24,25 +24,28 @@
                 <p class="text-white-50 text-sm mb-1">@Model.Title @Model.ProductionYear</p>
                 <p class="text-sm"><span class="date">Dec. 31, 2023</span>&nbsp;&nbsp;&nbsp;China&nbsp;&nbsp;&nbsp;</p>
             </div>
-            <div
-                class="d-flex align-items-center align-items-md-start py-2 border-top border-bottom border-dark gap-2 flex-column flex-md-row">
-                <div class="d-flex gap-2">
-                    <div class="points rounded p-2 d-flex align-items-center justify-content-center">
-                        <p class="fs-4 fw-bold m-0">@Ratings</p>
-                    </div>
-                    <div>
-                        <div class="rating-stars">
-                            @for (int i = 1; i <= 10; i++)
-                            {
-                                <i class="far fa-star" data-value="@i"></i>
-                            }
-                        </div>
-                        <span class="text-white-50 text-xs "><i class="fa-solid fa-circle-user"></i> 69 đánh giá</span>
-                    </div>
-                </div>
-                <p class="text-xs py-1 rounded text-center my-ratings order-last order-md-0">Đánh giá của bạn: <span
-                        id="selected-rating">0</span></p>
+            @* <div *@
+            @*     class="d-flex align-items-center align-items-md-start py-2 border-top border-bottom border-dark gap-2 flex-column flex-md-row"> *@
+            @*     <div class="d-flex gap-2"> *@
+            @*         <div class="points rounded p-2 d-flex align-items-center justify-content-center"> *@
+            @*             <p class="fs-4 fw-bold m-0">@Ratings</p> *@
+            @*         </div> *@
+            @*         <div> *@
+            @*             <div class="rating-stars"> *@
+            @*                 @for (int i = 1; i <= 10; i++) *@
+            @*                 { *@
+            @*                     <i class="far fa-star" data-value="@i"></i> *@
+            @*                 } *@
+            @*             </div> *@
+            @*             <span class="text-white-50 text-xs "><i class="fa-solid fa-circle-user"></i> 69 đánh giá</span> *@
+            @*         </div> *@
+            @*     </div> *@
+            @*     <p class="text-xs py-1 rounded text-center my-ratings order-last order-md-0">Đánh giá của bạn: <span *@
+            @*             id="selected-rating">0</span></p> *@
+            @* </div> *@
+            <div id="reviews-container">
             </div>
+
             <div class="mt-2 genres">
                 <a class="text-sm" href="#">Phim Hoạt Hình</a>
                 <a class="text-sm" href="#">Phim Hài</a>
@@ -122,37 +125,8 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script>
-        $(document).ready(function () {
-            let stars = $(".rating-stars i");
-            let selected = $("#selected-rating");
-            let ratings = Math.floor(@Ratings);
+    <script src="~/js/rating.js"></script>
 
-            highlight(ratings);
-
-            stars.on("mouseover", function () {
-                let value = $(this).data("value");
-                highlight(value);
-            });
-
-            stars.on("mouseout", function () {
-                let currentValue = selected.text().trim() === "0" ? ratings : selected.text();
-                highlight(currentValue);
-            });
-
-            stars.on("click", function () {
-                selected.text($(this).data("value"));
-            });
-
-            function highlight(value) {
-                stars.each(function () {
-                    let starValue = parseInt($(this).data("value"));
-                    $(this).toggleClass("fas", starValue <= value);
-                    $(this).toggleClass("far", starValue > value);
-                });
-            }
-        });
-    </script>
     @* <script>
         $(document).ready(function () {
             let video = $("#video").get(0);
