@@ -50,12 +50,12 @@ namespace Netflex.Controllers
                 .Select(un => new { un.NotificationId, un.HaveRead }).Distinct().ToList();
 
             var notifications = _context.Notifications.Where(n => notificationId.Select(x => x.NotificationId).Contains(n.Id))
-                .OrderBy(x => x.CreatedAt).AsQueryable();
+                .OrderByDescending(x => x.CreatedAt).AsQueryable();
 
             int pageNumber = page ?? 1;
 
             var models = new List<NotificationViewModel>();
-            foreach (var b in notifications.OrderBy(b => b.CreatedAt))
+            foreach (var b in notifications)
             {
                 var content = JsonSerializer.Deserialize<JsonContent>(b.Content);
                 if (content == null) continue;
@@ -83,7 +83,28 @@ namespace Netflex.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId != null)
-                await _notificationService.PushAsync(new Message([userId], "You have a new notification"));
+            {
+                var sendTo = new string[] { userId };
+                var notification = new Notification
+                {
+                    Id = Guid.NewGuid(),
+                    Content = JsonSerializer.Serialize(new JsonContent { Message = "You have a new notification", Link = "/notification" }),
+                    Status = "System",
+                    CreatedAt = DateTime.UtcNow,
+                };
+                _context.Notifications.Add(notification);
+                _context.SaveChanges();
+
+
+                foreach (var id in sendTo)
+                {
+                    _context.UserNotifications.Add(new UserNotification { UserId = id, NotificationId = notification.Id, HaveRead = false });
+                }
+
+                _context.SaveChanges();
+                await _notificationService.PushAsync(new Message(sendTo, "You have a new notification"));
+
+            }
             return Ok();
         }
     }

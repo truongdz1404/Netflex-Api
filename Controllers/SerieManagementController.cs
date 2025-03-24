@@ -24,7 +24,8 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
         if (!string.IsNullOrWhiteSpace(searchTerm))
             query = query.Where(m => m.Title.Contains(searchTerm));
 
-        if (productionYear.HasValue){
+        if (productionYear.HasValue)
+        {
             query = query.Where(m => m.ProductionYear.ToString().Contains(productionYear.Value.ToString()));
         }
         switch (sortOrder)
@@ -71,10 +72,10 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
         if (id == null)
             return NotFound();
         var serie = _unitOfWork.Repository<Serie>().Entities
-   .Include(s => s.SerieCountries)
-   .Include(s => s.SerieGenres)
-   .Include(s => s.SerieActors)
-   .FirstOrDefault(m => m.Id.Equals(id));
+            .Include(s => s.SerieCountries)
+            .Include(s => s.SerieGenres)
+            .Include(s => s.SerieActors)
+            .FirstOrDefault(m => m.Id.Equals(id));
         if (serie == null)
             return NotFound();
         var model = new DetailSerieViewModel
