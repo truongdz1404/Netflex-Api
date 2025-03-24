@@ -76,17 +76,17 @@ namespace Netflex.Controllers
             }
 
             var models = query.Select(
-                film => new FilmViewModel()
+                film => new DetailFilmViewModel()
                 {
                     Id = film.Id,
                     Title = film.Title,
+                    About = film.About,
                     Poster = film.Poster,
                     Path = film.Path,
                     Trailer = film.Trailer,
                     ProductionYear = film.ProductionYear,
-                    CreatedAt = film.CreatedAt
                 }
-            ).OrderBy(f => f.CreatedAt)
+            ).OrderBy(f => f.ProductionYear)
             .ToPagedList(pageNumber, PAGE_SIZE);
 
             return View(models);

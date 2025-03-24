@@ -14,9 +14,11 @@ namespace Netflex.Controllers
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<IActionResult> GetReview(Guid id)
+        public async Task<IActionResult> GetReview([FromRoute] Guid id)
         {
-            var createrId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "00000000-0000-0000-0000-000000000000";
+            var createrId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if(createrId == null) 
+                return Unauthorized();
 
             if(id == Guid.Empty)
                 return BadRequest("Invalid Film ID");
@@ -26,11 +28,11 @@ namespace Netflex.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Rating(Guid id, [FromBody]ReviewEditModel model)
+        public async Task<IActionResult> Rating([FromRoute] Guid id, [FromBody]ReviewEditModel model)
         {
             try
             {
-                var createrId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "00000000-0000-0000-0000-000000000000";
+                var createrId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 if (id == Guid.Empty)
                     return BadRequest("Invalid Film ID");
@@ -49,7 +51,7 @@ namespace Netflex.Controllers
                         Id = Guid.NewGuid(),
                         Rating = model.Rating,
                         CreaterId = createrId,
-                        FilmId = model.FilmId
+                        FilmId = id
                     };
 
                     await reviewRepo.AddAsync(newReview);
@@ -59,8 +61,9 @@ namespace Netflex.Controllers
                     existingReview.Rating = model.Rating;
                     await reviewRepo.UpdateAsync(existingReview);
                 }
-
                 await _unitOfWork.Save(CancellationToken.None);
+
+
 
                 var modelView = await GetRating(id, createrId);
                 return PartialView("_ReviewPartial", modelView);
