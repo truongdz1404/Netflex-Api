@@ -35,7 +35,14 @@
                     <p>@(string.IsNullOrEmpty(film.About) ? "" : (film.About.Length > 100 ? film.About.Substring(0, 100) + "..." : film.About))</p>
                 </div>
                 <div class="col-md-1 text-smm">
-                    <i class="fa-solid fa-ellipsis fa-2xl"></i>
+                    <button class="delete btn btn-danger btn-sm" 
+                            data-id="@item.Id" 
+                            data-controller="Follow"
+                            data-action="Delete"
+                            data-body-message="Bạn có muốn xóa phim này khỏi danh sách theo dõi không?"
+                            data-redirect-url="@Url.Action("Index", "Follow")">
+                        <i class="fa-solid fa-xmark fa-2xl"></i>
+                    </button>
                 </div>
             </div>
         }
@@ -50,7 +57,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-10 text-smm ">
+                <div class="col-md-9 text-smm ">
                     <a href="@Url.Action("Detail", "Serie", new { id = serie.Id })">
                         <p class="text-base text-white-70 mb-1">
                             @(serie.Title.Length > 100 ? serie.Title.Substring(0, 100) + "..." : serie.Title)
@@ -58,7 +65,16 @@
                     </a>
                     <p>@serie.ProductionYear</p>
                     <p>@(string.IsNullOrEmpty(serie.About) ? "" : (serie.About.Length > 100 ? serie.About.Substring(0, 100) + "..." : serie.About))</p>
-
+                </div>
+                <div class="col-md-1 text-smm">
+                    <button class="delete btn btn-danger btn-sm" 
+                        data-id="@item.Id" 
+                        data-controller="Follow"
+                        data-action="Delete"
+                        data-body-message="Bạn có muốn xóa phim này khỏi danh sách theo dõi không?"
+                        data-redirect-url="@Url.Action("Index", "Follow")">
+                        <i class="fa-solid fa-xmark fa-2xl"></i>
+                    </button>
                 </div>
             </div>
         }
