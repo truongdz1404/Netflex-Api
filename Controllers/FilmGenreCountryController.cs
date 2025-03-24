@@ -14,13 +14,11 @@ namespace Netflex.Controllers
     public class FilmGenreCountryController : BaseController
     {
         private const int PAGE_SIZE = 10;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly ApplicationDbContext _context;
 
         public FilmGenreCountryController(IUnitOfWork unitOfWork,
         ApplicationDbContext context) : base(unitOfWork)
         {
-            _unitOfWork = unitOfWork;
             _context = context;
         }
 

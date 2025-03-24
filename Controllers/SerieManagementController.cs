@@ -73,10 +73,10 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
         if (id == null)
             return NotFound();
         var serie = _unitOfWork.Repository<Serie>().Entities
-   .Include(s => s.SerieCountries)
-   .Include(s => s.SerieGenres)
-   .Include(s => s.SerieActors)
-   .FirstOrDefault(m => m.Id.Equals(id));
+            .Include(s => s.SerieCountries)
+            .Include(s => s.SerieGenres)
+            .Include(s => s.SerieActors)
+            .FirstOrDefault(m => m.Id.Equals(id));
         if (serie == null)
             return NotFound();
         var model = new DetailSerieViewModel

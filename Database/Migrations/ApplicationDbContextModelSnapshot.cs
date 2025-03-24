@@ -262,8 +262,8 @@ namespace Netflex.Database.Migrations
 
                     b.Property<string>("Path")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<Guid>("SerieId")
                         .HasColumnType("uuid");
@@ -300,8 +300,8 @@ namespace Netflex.Database.Migrations
                         .HasColumnType("interval");
 
                     b.Property<string>("Path")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<string>("Poster")
                         .HasMaxLength(200)
@@ -683,6 +683,9 @@ namespace Netflex.Database.Migrations
 
                     b.Property<Guid>("NotificationId")
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("HaveRead")
+                        .HasColumnType("boolean");
 
                     b.HasKey("UserId", "NotificationId");
 

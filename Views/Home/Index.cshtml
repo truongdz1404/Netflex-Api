@@ -16,23 +16,46 @@
             {
                 <div class="carousel-item @(i == 0 ? "active" : "")">
                     <div class="row">
-                        @for (var j = 0; j < 2 && (i + j) < ViewBag.FeaturedFilms.Count; j++)
-                        {
-                            var film = ViewBag.FeaturedFilms[i + j];
-                            <div class="col-md-6">
-                                <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
-                                    <div class="position-relative movie-banner">
-                                        <img src="@film.Poster" alt="@film.Title">
-                                        <div class="position-absolute bottom-0 movie-banner-content p-2">
-                                            <p class="m-0 text-white text-truncate" style="max-width:10rem;">
-                                                @film.Title
-                                            </p>
-                                            <span class="p-0 text-white-50 text-smm">@film.ProductionYear</span>
+                        @{
+                            int count = 0;
+                            for (var j = 0; j < 2 && (i + j) < ViewBag.FeaturedFilms.Count; j++)
+                            {
+                                var film = ViewBag.FeaturedFilms[i + j];
+                                <div class="col-md-6">
+                                    <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
+                                        <div class="position-relative movie-banner">
+                                            <img src="@film.Poster" alt="@film.Title">
+                                            <div class="position-absolute bottom-0 movie-banner-content p-2">
+                                                <p class="m-0 text-white text-truncate" style="max-width:10rem;">
+                                                    @film.Title
+                                                </p>
+                                                <span class="p-0 text-white-50 text-smm">@film.ProductionYear</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                </a>
-                            </div>
+                                    </a>
+                                </div>
+
+                                count++;
+                            }
+                            if (count == 1)
+                            {
+                                var film = ViewBag.FeaturedFilms[0];
+                                <div class="col-md-6">
+                                    <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
+                                        <div class="position-relative movie-banner">
+                                            <img src="@film.Poster" alt="@film.Title">
+                                            <div class="position-absolute bottom-0 movie-banner-content p-2">
+                                                <p class="m-0 text-white text-truncate" style="max-width:10rem;">
+                                                    @film.Title
+                                                </p>
+                                                <span class="p-0 text-white-50 text-smm">@film.ProductionYear</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
                         }
+
                     </div>
                 </div>
             }
@@ -125,7 +148,7 @@
             </div>
 
             <div class="col-md-11 text-smm ">
-                <a href="@Url.Action("Details", "Blog", new { id = blog.Id })">
+                <a href="@Url.Action("details", "blog", new { id = blog.Id })">
                     <p class="text-base text-white-70 mb-1">
                         @Html.Raw(blog.Title.Length > 100 ? blog.Title.Substring(0, 100) + "..." : blog.Title)
                     </p>

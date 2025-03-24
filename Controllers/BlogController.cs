@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-using Microsoft.EntityFrameworkCore;
 using Netflex.Database;
 using Netflex.Models.Blog;
-using System;
-using System.Linq;
-using System.Collections.Generic;
+
 using X.PagedList.Extensions;
 
 

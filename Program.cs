@@ -1,19 +1,18 @@
 using Netflex;
-using Netflex.Exceptions.Handler;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Netflex.Database;
-using Netflex.Models.Configs;
+using Netflex.Database.Repositories.Abstractions;
 using Netflex.Database.Repositories.Implements;
+using Netflex.Exceptions.Handler;
+using Netflex.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddDependencyInjection(builder.Configuration);
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
-builder.Services.AddScoped<IFollowRepository, FollowRepository>();
-
+builder.Services.AddScoped<ICountryRepository, CountryRepository>();
+builder.Services.AddScoped<IActorRepository, ActorRepository>();
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<ConnectionManager>();
 
 var app = builder.Build();
 
@@ -33,7 +32,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-
+app.MapHub<NotificationHub>("/notification-hub");
 
 app.MapControllerRoute(
     name: "default",

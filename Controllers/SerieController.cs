@@ -16,14 +16,12 @@ namespace Netflex.Controllers
     public class SerieController : BaseController
     {
         private const int PAGE_SIZE = 10;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly ApplicationDbContext _dbContext;
 
         private readonly IFollowRepository _followRepository;
         private readonly UserManager<User> _userManager;
         public SerieController(IFollowRepository followRepository, IUnitOfWork unitOfWork, ApplicationDbContext dbContext, UserManager<User> userManager) : base(unitOfWork)
         {
-            _unitOfWork = unitOfWork;
             _dbContext = dbContext;
             _followRepository = followRepository;
             _userManager = userManager;

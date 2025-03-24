@@ -12,7 +12,6 @@ public class EpisodeController(IStorageService storage, IUnitOfWork unitOfWork, 
     : BaseController(unitOfWork)
 {
     private readonly IStorageService _storage = storage;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ApplicationDbContext _context = context;
     private const int PAGE_SIZE = 3;
     [Authorize(Roles = "admin")]
@@ -157,6 +156,14 @@ public class EpisodeController(IStorageService storage, IUnitOfWork unitOfWork, 
         ViewData["SerieTitle"] = serie.Title ?? "Không có serie";
         ViewData["SerieId"] = serie.Id;
         return RedirectToAction("Index", "Episode", new { serieId = serie.Id });
+    }
+
+
+    private void NotifyNewEpisode(Notification notification, Guid serieId)
+    {
+
+        // var sendTo = new string[] { userId };
+
     }
 
 }

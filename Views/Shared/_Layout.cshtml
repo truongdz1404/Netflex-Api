@@ -149,16 +149,13 @@
                                 </div>
                             </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Blog" asp-action="index">Blog</a>
-                        </li>
-
-                        @await Html.PartialAsync("_LoginPartial")
                     </ul>
                     <form class="d-none d-lg-flex search-box">
                         <input class="search" placeholder="Tìm kiếm..." aria-label="Search">
                         <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </form>
+                    @await Html.PartialAsync("_LoginPartial")
+
                 </div>
             </div>
         </nav>
@@ -222,8 +219,20 @@
         </div>
     </footer>
 
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notificationToast" class="toast align-items-center text-bg-primary border-0" role="alert"
+            aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body text-black" id="toastBody">
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/delete.js" asp-append-version="true"></script>
     <script src="https://cdn.tiny.cloud/1/25kiq8kjalzyqvwkno8j4sgazvesxspatked58wy320zismn/tinymce/7/tinymce.min.js"
@@ -251,6 +260,8 @@
     </script>
 
     <script>
+
+
         $(document).ready(function () {
             updateSidebarHeight();
             $(window).on("resize", updateSidebarHeight);
@@ -270,15 +281,24 @@
             $(window).scrollTop(0);
         }
 
-        const ngrokUrl = "https://6c05-2401-d800-14e-6870-ccd4-a808-4169-9027.ngrok-free.app";
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('[data-href]').forEach(function (element) {
-                const dataHref = element.getAttribute('data-href');
-                if (dataHref && dataHref.includes('http://localhost:8080')) {
-                    element.setAttribute('data-href', dataHref.replace('http://localhost:8080', ngrokUrl));
-                }
+        $(() => {
+            var connection = new signalR.HubConnectionBuilder()
+                .withUrl("/notification-hub")
+                .build();
+
+            connection.start().catch(err => console.error(err.toString()));
+
+            connection.on("ReceiveNotification", function (message) {
+                showToast(message);
             });
+
+            function showToast(message) {
+                $("#toastBody").text(message);
+                var toast = new bootstrap.Toast(document.getElementById('notificationToast'));
+                toast.show();
+            }
         });
+
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)

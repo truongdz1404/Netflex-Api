@@ -18,26 +18,48 @@
         </div>
 
         <div class="carousel-inner">
-            @for (var i = 0; i < Model.Count(); i += 2)
+            @for (var i = 0; i < Math.Min(Model.Count(), 8); i += 2)
             {
                 <div class="carousel-item @(i == 0 ? "active" : "")">
-                    <div class="row">
-                        @for (var j = 0; j < 2 && (i + j) < Model.Count(); j++)
-                        {
-                            var film = Model[i + j];
-                            <div class="col-md-6">
-                                <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
-                                    <div class="position-relative movie-banner">
-                                        <img src="@film.Poster" alt="@film.Title">
-                                        <div class="position-absolute bottom-0 movie-banner-content p-2">
-                                            <p class="m-0 text-white text-truncate" style="max-width:10rem;">
-                                                @film.Title
-                                            </p>
-                                            <span class="p-0 text-white-50 text-smm">@film.ProductionYear</span>
+                    <div class="row ">
+                        @{
+                            int count = 0;
+                            for (var j = 0; j < 2 && (i + j) < Model.Count(); j++)
+                            {
+                                var film = Model[i + j];
+                                <div class="col-md-6">
+                                    <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
+                                        <div class="position-relative movie-banner">
+                                            <img src="@film.Poster" alt="@film.Title">
+                                            <div class="position-absolute bottom-0 movie-banner-content p-2">
+                                                <p class="m-0 text-white text-truncate" style="max-width:10rem;">
+                                                    @film.Title
+                                                </p>
+                                                <span class="p-0 text-white-50 text-smm">@film.ProductionYear</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                </a>
-                            </div>
+                                    </a>
+                                </div>
+
+                                count++;
+                            }
+                            if (count == 1)
+                            {
+                                var film = Model[0];
+                                <div class="col-md-6">
+                                    <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
+                                        <div class="position-relative movie-banner">
+                                            <img src="@film.Poster" alt="@film.Title">
+                                            <div class="position-absolute bottom-0 movie-banner-content p-2">
+                                                <p class="m-0 text-white text-truncate" style="max-width:10rem;">
+                                                    @film.Title
+                                                </p>
+                                                <span class="p-0 text-white-50 text-smm">@film.ProductionYear</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
                         }
                     </div>
                 </div>
@@ -64,12 +86,56 @@
         }
     </div>
 
-    <!-- Phân trang -->
-    <nav class="d-flex justify-content-center mt-3">
-        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
-   {
-       LiElementClasses = new string[] { "page-item" },
-       PageClasses = new string[] { "page-link" }
-   })
-    </nav>
+    <div class="row">
+        <nav class="text-sm">
+            <ul class="pagination d-flex gap-2">
+                <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("index", new { page = Model.PageNumber - 1 })">‹</a>
+                </li>
+
+                @if (Model.PageCount <= 5)
+                {
+                    @for (int i = 1; i <= Model.PageCount; i++)
+                    {
+                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("index", new { page = i })">@i</a>
+                        </li>
+                    }
+                }
+                else
+                {
+                    <li class="page-item @(1 == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("index", new { page = 1 })">1</a>
+                    </li>
+
+                    @if (Model.PageNumber > 3)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+
+                    @for (int i = Math.Max(2, Model.PageNumber - 1); i <= Math.Min(Model.PageCount - 1, Model.PageNumber +
+                   1); i++)
+                    {
+                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("index", new { page = i })">@i</a>
+                        </li>
+                    }
+
+                    @if (Model.PageNumber < Model.PageCount - 2)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+
+                    <li class="page-item @(Model.PageCount == Model.PageNumber ? "active" : "")">
+                        <a class="page-link"
+                            href="@Url.Action("index", new { page = Model.PageCount })">@Model.PageCount</a>
+                    </li>
+                }
+
+                <li class="page-item @(Model.PageNumber == Model.PageCount ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("index", new { page = Model.PageNumber + 1 })">›</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </div>
