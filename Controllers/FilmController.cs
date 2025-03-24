@@ -14,14 +14,12 @@ namespace Netflex.Controllers
     public class FilmController : BaseController
     {
         private const int PAGE_SIZE = 10;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IFollowRepository _followRepository;
         private readonly UserManager<User> _userManager;
 
         public FilmController(IFollowRepository followRepository, IUnitOfWork unitOfWork, UserManager<User> userManager) : base(unitOfWork)
         {
             _followRepository = followRepository;
-            _unitOfWork = unitOfWork;
             _userManager = userManager;
         }
 

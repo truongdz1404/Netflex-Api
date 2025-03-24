@@ -7,8 +7,8 @@
         public Guid? SerieId { get; set; }
         public DateTime FollowedAt { get; set; }
 
-        public virtual Film.DetailFilmViewModel FollowedFilms { get; set; }
-        public virtual Serie.SerieViewModel FollowedSeries { get; set; }
+        public virtual Film.DetailFilmViewModel? FollowedFilms { get; set; }
+        public virtual Serie.SerieViewModel? FollowedSeries { get; set; }
     }
 }
 

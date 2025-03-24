@@ -11,13 +11,11 @@ namespace Netflex.Controllers
     {
         private const int PAGE_SIZE = 5;
         private readonly IFollowRepository _followRepository;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<User> _userManager;
 
         public FollowController(IFollowRepository followRepository, IUnitOfWork unitOfWork, UserManager<User> userManager) : base(unitOfWork)
         {
             _followRepository = followRepository;
-            _unitOfWork = unitOfWork;
             _userManager = userManager;
         }
 

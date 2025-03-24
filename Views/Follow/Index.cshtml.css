@@ -72,17 +72,6 @@
     border-color: rgba(255, 255, 255, .08);
 }
 
-.pagination {
-    display: flex;
-    gap: 5px;
-    justify-content: center;
-    padding: 10px;
-}
-
-.pagination .page-item {
-    list-style: none;
-}
-
 .pagination .page-item.active .page-link {
     background: rgba(0, 0, 0, .1);
     border-color: rgba(0, 0, 0, .5);
@@ -95,6 +84,10 @@
     border: 1px solid;
     border-radius: 0;
     border-color: rgba(0, 0, 0, .5);
+}
+
+.disabled{
+    display: none;
 }
 
 .thumbnail-container {

@@ -1,6 +1,8 @@
 ﻿@model X.PagedList.IPagedList<Netflex.Entities.Country>
 @using X.PagedList.Mvc;
-
+@{
+    Layout = "_AdminLayout";
+}
 <h2>Danh sách Quốc gia</h2>
 
 <form method="get" class="mb-3">
@@ -26,7 +28,7 @@
                 <td>@country.Name</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@country.Id" class="btn btn-warning">Sửa</a>
-                    <a asp-action="Delete" asp-route-id="@country.Id" class="btn btn-danger">Xóa</a>
+                    <a asp-action="Delete" asp-route-id="@country.Id" class="btn btn-danger" onclick="return confirmDelete();">Xóa</a>
                 </td>
             </tr>
         }
@@ -41,3 +43,8 @@
     </style>
     @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchString = ViewBag.SearchString }))
 </div>
+<script type="text/javascript">
+    function confirmDelete() {
+        return confirm("Bạn có đồng ý xóa diễn viên này không?");
+    }
+</script>

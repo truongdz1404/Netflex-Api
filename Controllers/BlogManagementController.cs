@@ -107,7 +107,7 @@ namespace Netflex.Controllers
             ViewBag.CreatedAt = createdAt;
             ViewBag.SortOrder = sortOrder;
 
-            return View(models);
+            return View("~/Views/Dashboard/BlogManagement/Index.cshtml", models);
         }
 
         public IActionResult ExportToExcel()
@@ -167,14 +167,14 @@ namespace Netflex.Controllers
                 CreaterId = b.CreaterId,
             };
 
-            return View(model);
+            return View("~/Views/Dashboard/BlogManagement/Details.cshtml", model);
         }
 
         [Route("/dashboard/blog/create")]
         public IActionResult Create()
         {
             ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName");
-            return View();
+            return View("~/Views/Dashboard/BlogManagement/Create.cshtml");
         }
 
         [HttpPost]
@@ -235,7 +235,7 @@ namespace Netflex.Controllers
                 CreaterId = blog.CreaterId
             };
             ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName", blog.CreaterId);
-            return View(blogViewModel);
+            return View("~/Views/Dashboard/BlogManagement/Edit.cshtml", blogViewModel);
         }
 
         [HttpPost]

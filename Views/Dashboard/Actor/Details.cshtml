@@ -1,5 +1,7 @@
 ﻿@model Netflex.Entities.Actor
-
+@{
+    Layout = "_AdminLayout";
+}
 <h2>Thông tin diễn viên</h2>
 <p><strong>Tên:</strong> @Model.Name</p>
 @if (!string.IsNullOrEmpty(Model.Photo))

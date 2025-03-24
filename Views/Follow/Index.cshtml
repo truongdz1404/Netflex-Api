@@ -5,7 +5,7 @@
     Layout = "_Layout";
 }
 
-<div class="container list-items-blogs">
+<div class="container list-items-blogs ">
     <div class="d-flex justify-content-between align-items-center my-3">
         <div class="d-flex align-items-center">
             <div class="vertical-line"></div>
@@ -25,14 +25,17 @@
                     </div>
                 </div>
 
-                <div class="col-md-10 text-smm ">
+                <div class="col-md-9 text-smm ">
                     <a href="@Url.Action("Detail", "Film", new { id = film.Id })">
                         <p class="text-base text-white-70 mb-1">
                             @(film.Title.Length > 100 ? film.Title.Substring(0, 100) + "..." : film.Title)
                         </p>
                     </a>
                     <p>@film.ProductionYear</p>
-                    <p>@(film.About.Length > 100 ? film.About.Substring(0, 100) + "..." : film.About)</p>
+                    <p>@(string.IsNullOrEmpty(film.About) ? "" : (film.About.Length > 100 ? film.About.Substring(0, 100) + "..." : film.About))</p>
+                </div>
+                <div class="col-md-1 text-smm">
+                    <i class="fa-solid fa-ellipsis fa-2xl"></i>
                 </div>
             </div>
         }
@@ -54,32 +57,33 @@
                         </p>
                     </a>
                     <p>@serie.ProductionYear</p>
-                    <p>@(serie.About.Length > 100 ? serie.About.Substring(0, 100) + "..." : serie.About)</p>
+                    <p>@(string.IsNullOrEmpty(serie.About) ? "" : (serie.About.Length > 100 ? serie.About.Substring(0, 100) + "..." : serie.About))</p>
+
                 </div>
             </div>
         }
     }
-</div>
-
-<div class="row">
-    <nav class="text-sm">
-        <ul class="pagination d-flex gap-2">
-            <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
-                <a class="page-link" href="@Url.Action("index", new { page = Model.PageNumber - 1 })"><i
-                        class="fa-solid fa-caret-left slider-prev text-md ps-2 pe-1"></i></a>
-            </li>
-
-            @for (int i = 1; i <= Model.PageCount; i++)
-            {
-                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                    <a class="page-link" href="@Url.Action("index", new { page = i })">@i</a>
+    <div class="row mt-3">
+        <nav class="text-sm">
+            <ul class="pagination d-flex gap-2">
+                <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("index", new { page = Model.PageNumber - 1 })"><i
+                            class="fa-solid fa-caret-left slider-prev text-md ps-2 pe-1"></i></a>
                 </li>
-            }
 
-            <li class="page-item @(Model.PageNumber == Model.PageCount ? "disabled" : "") ">
-                <a class="page-link" href="@Url.Action("index", new { page = Model.PageNumber + 1 })"><i
-                        class="fa-solid fa-caret-right slider-next text-md ps-1 pe-2"></i></a>
-            </li>
-        </ul>
-    </nav>
+                @for (int i = 1; i <= Model.PageCount; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("index", new { page = i })">@i</a>
+                    </li>
+                }
+
+                <li class="page-item @(Model.PageNumber == Model.PageCount ? "disabled" : "") ">
+                    <a class="page-link" href="@Url.Action("index", new { page = Model.PageNumber + 1 })"><i
+                            class="fa-solid fa-caret-right slider-next text-md ps-1 pe-2"></i></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
 </div>

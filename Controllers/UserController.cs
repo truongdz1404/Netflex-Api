@@ -90,7 +90,7 @@ namespace Netflex.Controllers
 
             var pagedModels = models.ToPagedList(pageNumber, PAGE_SIZE);
 
-            return View(pagedModels);
+            return View("~/Views/Dashboard/User/Index.cshtml",pagedModels);
         }
 
         public async Task<IActionResult> ExportToExcel()
@@ -168,7 +168,7 @@ namespace Netflex.Controllers
                 LockoutEnabled = user.LockoutEnabled
             };
 
-            return View(model);
+            return View("~/Views/Dashboard/User/Details.cshtml",model);
         }
 
         // GET: UserController/Create
@@ -180,7 +180,7 @@ namespace Netflex.Controllers
             {
                 AvailableRoles = roles.Select(r => r.Name ?? string.Empty).ToList()
             };
-            return View(model);
+            return View("~/Views/Dashboard/User/Create.cshtml",model);
         }
 
         // POST: UserController/Create
@@ -252,7 +252,7 @@ namespace Netflex.Controllers
                 SelectedRoles = currentRoles.ToList()
             };
             ViewBag.SelectedRoles = model.SelectedRoles;
-            return View(model);
+            return View("~/Views/Dashboard/User/Edit.cshtml",model);
         }
 
         // POST: UserController/Edit/5
@@ -311,7 +311,7 @@ namespace Netflex.Controllers
 
             var roles = await _roleManager.Roles.ToListAsync();
             model.AvailableRoles = roles.Select(r => r.Name ?? string.Empty).ToList();
-            return View(model);
+            return View("~/Views/Dashboard/User/Edit.cshtml",model);
         }
 
         [Route("/dashboard/user/lock/{id}")]
