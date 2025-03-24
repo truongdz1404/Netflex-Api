@@ -21,7 +21,7 @@
             @for (var i = 0; i < Model.Count(); i += 2)
             {
                 <div class="carousel-item @(i == 0 ? "active" : "")">
-                    <div class="row">
+                    <div class="row ">
                         @for (var j = 0; j < 2 && (i + j) < Model.Count(); j++)
                         {
                             var film = Model[i + j];

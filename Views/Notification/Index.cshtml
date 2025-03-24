@@ -12,13 +12,11 @@
             <p class="ms-2 mb-0 text-md text-white fw-bold">Notification</p>
         </div>
     </div>
-    <div class="row">
+    <div class="row mb-3">
         @foreach (var noti in Model)
         {
-            <div class="col-12 col-md-6 col-lg-4 mb-4">
-                <div>
-                    @noti.Message
-                </div>
+            <div class="col-12">
+                @noti.Message
             </div>
         }
     </div>

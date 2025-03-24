@@ -70,19 +70,25 @@ public static class DependencyInjection
             };
         });
         services.ConfigureApplicationCookie(options =>
-  {
-      options.SlidingExpiration = true;
-      options.ExpireTimeSpan = TimeSpan.FromDays(7);
-  });
+        {
+            options.SlidingExpiration = true;
+            options.ExpireTimeSpan = TimeSpan.FromDays(7);
+        });
         services.Configure<CookiePolicyOptions>(options =>
-      {
-          options.CheckConsentNeeded = context => false;
-          options.MinimumSameSitePolicy = SameSiteMode.Lax;
-      });
-      services.ConfigureApplicationCookie(options => {
-        options.LoginPath = "/Identity/Account/Login";
-        options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-      });
+        {
+            options.CheckConsentNeeded = context => false;
+            options.MinimumSameSitePolicy = SameSiteMode.Lax;
+        });
+        services.ConfigureApplicationCookie(options =>
+        {
+            options.LoginPath = "/Identity/Account/Login";
+            options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+        });
+
+
+        services.AddSingleton<NotificationQueueService>();
+        services.AddHostedService(sp => sp.GetService<NotificationQueueService>()!);
+
         return services;
     }
 }
