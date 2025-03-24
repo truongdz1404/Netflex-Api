@@ -155,3 +155,8 @@ video {
 .hover-blur:hover {
   filter: blur(5px); 
 }
+
+
+.border-line {
+  border-color: rgba(255, 255, 255, .08) !important;
+}
