@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -7,6 +8,7 @@ namespace Netflex.Hubs
     public class NotificationHub : Hub<INotificationClient>
     {
         private readonly ConnectionManager _connectionManager;
+
         public NotificationHub(ConnectionManager connectionManager)
         {
             _connectionManager = connectionManager;
@@ -14,11 +16,11 @@ namespace Netflex.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            var userName = Context.User?.Identity?.Name
-                ?? throw new Exception("User is not authenticated");
+            var userId = Context.User?.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? throw new Exception("User ID is not available");
 
             var connectionId = Context.ConnectionId;
-            _connectionManager.AddConnection(userName, connectionId,
+            _connectionManager.AddConnection(userId, connectionId,
                 (u) => Clients.Others.UserConnected(u)
             );
             await base.OnConnectedAsync();
@@ -26,11 +28,11 @@ namespace Netflex.Hubs
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            string userName = Context.User?.Identity?.Name
+            string userId = Context.User?.FindFirstValue(ClaimTypes.NameIdentifier)
                 ?? throw new Exception("User is not authenticated");
 
             string connectionId = Context.ConnectionId;
-            _connectionManager.RemoveConnection(userName, connectionId,
+            _connectionManager.RemoveConnection(userId, connectionId,
                 (u) => Clients.Others.UserDisconnected(u));
             await base.OnDisconnectedAsync(exception);
         }

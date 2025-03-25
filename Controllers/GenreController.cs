@@ -14,6 +14,7 @@ namespace Netflex.Controllers
         {
             _unitOfWork = unitOfWork;
         }
+        [Route("/dashboard/genre")]
         public IActionResult Index(string? SearchString, string? SortBy = "name", int PageNumber = 1)
         {
             var repository = _unitOfWork.Repository<Genre>();
@@ -40,13 +41,14 @@ namespace Netflex.Controllers
                 Name = x.Name
             }).ToPagedList(PageNumber, PAGE_SIZE);
 
-            return View(result);
+            return View("~/Views/Dashboard/Genre/Index.cshtml",result);
         }
 
-
-        public IActionResult Create() => View();
+        [Route("/dashboard/genre/create")]
+        public IActionResult Create() => View("~/Views/Dashboard/Genre/Create.cshtml");
 
         [HttpPost]
+        [Route("/dashboard/genre/create")]
         public async Task<IActionResult> Create(GenreEditModel model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -57,16 +59,18 @@ namespace Netflex.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Route("/dashboard/genre/edit/{id}")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var category = await _unitOfWork.Repository<Genre>().GetByIdAsync(id);
             if (category == null) return NotFound();
             GenreEditModel model = new GenreEditModel() { Name = category.Name };
 
-            return View(model);
+            return View("~/Views/Dashboard/Genre/Edit.cshtml",model);
         }
 
         [HttpPost]
+        [Route("/dashboard/genre/edit/{id}")]
         public async Task<IActionResult> Edit(Guid id, GenreEditModel model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -80,6 +84,7 @@ namespace Netflex.Controllers
 
 
         [HttpPost]
+        [Route("/dashboard/genre/delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var entity = await _unitOfWork.Repository<Genre>().GetByIdAsync(id);

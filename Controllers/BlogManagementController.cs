@@ -13,13 +13,13 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Netflex.Controllers
 {
-[Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin")]
 
     public class BlogManagementController(ApplicationDbContext context,
-    IStorageService storage,
-    IUnitOfWork unitOfWork,
-    ILogger<BlogManagementController> logger)
-    : Controller
+        IStorageService storage,
+        IUnitOfWork unitOfWork,
+        ILogger<BlogManagementController> logger)
+        : Controller
     {
         private readonly IStorageService _storage = storage;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
@@ -27,6 +27,8 @@ namespace Netflex.Controllers
         private readonly ApplicationDbContext _context = context;
 
         private readonly ILogger<BlogManagementController> _logger = logger;
+
+        [Route("/dashboard/blog")]
         public IActionResult Index(int? page, string searchTerm, string createrName, string createrId, DateTime? createdAt, string sortOrder)
         {
             int pageNumber = page ?? 1;
@@ -105,7 +107,7 @@ namespace Netflex.Controllers
             ViewBag.CreatedAt = createdAt;
             ViewBag.SortOrder = sortOrder;
 
-            return View(models);
+            return View("~/Views/Dashboard/Blog/Index.cshtml", models);
         }
 
         public IActionResult ExportToExcel()
@@ -146,6 +148,7 @@ namespace Netflex.Controllers
             }
         }
 
+        [Route("/dashboard/blog/detail/{id}")]
         public IActionResult Details(Guid? id)
         {
             if (id == null)
@@ -164,24 +167,27 @@ namespace Netflex.Controllers
                 CreaterId = b.CreaterId,
             };
 
-            return View(model);
+            return View("~/Views/Dashboard/Blog/Details.cshtml", model);
         }
 
+        [Route("/dashboard/blog/create")]
         public IActionResult Create()
         {
             ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName");
-            return View();
+            return View("~/Views/Dashboard/Blog/Create.cshtml");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("/dashboard/blog/create")]
         public async Task<IActionResult> Create(CreateBlogViewModels blogViewModel)
         {
-            if (!ModelState.IsValid) {
+            if (!ModelState.IsValid)
+            {
                 ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName");
                 return View(blogViewModel);
             }
-                
+
 
             var thumbnailUri = blogViewModel.Thumbnail != null ? await _storage.UploadFileAsync("thumbnail", blogViewModel.Thumbnail) : null;
 
@@ -210,6 +216,7 @@ namespace Netflex.Controllers
             return RedirectToAction("index", "blogmanagement");
         }
 
+        [Route("/dashboard/blog/edit/{id}")]
         public IActionResult Edit(Guid? id)
         {
             if (id == null)
@@ -228,11 +235,12 @@ namespace Netflex.Controllers
                 CreaterId = blog.CreaterId
             };
             ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName", blog.CreaterId);
-            return View(blogViewModel);
+            return View("~/Views/Dashboard/Blog/Edit.cshtml", blogViewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("/dashboard/blog/edit/{id}")]
         public async Task<IActionResult> Edit(EditBlogViewModels blogViewModel)
         {
             if (!ModelState.IsValid)
@@ -255,7 +263,7 @@ namespace Netflex.Controllers
             return RedirectToAction("index", "blogmanagement");
         }
 
-
+        [Route("/dashboard/blog/delete/{id}")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)

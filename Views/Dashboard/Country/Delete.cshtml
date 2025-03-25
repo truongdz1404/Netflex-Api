@@ -1,0 +1,17 @@
+﻿@model Netflex.Entities.Country
+@{
+    Layout = "_AdminLayout";
+}
+<h2>Xác nhận xóa</h2>
+
+<p>Bạn có chắc muốn xóa quốc gia <strong>@Model.Name</strong> không?</p>
+
+<button class="btn btn-danger delete" data-id="@Model.Id" data-controller="Country" data-action="DeleteConfirmed"
+    data-body-message="Bạn có chắc chắn muốn xóa @Model.Name không?"
+    data-redirect-url="@Url.Action("Index", "Country")">
+    Xóa
+</button>
+
+<a asp-action="Index" class="btn btn-secondary">Hủy</a>
+
+<script src="~/js/delete.js"></script>

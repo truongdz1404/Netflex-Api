@@ -13,7 +13,7 @@ $((function(){
                             <span aria-hidden="true" class="text-white-50">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body delete-modal-body">
+                    <div class="modal-body delete-modal-body">  
                         
                     </div>
                     <div class="modal-footer">
@@ -34,7 +34,7 @@ $((function(){
         var bodyMessage = $(target).data('body-message');
         redirectUrl = $(target).data('redirect-url');
 
-        url = "/"+controller+"/"+action+"?Id="+Id;
+        url = "/"+ "dashboard" + "/" +controller+"/"+action+"/"+Id;
         $(".delete-modal-body").text(bodyMessage);
         $("#deleteModal").modal('show');
     });

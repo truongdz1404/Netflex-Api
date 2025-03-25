@@ -9,7 +9,7 @@ html {
 }
 
 body {
-  font-family: "Inter", Helvetica, Arial, sans-serif;
+  font-family: "Inter", Helvetica, Arial, sans-serif !important;
 }
 
 @media (min-width: 768px) {
@@ -58,6 +58,9 @@ a {
 }
 .text-white-70{
   color: #d9d9d9 !important;
+}
+.text-white-smoke{
+  color: whitesmoke !important;
 }
 
 .form-group.required .control-label:after {
@@ -143,4 +146,29 @@ video {
 
 .modal-header, .modal-footer{
   border: none !important;
+}
+
+.hover-blur {
+  transition: filter 0.3s ease-in-out;
+}
+
+.hover-blur:hover {
+  filter: blur(5px); 
+}
+
+
+.border-line {
+  border-color: rgba(255, 255, 255, .08) !important;
+}
+
+.bg-light {
+  background-color: #F3F6F9 !important;
+}
+
+.blur-on-hover img {
+  transition: filter 0.3s ease-in-out;
+}
+
+.blur-on-hover:hover img {
+  filter: blur(2px);
 }

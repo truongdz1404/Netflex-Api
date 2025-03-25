@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Netflex.Database;
 using Netflex.Models.Serie;
+using Microsoft.AspNetCore.Identity;
 using X.PagedList.Extensions;
 
 namespace Netflex.Controllers
@@ -16,9 +17,14 @@ namespace Netflex.Controllers
     {
         private const int PAGE_SIZE = 10;
         private readonly ApplicationDbContext _context;
-        public SerieController(IUnitOfWork unitOfWork, ApplicationDbContext context) : base(unitOfWork)
+
+        private readonly IFollowRepository _followRepository;
+        private readonly UserManager<User> _userManager;
+        public SerieController(IFollowRepository followRepository, IUnitOfWork unitOfWork, ApplicationDbContext context, UserManager<User> userManager) : base(unitOfWork)
         {
             _context = context;
+            _followRepository = followRepository;
+            _userManager = userManager;
         }
 
         public IActionResult Index(int? page)
@@ -40,7 +46,7 @@ namespace Netflex.Controllers
             return View(models);
         }
 
-        public IActionResult Detail(Guid? id)
+        public async Task<IActionResult> Detail(Guid? id)
         {
             if (id == null)
                 return NotFound();
@@ -51,6 +57,15 @@ namespace Netflex.Controllers
                 .FirstOrDefault(m => m.Id.Equals(id));
             if (serie == null)
                 return NotFound();
+
+            var user = await _userManager.GetUserAsync(User);
+            bool isFollowed = false;
+
+            if (user != null)
+            {
+                var existingFollow = await _followRepository.GetByUserIdAndSerieIdAsync(user.Id, serie.Id);
+                isFollowed = existingFollow != null;
+            }
             var model = new DetailSerieViewModel
             {
                 Id = serie.Id,
@@ -62,6 +77,7 @@ namespace Netflex.Controllers
                 CountryIds = _context.SerieCountries.Where(x => x.SerieId == serie.Id).Select(x => x.CountryId).ToList(),
                 GenreIds = _context.SerieGenres.Where(x => x.SerieId == serie.Id).Select(x => x.GenreId).ToList(),
                 ActorIds = _context.SerieActors.Where(x => x.SerieId == serie.Id).Select(x => x.ActorId).ToList(),
+                IsFollowed = isFollowed
 
             };
             ViewBag.Episodes = _unitOfWork.Repository<Episode>().Entities.Where(e => e.SerieId == id).ToList();

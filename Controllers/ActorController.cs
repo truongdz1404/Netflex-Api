@@ -17,6 +17,7 @@ namespace Netflex.Controllers
             _storage = storage;
         }
 
+        [Route("/dashboard/actor")]
         public async Task<IActionResult> Index(string searchString, int? page)
         {
             var actors = await _actorRepository.GetAllAsync();
@@ -32,15 +33,17 @@ namespace Netflex.Controllers
             var pagedActors = actors.ToPagedList(pageNumber, PageSize);
 
             ViewBag.SearchString = searchString;
-            return View(pagedActors);
+            return View("~/Views/Dashboard/Actor/Index.cshtml", pagedActors);
         }
 
+        [Route("/dashboard/actor/create")]
         public IActionResult Create()
         {
-            return View();
+            return View("~/Views/Dashboard/Actor/Create.cshtml");
         }
 
         [HttpPost]
+        [Route("/dashboard/actor/create")]
         public async Task<IActionResult> Create(CreateActorViewModel actor, IFormFile? photoFile)
         {
             if (!ModelState.IsValid) return View(actor);
@@ -64,18 +67,20 @@ namespace Netflex.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Route("/dashboard/actor/detail/{id}")]
         public async Task<IActionResult> Details(Guid id)
         {
             var actor = await _actorRepository.GetByIdAsync(id);
             if (actor == null) return NotFound();
-            return View(actor);
+            return View("~/Views/Dashboard/Actor/Details.cshtml",actor);
         }
 
+        [Route("/dashboard/actor/edit/{id}")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var actor = await _actorRepository.GetByIdAsync(id);
             if (actor == null) return NotFound();
-            return View(new EditActorViewModel
+            return View("~/Views/Dashboard/Actor/Edit.cshtml", new EditActorViewModel
             {
                 Id = actor.Id,
                 Name = actor.Name,
@@ -85,6 +90,7 @@ namespace Netflex.Controllers
         }
 
         [HttpPost]
+        [Route("/dashboard/actor/edit/{id}")]
         public async Task<IActionResult> Edit(Guid id, EditActorViewModel actor, IFormFile? photoFile)
         {
             if (!ModelState.IsValid) return View(actor);
@@ -111,15 +117,9 @@ namespace Netflex.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            var actor = await _actorRepository.GetByIdAsync(id);
-            if (actor == null) return NotFound();
-            return View(actor);
-        }
-
         [HttpDelete]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        [Route("/dashboard/actor/delete/{id}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
             var actor = await _actorRepository.GetByIdAsync(id);
             if (actor == null) return NotFound();
@@ -127,7 +127,7 @@ namespace Netflex.Controllers
             await _actorRepository.DeleteAsync(actor);
             await _actorRepository.SaveChangeAsync();
 
-            return Json(new { success = true });
+            return RedirectToAction(nameof(Index));
         }
     }
 }
