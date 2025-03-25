@@ -103,7 +103,7 @@ namespace Netflex.Controllers
         }
 
 
-        [HttpPost]
+        [HttpDelete]
         [Route("/dashboard/genre/delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

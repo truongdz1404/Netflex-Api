@@ -236,8 +236,21 @@ namespace Netflex.Controllers
                 return Json(new { isFollowed = true });
             }
         }
-        [Route("/follow/delete/{id}")]
+        // [HttpDelete]
+        // [Route("/follow/delete/{id}")]
+        // public async Task<IActionResult> Delete(Guid? id)
+        // {
+        //     if (id == null)
+        //         return NotFound();
+        //     var follow = _unitOfWork.Repository<Follow>().Entities.FirstOrDefault(m => m.Id.Equals(id));
+        //     if (follow == null)
+        //         return NotFound();
+        //     await _unitOfWork.Repository<Follow>().DeleteAsync(follow);
+        //     await _unitOfWork.Save(CancellationToken.None);
+        //     return RedirectToAction("Index", "Follow");
+        // }
         [HttpDelete]
+        [Route("/follow/delete/{id}")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)

@@ -15,7 +15,7 @@ namespace Netflex.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [Route("/dashboard/age-category")]
+        [Route("/dashboard/agecategory")]
         public IActionResult Index(string? SearchString, string? SortBy = "name", int PageNumber = 1)
         {
             var repository = _unitOfWork.Repository<AgeCategory>();
@@ -42,15 +42,15 @@ namespace Netflex.Controllers
                 Name = x.Name
             }).ToPagedList(PageNumber, PAGE_SIZE);
 
-            return View("~/Views/Dashboard/AgeCategory/Index.cshtml",result);
+            return View("~/Views/Dashboard/AgeCategory/Index.cshtml", result);
         }
 
 
-        [Route("/dashboard/age-category/create")]
+        [Route("/dashboard/agecategory/create")]
         public IActionResult Create() => View("~/Views/Dashboard/AgeCategory/Create.cshtml");
 
         [HttpPost]
-        [Route("/dashboard/age-category/create")]
+        [Route("/dashboard/agecategory/create")]
         public async Task<IActionResult> Create(AgeCategoryEditModel model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -61,18 +61,18 @@ namespace Netflex.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Route("/dashboard/age-category/edit/{id}")]
+        [Route("/dashboard/agecategory/edit/{id}")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var category = await _unitOfWork.Repository<AgeCategory>().GetByIdAsync(id);
             if (category == null) return NotFound();
             AgeCategoryEditModel model = new AgeCategoryEditModel() { Name = category.Name };
 
-            return View("~/Views/Dashboard/AgeCategory/Edit.cshtml",model);
+            return View("~/Views/Dashboard/AgeCategory/Edit.cshtml", model);
         }
 
         [HttpPost]
-        [Route("/dashboard/age-category/edit/{id}")]
+        [Route("/dashboard/agecategory/edit/{id}")]
         public async Task<IActionResult> Edit(Guid id, AgeCategoryEditModel model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -85,17 +85,36 @@ namespace Netflex.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
-        [HttpPost]
-        [Route("/dashboard/age-category/delete/{id}")]
+        [HttpDelete]
+        [Route("/dashboard/agecategory/delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var category = await _unitOfWork.Repository<AgeCategory>().GetByIdAsync(id);
-            if (category != null)
+            var entity = await _unitOfWork.Repository<AgeCategory>().GetByIdAsync(id);
+
+            if (entity != null)
             {
-                await _unitOfWork.Repository<AgeCategory>().DeleteAsync(category);
+                var allFilms = await _unitOfWork.Repository<Film>().GetAllAsync();
+                var filmsWithCategory = allFilms.Where(f => f.AgeCategoryId == id).ToList();
+
+                foreach (var film in filmsWithCategory)
+                {
+                    film.AgeCategoryId = null;
+                    await _unitOfWork.Repository<Film>().UpdateAsync(film);
+                }
+
+                var allSeries = await _unitOfWork.Repository<Serie>().GetAllAsync();
+                var seriesWithCategory = allSeries.Where(s => s.AgeCategoryId == id).ToList();
+                
+                foreach (var serie in seriesWithCategory)
+                {
+                    serie.AgeCategoryId = null;
+                    await _unitOfWork.Repository<Serie>().UpdateAsync(serie);
+                }
+
+                await _unitOfWork.Repository<AgeCategory>().DeleteAsync(entity);
                 await _unitOfWork.Save(CancellationToken.None);
             }
+
             return RedirectToAction(nameof(Index));
         }
     }
