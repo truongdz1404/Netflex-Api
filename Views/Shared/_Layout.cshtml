@@ -152,8 +152,8 @@
                             </div>
                         </li>
                     </ul>
-                    <form class="d-none d-lg-flex search-box" action="@Url.Action("SearchByTitle", "Film")">
-                        <input class="search" placeholder="Tìm kiếm..." aria-label="Search" name="searchTitle">
+                    <form class="d-none d-lg-flex search-box" action="@Url.Action("index", "search")">
+                        <input class="search" placeholder="Tìm kiếm..." aria-label="Search" name="title">
                         <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </form>
                     @await Html.PartialAsync("_LoginPartial")
@@ -237,28 +237,28 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/delete.js" asp-append-version="true"></script>
 
-	<script>
-		$(document).ready(function () {
-			updateSidebarHeight();
-			$(window).on("resize", updateSidebarHeight);
-			$(window).on("load", scrollToTop);
+    <script>
+        $(document).ready(function () {
+            updateSidebarHeight();
+            $(window).on("resize", updateSidebarHeight);
+            $(window).on("load", scrollToTop);
 
-			// Load Genre Dropdown
-			loadGenreDropdown();
-		});
+            // Load Genre Dropdown
+            loadGenreDropdown();
+        });
 
-		function updateSidebarHeight() {
-			let mainContent = $(".main-content");
-			let sidebar = $(".sidebar");
+        function updateSidebarHeight() {
+            let mainContent = $(".main-content");
+            let sidebar = $(".sidebar");
 
-			if (mainContent.length && sidebar.length) {
-				sidebar.css("max-height", mainContent.outerHeight() + "px");
-			}
-		}
+            if (mainContent.length && sidebar.length) {
+                sidebar.css("max-height", mainContent.outerHeight() + "px");
+            }
+        }
 
-		function scrollToTop() {
-			$(window).scrollTop(0);
-		}
+        function scrollToTop() {
+            $(window).scrollTop(0);
+        }
 
         function loadGenreDropdown() {
             $.ajax({

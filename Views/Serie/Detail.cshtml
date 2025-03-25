@@ -2,7 +2,6 @@
 @{
     ViewData["Title"] = Model.Title;
     Layout = "_Layout";
-    float Ratings = 8.6f;
 }
 <div class="container">
     <nav aria-label="breadcrumb">
@@ -136,15 +135,14 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src="~/js/rating.js"></script>
-
-            function highlight(value) {
-                stars.each(function () {
-                    let starValue = parseInt($(this).data("value"));
-                    $(this).toggleClass("fas", starValue <= value);
-                    $(this).toggleClass("far", starValue > value);
-                });
-            }
-        });
+    <script>
+        function highlight(value) {
+            stars.each(function () {
+                let starValue = parseInt($(this).data("value"));
+                $(this).toggleClass("fas", starValue <= value);
+                $(this).toggleClass("far", starValue > value);
+            });
+        }
     </script>
 
     <script>

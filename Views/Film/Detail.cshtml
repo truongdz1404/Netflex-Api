@@ -1,9 +1,8 @@
-
 @model DetailFilmViewModel
 @{
     ViewData["Title"] = Model.Title;
     Layout = "_Layout";
-    
+
 }
 <div class="container">
     <nav aria-label="breadcrumb">
@@ -53,7 +52,6 @@
                 <p class="text-sm"><span class="date">Dec. 31, 2023</span>&nbsp;&nbsp;&nbsp;China&nbsp;&nbsp;&nbsp;</p>
             </div>
 
-            @* Review  *@
             <div id="review-container">
 
             </div>
@@ -138,7 +136,7 @@
     src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v22.0&appId=1589497395335451"></script>
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-	<script src="~/js/rating.js"></script>
+    <script src="~/js/rating.js"></script>
     <script>
         $(document).ready(function () {
             let video = $("#video").get(0);
