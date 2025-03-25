@@ -1,7 +1,7 @@
 ﻿$(document).ready(function () {
     let pathSegments = window.location.pathname.split("/").filter(segment => segment);
-    let contentId = pathSegments[pathSegments.length - 1]; // ID của phim hoặc series
-    let isSeries = window.location.pathname.toLowerCase().includes("series"); // Kiểm tra nếu là series
+    let contentId = pathSegments[pathSegments.length - 1]; 
+    let isSeries = window.location.pathname.toLowerCase().includes("serie"); 
 
     let selected = $("#selected-rating");
     let ratings = 0;
@@ -19,7 +19,7 @@
     function bindStarEvents() {
         let stars = $(".rating-stars i");
 
-        stars.off("mouseover mouseout click"); // Xóa sự kiện cũ để tránh trùng lặp
+        stars.off("mouseover mouseout click"); 
         stars.on("mouseover", function () {
             let value = $(this).data("value");
             highlight(value);
@@ -46,7 +46,6 @@
             success: function (data) {
                 $("#review-container").html(data);
                 ratings = parseFloat($("#selected-rating").attr("data-rating")) || 0;
-                console.log("Rating data:", data);
                 highlight(ratings);
                 bindStarEvents();
             },

@@ -39,7 +39,7 @@ namespace Netflex.Controllers
                 return BadRequest("Invalid Series ID");
 
             var model = await GetSerieRating(id, createrId);
-            return PartialView("_ReviewPartial", model); // Có thể dùng partial view riêng nếu cần
+            return PartialView("_ReviewPartial", model); 
         }
 
         // Action POST cho Film
@@ -70,7 +70,7 @@ namespace Netflex.Controllers
                         Rating = model.Rating,
                         CreaterId = createrId,
                         FilmId = id,
-                        SerieId = null // Đảm bảo SerieId là null khi rating cho Film
+                        SerieId = null 
                     };
                     await reviewRepo.AddAsync(newReview);
                 }
@@ -117,8 +117,8 @@ namespace Netflex.Controllers
                         Id = Guid.NewGuid(),
                         Rating = model.Rating,
                         CreaterId = createrId,
-                        SerieId = id,  // Gán SerieId
-                        FilmId = null  // Đảm bảo FilmId là null khi rating cho Series
+                        SerieId = id,  
+                        FilmId = null  
                     };
                     await reviewRepo.AddAsync(newReview);
                 }
@@ -130,7 +130,7 @@ namespace Netflex.Controllers
                 await _unitOfWork.Save(CancellationToken.None);
 
                 var modelView = await GetSerieRating(id, createrId);
-                return PartialView("_ReviewPartial", modelView); // Có thể dùng partial view riêng nếu cần
+                return PartialView("_ReviewPartial", modelView); 
             }
             catch (Exception ex)
             {
@@ -153,7 +153,7 @@ namespace Netflex.Controllers
                 AverageRating = reviews.Any() ? reviews.Average(r => r.Rating) : 1,
                 TotalReviews = reviews.Count,
                 FilmId = id,
-                SerieId = null // Đảm bảo SerieId là null
+                SerieId = null 
             };
         }
 
@@ -171,7 +171,7 @@ namespace Netflex.Controllers
                 Rating = userReview?.Rating ?? 0,
                 AverageRating = reviews.Any() ? reviews.Average(r => r.Rating) : 1,
                 TotalReviews = reviews.Count,
-                FilmId = null, // Đảm bảo FilmId là null
+                FilmId = null, 
                 SerieId = id
             };
         }
