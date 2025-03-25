@@ -44,8 +44,8 @@
                 href="@(film != null ? Url.Action("Detail", "Film", new { id = film.Id }) : (serie != null ? Url.Action("Detail", "Serie", new { id = serie.Id }) : "#"))">
                 <p class="text-base text-white-70 mb-1">
                     @((film != null ? film.Title : (serie != null ? serie.Title : "")).Length > 100
-                                        ? (film != null ? film.Title : (serie != null ? serie.Title : "")).Substring(0, 100) + "..."
-                                        : (film != null ? film.Title : (serie != null ? serie.Title : "")))
+                    ? (film != null ? film.Title : (serie != null ? serie.Title : "")).Substring(0, 100) + "..."
+                    : (film != null ? film.Title : (serie != null ? serie.Title : "")))
                 </p>
             </a>
             <p>
@@ -53,12 +53,11 @@
             </p>
             <p>
                 @{
-                        var about = film?.About ?? serie?.About ?? "";
-                        var truncatedAbout = about.Length > 100 ? about.Substring(0, 100) + "..." : about;
-                    }
-                    @truncatedAbout
-                </p>
-
+                    var about = film?.About ?? serie?.About ?? "";
+                    var truncatedAbout = about.Length > 100 ? about.Substring(0, 100) + "..." : about;
+                }
+                @truncatedAbout
+            </p>
             </div>
 
             <a class="col-md-1" href="javascript:void(0);" data-id="@item.Id"
@@ -67,7 +66,6 @@
             </a>
         </div>
     }
-
 
     @if (Model.PageCount > 1)
     {
