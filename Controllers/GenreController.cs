@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
+using Netflex.Entities;
 using Netflex.Models.Genre;
 using System.Drawing.Printing;
 using X.PagedList.Extensions;
@@ -9,7 +11,7 @@ namespace Netflex.Controllers
     public class GenreController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        public const int PAGE_SIZE = 3;
+        public const int PAGE_SIZE = 10;
         public GenreController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -42,6 +44,24 @@ namespace Netflex.Controllers
             }).ToPagedList(PageNumber, PAGE_SIZE);
 
             return View("~/Views/Dashboard/Genre/Index.cshtml",result);
+        }
+        // 
+        public IActionResult GenreDropdown()
+        {
+            try
+            {
+                var repository = _unitOfWork.Repository<Genre>();
+                var genres = repository.Entities
+                    .OrderBy(g => g.Name)
+                    .Select(g => new GenreViewModel { Id = g.Id, Name = g.Name })
+                    .ToList();
+                ViewData["Genres"] = genres;
+                return PartialView("_GenresPartial", genres);
+            }
+            catch (Exception ex)
+            {
+                return Content("Server Error: " + ex.Message);
+            }
         }
 
         [Route("/dashboard/genre/create")]
@@ -95,5 +115,8 @@ namespace Netflex.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+
+
+       
     }
 }

@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Netflex.Models.Genre
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -151,8 +152,8 @@
                             </div>
                         </li>
                     </ul>
-                    <form class="d-none d-lg-flex search-box">
-                        <input class="search" placeholder="Tìm kiếm..." aria-label="Search">
+                    <form class="d-none d-lg-flex search-box" action="@Url.Action("SearchByTitle", "Film")">
+                        <input class="search" placeholder="Tìm kiếm..." aria-label="Search" name="searchTitle">
                         <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </form>
                     @await Html.PartialAsync("_LoginPartial")
@@ -236,28 +237,41 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/delete.js" asp-append-version="true"></script>
 
-    <script>
+	<script>
+		$(document).ready(function () {
+			updateSidebarHeight();
+			$(window).on("resize", updateSidebarHeight);
+			$(window).on("load", scrollToTop);
 
+			// Load Genre Dropdown
+			loadGenreDropdown();
+		});
 
-        $(document).ready(function () {
-            updateSidebarHeight();
-            $(window).on("resize", updateSidebarHeight);
-            $(window).on("load", scrollToTop);
-        });
+		function updateSidebarHeight() {
+			let mainContent = $(".main-content");
+			let sidebar = $(".sidebar");
 
-        function updateSidebarHeight() {
-            let mainContent = $(".main-content");
-            let sidebar = $(".sidebar");
+			if (mainContent.length && sidebar.length) {
+				sidebar.css("max-height", mainContent.outerHeight() + "px");
+			}
+		}
 
-            if (mainContent.length && sidebar.length) {
-                sidebar.css("max-height", mainContent.outerHeight() + "px");
-            }
+		function scrollToTop() {
+			$(window).scrollTop(0);
+		}
+
+        function loadGenreDropdown() {
+            $.ajax({
+                url: "/Genre/GenreDropdown",
+                type: "GET",
+                success: function (data) {
+                    $("#genre-dropdown .dropdown-menu").html(data);
+                },
+                error: function () {
+                    console.error("Cannot load the genre");
+                }
+            });
         }
-
-        function scrollToTop() {
-            $(window).scrollTop(0);
-        }
-
         $(() => {
             var connection = new signalR.HubConnectionBuilder()
                 .withUrl("/notification-hub")
