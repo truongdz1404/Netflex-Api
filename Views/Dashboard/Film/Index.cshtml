@@ -103,7 +103,7 @@
                                 asp-route-id="@item.Id">Details</a>
                             <a class="btn btn-danger btn-sm delete" data-id="@item.Id" data-controller="film"
                                 data-action="delete" data-body-message="Bạn có muốn xóa phim lẻ này?"
-                                >Delete</a>
+                                data-redirect-url="/dashboard/film">Delete</a>
                         </td>
                     </tr>
                 }

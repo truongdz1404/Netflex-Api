@@ -16,6 +16,7 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
     private readonly ApplicationDbContext _dbContext = dbContext;
     private const int PAGE_SIZE = 3;
 
+    [Route("/dashboard/serie")]
     public IActionResult Index(int? page, string searchTerm, int? productionYear, string sortOrder)
     {
         int pageNumber = page ?? 1;
@@ -65,9 +66,9 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
         ViewBag.ProductionYear = productionYear;
         ViewBag.CreatedAt = productionYear;
 
-        return View(models);
+        return View("~/Views/Dashboard/Serie/Index.cshtml", models);
     }
-
+    [Route("/dashboard/serie/detail/{id}")]
     public IActionResult Detail(Guid? id)
     {
         if (id == null)
@@ -93,10 +94,11 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
 
         };
 
-        return View(model);
+        return View("~/Views/Dashboard/Serie/Detail.cshtml", model);
     }
 
     [HttpPost]
+    [Route("/dashboard/serie/delete/{id}")]
     public async Task<IActionResult> Delete(Guid? id)
     {
         if (id == null)
@@ -104,11 +106,17 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
         var serie = _unitOfWork.Repository<Serie>().Entities.FirstOrDefault(m => m.Id.Equals(id));
         if (serie == null)
             return NotFound();
+        var follows = _unitOfWork.Repository<Follow>().Entities.Where(f => f.SerieId == serie.Id).ToList();
+        foreach (var follow in follows)
+        {
+            await _unitOfWork.Repository<Follow>().DeleteAsync(follow);
+        }
         await _unitOfWork.Repository<Serie>().DeleteAsync(serie);
         await _unitOfWork.Save(CancellationToken.None);
-        return RedirectToAction("index", "serie");
+        return RedirectToAction("index", "seriemanagement");
     }
 
+    [Route("/dashboard/serie/edit/{id}")]
     public async Task<IActionResult> Edit(Guid? id)
     {
         if (id == null)
@@ -137,12 +145,13 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
 
         await PopulateViewBags(model);
 
-        return View(model);
+        return View("~/Views/Dashboard/Serie/Edit.cshtml", model);
     }
 
 
 
     [HttpPost]
+    [Route("/dashboard/serie/edit/{id}")]
     public async Task<IActionResult> Edit(EditSerieModel update)
     {
         try
@@ -203,7 +212,7 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
             await _dbContext.SaveChangesAsync();
             await _unitOfWork.Save(CancellationToken.None);
 
-            return RedirectToAction("index", "serie");
+            return RedirectToAction("index", "seriemanagement");
         }
         catch (Exception ex)
         {
@@ -227,6 +236,7 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
 
 
     [HttpGet]
+    [Route("/dashboard/serie/create")]
     public async Task<IActionResult> Create()
     {
         ViewBag.Actors = await _unitOfWork.Repository<Actor>().GetAllAsync();
@@ -234,10 +244,12 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
         ViewBag.Countries = await _unitOfWork.Repository<Country>().GetAllAsync();
         ViewBag.AgeCategories = await _unitOfWork.Repository<AgeCategory>().GetAllAsync();
 
-        return View(new CreateSerieModel());
+        return RedirectToAction("index", "seriemanagement");
     }
 
     [HttpPost]
+    [Route("/dashboard/serie/create")]
+
     public async Task<IActionResult> Create(CreateSerieModel serie)
     {
         if (!ModelState.IsValid)

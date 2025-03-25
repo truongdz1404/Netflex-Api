@@ -17,7 +17,6 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
     private readonly ApplicationDbContext _context = context;
     private const int PAGE_SIZE = 3;
     [Route("dashboard/film")]
-    [Route("dashboard/film/index")]
     public IActionResult Index(string? searchTerm, int? productionYear, string? sortOrder, int? page, bool export = false)
     {
         int pageNumber = page ?? 1;
@@ -155,6 +154,11 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
         var film = _unitOfWork.Repository<Film>().Entities.FirstOrDefault(m => m.Id.Equals(id));
         if (film == null)
             return NotFound();
+        var followsToRemove = _unitOfWork.Repository<Follow>().Entities.Where(f => f.FilmId == id).ToList();
+        foreach (var follow in followsToRemove)
+        {
+            await _unitOfWork.Repository<Follow>().DeleteAsync(follow);
+        }
         await _unitOfWork.Repository<Film>().DeleteAsync(film);
         await _unitOfWork.Save(CancellationToken.None);
         return RedirectToAction("index", "filmmanagement");
