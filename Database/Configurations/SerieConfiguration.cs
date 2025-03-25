@@ -22,18 +22,19 @@ public class SerieConfiguration
             .WithOne()
             .HasForeignKey(e => e.SerieId)
             .IsRequired();
-        builder.HasMany<SerieActor>()
+        builder.HasMany(s => s.SerieActors)
             .WithOne()
             .HasForeignKey(sa => sa.SerieId)
             .IsRequired();
-        builder.HasMany<SerieGenre>()
+        builder.HasMany(sg => sg.SerieGenres)
             .WithOne()
             .HasForeignKey(sg => sg.SerieId)
             .IsRequired();
-        builder.HasMany<SerieCountry>()
+        builder.HasMany(sc => sc.SerieCountries)
             .WithOne()
             .HasForeignKey(sc => sc.SerieId)
             .IsRequired();
+
         builder.HasMany<Review>()
             .WithOne()
             .HasForeignKey(r => r.SerieId);

@@ -61,9 +61,9 @@
                         id="selected-rating">0</span></p>
             </div>
             <div class="mt-2 genres">
-                 @foreach (var item in ViewBag.Genres)
+                @foreach (var item in ViewBag.Genres)
                 {
-                    <a class="text-sm"  href="@Url.Action("Index", "Film", new { genreId = item.Id })">@item.Name</a>
+                    <a class="text-sm" href="@Url.Action("Index", "film", new { genreId = item.Id })">@item.Name</a>
                 }
             </div>
         </div>
@@ -120,21 +120,22 @@
     </div>
     <div class="movie-card mt-2">
         <p class="text-base text-white">Phim liên quan</p>
-         @if(ViewBag.RelatedFilms != null && ViewBag.RelatedFilms.Count > 0){
-         @foreach (var film in ViewBag.RelatedFilms)
+        @if (ViewBag.RelatedFilms != null && ViewBag.RelatedFilms.Count > 0)
         {
-            <div class="col-4 col-md-3 col-xl-2 mb-2">
-                <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
-                    <div class="position-relative">
-                        <img src="@film.Poster" class="img-6x9 rounded" alt="@film.Title">
-                        @* <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span> *@
-                    </div>
-                    <p class="text-white text-truncate mt-2 text-smm" style="max-width: 100%;">@(film.Title.Length > 20 ?
+            @foreach (var film in ViewBag.RelatedFilms)
+            {
+                <div class="col-4 col-md-3 col-xl-2 mb-2">
+                    <a href="@Url.Action("detail", "film", new { id = film.Id })" class="text-decoration-none">
+                        <div class="position-relative">
+                            <img src="@film.Poster" class="img-6x9 rounded" alt="@film.Title">
+                            @* <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span> *@
+                        </div>
+                        <p class="text-white text-truncate mt-2 text-smm" style="max-width: 100%;">@(film.Title.Length > 20 ?
                     film.Title.Substring(0, 20) + "..." : film.Title)</p>
-                </a>
-            </div>
+                    </a>
+                </div>
+            }
         }
-       }
     </div>
 </div>
 <script async defer crossorigin="anonymous"
@@ -182,7 +183,6 @@
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    // Nếu bạn đang dùng Anti-Forgery Token, hãy thêm header này:
                     "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
                 },
                 body: JSON.stringify(serieId)
@@ -193,7 +193,7 @@
                 if (result.isFollowed) {
                     button.innerHTML = '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>';
                 } else {
-                    button.innerHTML = '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi phim</span>';
+                    button.innerHTML = '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi</span>';
                 }
             } else {
                 console.error("Có lỗi xảy ra khi cập nhật trạng thái theo dõi");

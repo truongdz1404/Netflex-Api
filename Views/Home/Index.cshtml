@@ -22,7 +22,7 @@
                             {
                                 var film = ViewBag.FeaturedFilms[i + j];
                                 <div class="col-md-6 position-relative">
-                                    <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
+                                    <a href="@Url.Action("detail", "film", new { id = film.Id })" class="text-decoration-none">
                                         <div class="position-relative movie-banner">
                                             <img src="@film.Poster" alt="@film.Title">
                                             <div class="position-absolute bottom-0 movie-banner-content p-2">
@@ -41,7 +41,7 @@
                             {
                                 var film = ViewBag.FeaturedFilms[0];
                                 <div class="col-md-6">
-                                    <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
+                                    <a href="@Url.Action("detail", "film", new { id = film.Id })" class="text-decoration-none">
                                         <div class="position-relative movie-banner">
                                             <img src="@film.Poster" alt="@film.Title">
                                             <div class="position-absolute bottom-0 movie-banner-content p-2">
@@ -83,7 +83,7 @@
             <div class="navigation-buttons d-flex align-items-center">
                 @if (i != 0)
                 {
-                    <a href="@Url.Action("Index", @i == 1? "Film" : "Serie")" class="text-decoration-none">
+                    <a href="@Url.Action("Index", @i == 1? "film" : "serie")" class="text-decoration-none">
                         <button type="button" class="btn btn-primary py-0 me-2 text-sm">Xem thêm</button>
                     </a>
                 }
@@ -100,7 +100,7 @@
                             style="min-width: calc(10% - 26px); width: calc(10% - 26px); flex: 0 0 calc(20% - 20px);">
                             @if (i != 2)
                             {
-                                <a href="@Url.Action("Detail", "Film", new { id = movie.Id })" class="text-decoration-none">
+                                <a href="@Url.Action("detail", "film", new { id = movie.Id })" class="text-decoration-none">
                                     <div class="position-relative">
                                         <img src="@movie.Poster" class="img-6x9 w-100" alt="@movie.Title">
                                         <i
@@ -114,7 +114,7 @@
                             }
                             else
                             {
-                                <a href="@Url.Action("Detail", "Serie", new { id = movie.Id })" class="text-decoration-none">
+                                <a href="@Url.Action("detail", "serie", new { id = movie.Id })" class="text-decoration-none">
                                     <div class="position-relative">
                                         <img src="@movie.Poster" class="img-6x9 w-100" alt="@movie.Title">
                                         <i

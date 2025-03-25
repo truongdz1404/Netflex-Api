@@ -181,7 +181,6 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
 
         if (serie == null)
             return NotFound();
-        System.Console.WriteLine(serie.SerieCountries?.Select(c => c.CountryId).ToList());
 
         var model = new EditSerieModel
         {
@@ -195,7 +194,6 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
             GenreIds = _dbContext.SerieGenres.Where(x => x.SerieId == serie.Id).Select(x => x.GenreId).ToList(),
             ActorIds = _dbContext.SerieActors.Where(x => x.SerieId == serie.Id).Select(x => x.ActorId).ToList(),
         };
-        System.Console.WriteLine(serie.AgeCategoryId);
 
         await PopulateViewBags(model);
 
