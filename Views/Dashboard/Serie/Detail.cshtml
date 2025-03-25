@@ -2,7 +2,6 @@
 @{
     ViewData["Title"] = Model.Title;
     Layout = "_Layout";
-    float Ratings = 8.6f;
 }
 <div class="container">
     <nav aria-label="breadcrumb">
@@ -24,7 +23,7 @@
                 <p class="text-white-50 text-sm mb-1">@Model.Title @Model.ProductionYear</p>
                 <p class="text-sm"><span class="date">Dec. 31, 2023</span>&nbsp;&nbsp;&nbsp;China&nbsp;&nbsp;&nbsp;</p>
             </div>
-            
+
             <div id="review-container">
             </div>
 
@@ -95,24 +94,24 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src="~/js/rating.js"></script>
 
-    @* <script>
-        $(document).ready(function () {
-            let video = $("#video").get(0);
-            video.disablePictureInPicture = true;
-            video.addTextTrack("captions");
+@* <script>
+            $(document).ready(function () {
+                let video = $("#video").get(0);
+                video.disablePictureInPicture = true;
+                video.addTextTrack("captions");
 
-            if (Hls.isSupported()) {
-                let hls = new Hls({
-                    debug: true,
-                });
-                hls.loadSource(@Html.Raw(Json.Serialize(Model.Path)));
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-                    video.muted = true;
-                });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = @Html.Raw(Json.Serialize(Model.Path));
-            }
-        });
-    </script> *@
+                if (Hls.isSupported()) {
+                    let hls = new Hls({
+                        debug: true,
+                    });
+                    hls.loadSource(@Html.Raw(Json.Serialize(Model.Path)));
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+                        video.muted = true;
+                    });
+                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    video.src = @Html.Raw(Json.Serialize(Model.Path));
+                }
+            });
+        </script> *@
 }
