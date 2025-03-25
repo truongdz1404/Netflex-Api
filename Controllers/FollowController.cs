@@ -35,6 +35,7 @@ namespace Netflex.Controllers
                 .Where(f => f.FilmId != null)
                 .Select(f => new FollowViewModel
                 {
+                    Id = f.Id,
                     FollowerId = f.FollowerId,
                     FilmId = f.FilmId,
                     FollowedAt = f.FollowedAt
@@ -45,6 +46,7 @@ namespace Netflex.Controllers
                 .Where(f => f.SerieId != null)
                 .Select(f => new FollowViewModel
                 {
+                    Id = f.Id,
                     FollowerId = f.FollowerId,
                     SerieId = f.SerieId,
                     FollowedAt = f.FollowedAt
@@ -63,7 +65,7 @@ namespace Netflex.Controllers
                         Poster = f.Poster,
                         Path = f.Path,
                         Trailer = f.Trailer,
-                        ProductionYear = f.ProductionYear,          
+                        ProductionYear = f.ProductionYear,
                     }).FirstOrDefault();
 
                 if (filmDetails != null)
@@ -234,7 +236,7 @@ namespace Netflex.Controllers
                 return Json(new { isFollowed = true });
             }
         }
-
+        [Route("/follow/delete/{id}")]
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid? id)
         {
@@ -245,7 +247,7 @@ namespace Netflex.Controllers
                 return NotFound();
             await _unitOfWork.Repository<Follow>().DeleteAsync(follow);
             await _unitOfWork.Save(CancellationToken.None);
-            return RedirectToAction("index", "follow");
+            return RedirectToAction("Index", "Follow");
         }
     }
 }

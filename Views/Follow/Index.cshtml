@@ -36,7 +36,11 @@
                              : film.About))</p>
                 </div>
                 <div class="col-md-1 text-smm">
-                    <i class="fa-solid fa-ellipsis fa-2xl"></i>
+                    <a class="btn btn-danger btn-sm delete" data-id="@item.Id" 
+                        data-url="/follow/delete" data-body-message="Bạn có muốn xóa phim lẻ này?"
+                        data-redirect-url="/follow">
+                        <i class="fa-solid fa-xmark fa-2xl"></i>
+                    </a>
                 </div>
             </div>
         }
@@ -51,16 +55,21 @@
                     </div>
                 </div>
 
-                <div class="col-md-10 text-smm ">
+                <div class="col-md-9 text-smm ">
                     <a href="@Url.Action("Detail", "Serie", new { id = serie.Id })">
                         <p class="text-base text-white-70 mb-1">
                             @(serie.Title.Length > 100 ? serie.Title.Substring(0, 100) + "..." : serie.Title)
                         </p>
                     </a>
                     <p>@serie.ProductionYear</p>
-                    <p>@(string.IsNullOrEmpty(serie.About) ? "" : (serie.About.Length > 100 ? serie.About.Substring(0, 100) +
-                             "..." : serie.About))</p>
-
+                    <p>@(string.IsNullOrEmpty(serie.About) ? "" : (serie.About.Length > 100 ? serie.About.Substring(0, 100) + "..." : serie.About))</p>
+                </div>
+                <div class="col-md-1 text-smm">
+                    <a class="btn btn-danger btn-sm delete" data-id="@item.Id" 
+                        data-url="/follow/delete" data-body-message="Bạn có muốn xóa phim bộ này?"
+                        data-redirect-url="/follow">
+                        <i class="fa-solid fa-xmark fa-2xl"></i>
+                    </a>
                 </div>
             </div>
         }
