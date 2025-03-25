@@ -7,7 +7,7 @@
 
 <div class="container-fluid px-4">
     <!-- Filter & Search Form -->
-    <form id="filterForm" method="get" action="@Url.Action("Index", "Film")">
+    <form id="filterForm" method="get" action="@Url.Action("Index", "FilmManagement")">
         <input type="hidden" id="hiddenSearchTerm" name="searchTerm" />
         <input type="hidden" id="hiddenProductionYear" name="productionYear" />
         <input type="hidden" id="hiddenSortOrder" name="sortOrder" />
@@ -101,8 +101,9 @@
                                 asp-route-id="@item.Id">Edit</a>
                             <a class="btn btn-info btn-sm" asp-controller="FilmManagement" asp-action="detail"
                                 asp-route-id="@item.Id">Details</a>
-                            <a class="btn btn-danger btn-sm delete" data-id="@item.Id" data-controller="FilmManagement"
-                                data-action="delete" data-body-message="Bạn có muốn xóa phim lẻ này">Delete</a>
+                            <a class="btn btn-danger btn-sm delete" data-id="@item.Id" data-controller="film"
+                                data-action="delete" data-body-message="Bạn có muốn xóa phim lẻ này?"
+                                >Delete</a>
                         </td>
                     </tr>
                 }
@@ -118,7 +119,8 @@
                 @if (Model.HasPreviousPage)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
+                        <a class="page-link"
+                            href="/dashboard/film?page=@(Model.PageNumber - 1)&searchTerm=@(ViewBag.SearchTerm)&productionYear=@(ViewBag.ProductionYear)&sortOrder=@(ViewBag.SortOrder)">Previous</a>
                     </li>
                 }
                 else
@@ -132,7 +134,8 @@
                 @for (var i = 1; i <= Model.PageCount; i++)
                 {
                     <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                        <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                        <a class="page-link"
+                            href="/dashboard/film?page=@(i)&searchTerm=@(ViewBag.SearchTerm)&productionYear=@(ViewBag.ProductionYear)&sortOrder=@(ViewBag.SortOrder)">@i</a>
                     </li>
                 }
 
@@ -140,7 +143,8 @@
                 @if (Model.HasNextPage)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
+                        <a class="page-link"
+                            href="/dashboard/film?page=@(Model.PageNumber + 1)&searchTerm=@(ViewBag.SearchTerm)&productionYear=@(ViewBag.ProductionYear)&sortOrder=@(ViewBag.SortOrder)">Next</a>
                     </li>
                 }
                 else
@@ -187,22 +191,6 @@
             submitForm();
         }
 
-        // Delete confirmation handling for delete buttons
-        document.addEventListener('DOMContentLoaded', function () {
-            const deleteButtons = document.querySelectorAll('.delete');
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const id = this.getAttribute('data-id');
-                    const controller = this.getAttribute('data-controller');
-                    const action = this.getAttribute('data-action');
-                    const message = this.getAttribute('data-body-message');
-
-                    if (confirm(message)) {
-                        window.location.href = `/${controller}/${action}/${id}`;
-                    }
-                });
-            });
-        });
+       
     </script>
 }
