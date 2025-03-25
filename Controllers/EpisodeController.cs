@@ -26,6 +26,7 @@ public class EpisodeController : BaseController
     }
 
     [Authorize(Roles = "admin")]
+    [Route("/dashboard/episode/index/{serieId}")]
     public IActionResult Index(int? page, Guid serieId)
     {
         int pageNumber = page ?? 1;
@@ -43,7 +44,7 @@ public class EpisodeController : BaseController
         ).OrderBy(e => e.Number).ToPagedList(pageNumber, PAGE_SIZE);
         ViewData["SerieTitle"] = serie.Title ?? "Không có serie";
         ViewData["SerieId"] = serie.Id;
-        return View(models);
+        return View("~/Views/Dashboard/Episode/Index.cshtml", models);
     }
 
     public IActionResult Detail(Guid? id)
@@ -75,6 +76,7 @@ public class EpisodeController : BaseController
     }
     [Authorize(Roles = "admin")]
     [HttpDelete]
+    [Route("/dashboard/episode/delete/{id}")]
     public async Task<IActionResult> Delete(Guid? id)
     {
         if (id == null)
@@ -91,6 +93,7 @@ public class EpisodeController : BaseController
 
     }
     [Authorize(Roles = "admin")]
+    [Route("/dashboard/episode/edit/{id}")]
     public IActionResult Edit(Guid? id)
     {
         if (id == null)
@@ -106,15 +109,16 @@ public class EpisodeController : BaseController
             Number = episode.Number,
             SerieId = episode.SerieId,
         };
-        return View(model);
+        return View("~/Views/Dashboard/Episode/Edit.cshtml", model);
     }
     [Authorize(Roles = "admin")]
     [HttpPost]
+    [Route("/dashboard/episode/edit/{id}")]
     public async Task<IActionResult> Edit(EditEpisodeViewModel update)
     {
         if (!ModelState.IsValid)
         {
-            return View(update);
+            return View("~/Views/Dashboard/Episode/Edit.cshtml", update);
         }
         var episode = await _unitOfWork.Repository<Episode>().GetByIdAsync(update.Id);
         if (episode == null)
@@ -130,9 +134,10 @@ public class EpisodeController : BaseController
         ViewData["SerieTitle"] = serie.Title ?? "Không có serie";
         ViewData["SerieId"] = serie.Id;
         return RedirectToAction("Index", "Episode", new { serieId = serie.Id });
-
     }
 
+    [Route("/dashboard/episode/create/{serieId}/{serieTitle}")]
+    [Authorize(Roles = "admin")]
     public IActionResult Create(Guid serieId, string serieTitle)
     {
         ViewData["SerieTitle"] = serieTitle;
@@ -140,12 +145,13 @@ public class EpisodeController : BaseController
         return View();
     }
     [Authorize(Roles = "admin")]
+    [Route("/dashboard/episode/create")]
     [HttpPost]
     public async Task<IActionResult> Create(CreateEpisodeModel episode)
     {
         if (!ModelState.IsValid)
         {
-            return View(episode);
+            return View("~/Views/Dashboard/Episode/Create.cshtml", episode);
         }
 
         var episodeUri = episode.File != null ? await _storage.UploadFileAsync("episode", episode.File) : null;
@@ -157,7 +163,7 @@ public class EpisodeController : BaseController
             About = episode.About,
             Path = episodeUri?.ToString() ?? string.Empty,
             SerieId = episode.SerieId,
-            Number = episode.Number
+            Number = episode.Number,
 
         };
         await _unitOfWork.Repository<Episode>().AddAsync(newEpisode);

@@ -98,6 +98,8 @@
                             <td class="text-center action-column">
                                 <a class="btn btn-warning btn-sm" asp-controller="SerieManagement" asp-action="edit"
                                     asp-route-id="@item.Id">Edit</a>
+                                <a class="btn btn-info btn-sm" asp-controller="Serie" asp-action="detail"
+                                    asp-route-id="@item.Id">Details</a>
                                 <a class="btn btn-danger btn-sm delete" data-id="@item.Id" 
                                 data-url="/dashboard/serie/delete" data-body-message="Bạn có muốn xóa phim lẻ này?"
                                     data-redirect-url="/dashboard/serie">Delete</a>
