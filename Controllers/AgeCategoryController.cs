@@ -42,7 +42,7 @@ namespace Netflex.Controllers
                 Name = x.Name
             }).ToPagedList(PageNumber, PAGE_SIZE);
 
-            return View("~/Views/Dashboard/AgeCategory/Index.cshtml",result);
+            return View("~/Views/Dashboard/AgeCategory/Index.cshtml", result);
         }
 
 
@@ -68,7 +68,7 @@ namespace Netflex.Controllers
             if (category == null) return NotFound();
             AgeCategoryEditModel model = new AgeCategoryEditModel() { Name = category.Name };
 
-            return View("~/Views/Dashboard/AgeCategory/Edit.cshtml",model);
+            return View("~/Views/Dashboard/AgeCategory/Edit.cshtml", model);
         }
 
         [HttpPost]
@@ -90,11 +90,31 @@ namespace Netflex.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             var entity = await _unitOfWork.Repository<AgeCategory>().GetByIdAsync(id);
+
             if (entity != null)
             {
+                var allFilms = await _unitOfWork.Repository<Film>().GetAllAsync();
+                var filmsWithCategory = allFilms.Where(f => f.AgeCategoryId == id).ToList();
+
+                foreach (var film in filmsWithCategory)
+                {
+                    film.AgeCategoryId = null;
+                    await _unitOfWork.Repository<Film>().UpdateAsync(film);
+                }
+
+                var allSeries = await _unitOfWork.Repository<Serie>().GetAllAsync();
+                var seriesWithCategory = allSeries.Where(s => s.AgeCategoryId == id).ToList();
+                
+                foreach (var serie in seriesWithCategory)
+                {
+                    serie.AgeCategoryId = null;
+                    await _unitOfWork.Repository<Serie>().UpdateAsync(serie);
+                }
+
                 await _unitOfWork.Repository<AgeCategory>().DeleteAsync(entity);
                 await _unitOfWork.Save(CancellationToken.None);
             }
+
             return RedirectToAction(nameof(Index));
         }
     }

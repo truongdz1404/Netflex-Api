@@ -36,6 +36,7 @@ $((function(){
 
         $(".delete-modal-body").text(bodyMessage);
         $("#deleteModal").modal('show');
+        console.log(bodyMessage);
     });
 
     $("#confirm-delete").on('click',()=>{

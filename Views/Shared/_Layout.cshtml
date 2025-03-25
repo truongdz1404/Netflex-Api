@@ -5,7 +5,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Netflex</title>
-    <link rel="stylesheet" href="~/css/delete.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/font-awesome/css/all.css" crossorigin="anonymous" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -43,7 +42,7 @@
                                     @foreach (var item in ViewBag.Genres)
                                     {
                                         <a class="dropdown-item"
-                                            href="@Url.Action("index", "FilmGenreCountry", new { genreId = item.Id })">
+                                            href="@Url.Action("Index", "Film", new { genreId = item.Id })">
                                             <i class="fa-solid fa-caret-right pe-2"></i>@item.Name</a>
                                     }
 
@@ -122,7 +121,7 @@
                                     @foreach (var item in ViewBag.Countries)
                                     {
                                         <a class="dropdown-item"
-                                            href="@Url.Action("index", "FilmGenreCountry", new { countryId = item.Id })">
+                                            href="@Url.Action("Index", "Film", new { countryId = item.Id })">
                                             <i class="fa-solid fa-caret-right pe-2"></i>@item.Name</a>
                                     }
                                     <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
@@ -182,7 +181,7 @@
                 <ul class="menu-year overflow-auto">
                     @for (int i = DateTime.Now.Year; i >= 1981; i--)
                     {
-                        <li><a href="@Url.Action("index", "FilmRelease", new { year = i })">@i</a></li>
+                        <li><a href="@Url.Action("index", "Film", new { year = i })">@i</a></li>
                     }
                 </ul>
                 <a href="@Url.Action("Detail", "Serie", new { id = ViewBag.StarSeries[0].Id })"
@@ -234,7 +233,6 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/delete.js" asp-append-version="true"></script>
 
     <script>
 

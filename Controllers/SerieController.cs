@@ -16,13 +16,13 @@ namespace Netflex.Controllers
     public class SerieController : BaseController
     {
         private const int PAGE_SIZE = 10;
-        private readonly ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _context;
 
         private readonly IFollowRepository _followRepository;
         private readonly UserManager<User> _userManager;
-        public SerieController(IFollowRepository followRepository, IUnitOfWork unitOfWork, ApplicationDbContext dbContext, UserManager<User> userManager) : base(unitOfWork)
+        public SerieController(IFollowRepository followRepository, IUnitOfWork unitOfWork, ApplicationDbContext context, UserManager<User> userManager) : base(unitOfWork)
         {
-            _dbContext = dbContext;
+            _context = context;
             _followRepository = followRepository;
             _userManager = userManager;
         }
@@ -74,12 +74,34 @@ namespace Netflex.Controllers
                 Poster = serie.Poster,
                 AgeCategoryId = serie.AgeCategoryId,
                 ProductionYear = serie.ProductionYear,
-                CountryIds = _dbContext.SerieCountries.Where(x => x.SerieId == serie.Id).Select(x => x.CountryId).ToList(),
-                GenreIds = _dbContext.SerieGenres.Where(x => x.SerieId == serie.Id).Select(x => x.GenreId).ToList(),
-                ActorIds = _dbContext.SerieActors.Where(x => x.SerieId == serie.Id).Select(x => x.ActorId).ToList(),
+                CountryIds = _context.SerieCountries.Where(x => x.SerieId == serie.Id).Select(x => x.CountryId).ToList(),
+                GenreIds = _context.SerieGenres.Where(x => x.SerieId == serie.Id).Select(x => x.GenreId).ToList(),
+                ActorIds = _context.SerieActors.Where(x => x.SerieId == serie.Id).Select(x => x.ActorId).ToList(),
                 IsFollowed = isFollowed
+
             };
             ViewBag.Episodes = _unitOfWork.Repository<Episode>().Entities.Where(e => e.SerieId == id).ToList();
+
+            var actorIds = _context.SerieActors
+                           .Where(fa => fa.SerieId == id)
+                           .Select(fa => fa.ActorId)
+                           .ToList();
+
+            ViewBag.Actors = _unitOfWork.Repository<Actor>()
+                .Entities
+                .Where(a => actorIds.Contains(a.Id))
+                .ToList();
+
+            var genreIds = _context.SerieGenres
+                .Where(fg => fg.SerieId == id)
+                .Select(fg => fg.GenreId)
+                .ToList();
+
+            ViewBag.Genres = _unitOfWork.Repository<Genre>()
+                .Entities
+                .Where(g => genreIds.Contains(g.Id))
+                .ToList();
+
             return View(model);
         }
     }

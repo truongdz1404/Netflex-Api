@@ -36,13 +36,11 @@
                     @if (Model.IsFollowed)
                     {
                         <i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i>
-
                         <span>Đã theo dõi</span>
                     }
                     else
                     {
                         <i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i>
-
                         <span>Theo dõi</span>
                     }
                 </div>
@@ -71,8 +69,10 @@
                         id="selected-rating">0</span></p>
             </div>
             <div class="mt-2 genres">
-                <a class="text-sm" href="#">Phim Hoạt Hình</a>
-                <a class="text-sm" href="#">Phim Hài</a>
+                @foreach (var item in ViewBag.Genres)
+                {
+                    <a class="text-sm"  href="@Url.Action("Index", "Film", new { genreId = item.Id })">@item.Name</a>
+                }
             </div>
         </div>
     </div>
@@ -103,34 +103,16 @@
             </div>
             <div class="tab-pane fade" id="pills-actor" role="tabpanel" aria-labelledby="pills-actor-tab">
                 <div class="row g-3">
-                    <a href="#" class="person col-6 col-md-4">
-                        <img src="https://placehold.co/400X400/png" alt="Movie Poster">
-                        <div class="p-2">
-                            <p class="text-truncate" style="max-width:10rem;">Diễn viên 1
-                            </p>
-                        </div>
-                    </a>
-                    <a href="#" class="person col-6 col-md-4">
-                        <img src="https://placehold.co/400X400/png" alt="Movie Poster">
-                        <div class="p-2">
-                            <p class="text-truncate" style="max-width:10rem;">Diễn viên 2
-                            </p>
-                        </div>
-                    </a>
-                    <a href="#" class="person col-6 col-md-4">
-                        <img src="https://placehold.co/400X400/png" alt="Movie Poster">
-                        <div class="p-2">
-                            <p class="text-truncate" style="max-width:10rem;">Diễn viên 3
-                            </p>
-                        </div>
-                    </a>
-                    <a href="#" class="person col-6 col-md-4">
-                        <img src="https://placehold.co/400X400/png" alt="Movie Poster">
-                        <div class="p-2">
-                            <p class="text-truncate" style="max-width:10rem;">Diễn viên 4
-                            </p>
-                        </div>
-                    </a>
+                    @foreach (var item in ViewBag.Actors)
+                    {
+                        <a href="#" class="person col-6 col-md-4">
+                            <img src= @(item.Photo != null ? item.Photo :"https://placehold.co/400X400/png") alt="Movie Poster">
+                            <div class="p-2">
+                                <p class="text-truncate" style="max-width:10rem;">@item.Name
+                                </p>
+                            </div>
+                        </a>
+                    }
                 </div>
             </div>
         </div>
@@ -141,6 +123,23 @@
     </div>
     <div class="movie-card mt-2">
         <p class="text-base text-white">Phim liên quan</p>
+        <div class="row">
+       @if(ViewBag.RelatedFilms != null && ViewBag.RelatedFilms.Count > 0){
+         @foreach (var film in ViewBag.RelatedFilms)
+        {
+            <div class="col-4 col-md-3 col-xl-2 mb-2">
+                <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
+                    <div class="position-relative">
+                        <img src="@film.Poster" class="img-6x9 rounded" alt="@film.Title">
+                        @* <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span> *@
+                    </div>
+                    <p class="text-white text-truncate mt-2 text-smm" style="max-width: 100%;">@(film.Title.Length > 20 ?
+                    film.Title.Substring(0, 20) + "..." : film.Title)</p>
+                </a>
+            </div>
+        }
+       }
+    </div>
     </div>
 </div>
 <div id="fb-root"></div>
@@ -200,9 +199,16 @@
         });
     </script>
     <script>
-        async function toggleFollow(button) {
-            const filmId = button.getAttribute("data-film-id");
+    async function toggleFollow(button) {
+        const filmId = button.getAttribute("data-film-id");
 
+        // Cập nhật UI ngay lập tức
+        const isFollowed = button.querySelector("i").classList.contains("fa-regular");
+        button.innerHTML = isFollowed
+            ? '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>'
+            : '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi</span>';
+
+        try {
             const response = await fetch("/follow/toggleFollowFilm", {
                 method: "POST",
                 headers: {
@@ -212,15 +218,16 @@
                 body: JSON.stringify(filmId)
             });
 
-            if (response.ok) {
-                const result = await response.json();
-                if (result.isFollowed) {
-                    button.innerHTML = '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>';
-                } else {
-                    button.innerHTML = '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi</span>';
-                }
+            if (!response.ok) {
+                throw new Error("Lỗi khi thay đổi trạng thái");
             }
+        } catch (error) {
+            // Nếu có lỗi, hoàn tác thay đổi UI
+            button.innerHTML = isFollowed
+                ? '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi</span>'
+                : '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>';
+            alert("Có lỗi xảy ra khi thay đổi trạng thái, vui lòng thử lại!");
         }
+    }
     </script>
-
 }
