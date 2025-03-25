@@ -24,6 +24,7 @@ namespace Netflex.Controllers
                 return BadRequest("Invalid Film ID");
 
             var model = await GetRating(id, createrId);
+            
             return PartialView("_ReviewPartial", model);
         }
 

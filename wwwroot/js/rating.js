@@ -1,9 +1,9 @@
 ﻿$(document).ready(function () {
     let pathSegments = window.location.pathname.split("/");
     let filmId = pathSegments[pathSegments.length - 1];
-    let selected = $("#selected-rating");
-    let ratings = 10;
 
+    let selected = $("#selected-rating");
+    let ratings = 0;
     getRating();
 
     function highlight(value) {
@@ -16,8 +16,6 @@
 
     function bindStarEvents() {
         let stars = $(".rating-stars i");
-        let averageRating = parseFloat($("#average-rating").text());
-        highlight(averageRating);
 
         stars.on("mouseover", function () {
             let value = $(this).data("value");
@@ -25,14 +23,15 @@
         });
 
         stars.on("mouseout", function () {
-            let currentValue = selected.text().trim() === "0" ? ratings : selected.text();
+            let currentValue = parseInt(selected.text().trim()) || ratings;
             highlight(currentValue);
         });
 
         stars.on("click", function () {
-            let ratingValue = $(this).data("value"); 
-            selected.text(ratingValue);
-            rating(ratingValue);
+            ratings = $(this).data("value");
+            selected.text(ratings);
+            highlight(ratings);
+            rating(ratings);
         });
     }
 
@@ -43,10 +42,13 @@
             contentType: "application/json",
             success: function (data) {
                 $("#review-container").html(data);
+                ratings = parseFloat($("#selected-rating").attr("data-rating")) || 0;
+                console.log(data);
+                highlight(ratings);
                 bindStarEvents();
             },
             error: function (xhr, status, error) {
-                console.error("Error at GetReview:", error);
+                console.error("Lỗi khi lấy đánh giá:", error);
             },
         });
     }
@@ -64,6 +66,7 @@
             data: JSON.stringify(reviewData),
             success: function (data) {
                 $("#review-container").html(data);
+                highlight(ratings);
                 bindStarEvents();
             },
             error: function (xhr, status, error) {

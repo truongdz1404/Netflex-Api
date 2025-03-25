@@ -1,6 +1,9 @@
 ﻿@using Netflex.Models.Review
 @model ReviewViewModel
-
+@{
+	
+	float Ratings = Model.Rating;
+}
 <div class="d-flex align-items-center align-items-md-start py-2 border-top border-bottom border-dark gap-2 flex-column flex-md-row">
 	<div class="d-flex gap-2">
 		<div class="points rounded p-2 d-flex align-items-center justify-content-center">
@@ -19,7 +22,7 @@
 		</div>
 	</div>
 	<p class="text-xs py-1 rounded text-center my-ratings order-last order-md-0">
-		Đánh giá của bạn: <span id="selected-rating">@Model.Rating</span>
+		Đánh giá của bạn: <span id="selected-rating" data-rating="@Model.Rating">@Model.Rating</span>
 	</p>
 </div>
 
