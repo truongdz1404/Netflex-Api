@@ -158,7 +158,7 @@
         <div id="notificationToast" class="toast align-items-center text-bg-primary border-0" role="alert"
             aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
-                <div class="toast-body text-black" id="toastBody">
+                <div class="toast-body" id="toastBody">
                 </div>
                 <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
@@ -170,29 +170,6 @@
     <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/delete.js" asp-append-version="true"></script>
-    <script src="https://cdn.tiny.cloud/1/25kiq8kjalzyqvwkno8j4sgazvesxspatked58wy320zismn/tinymce/7/tinymce.min.js"
-        referrerpolicy="origin"></script>
-    <script>
-        tinymce.init({
-            selector: 'textarea#tiny',
-            plugins: [
-                'accordion', 'advlist', 'anchor', 'autolink', 'autosave',
-                'charmap', 'code', 'codesample', 'directionality', 'emoticons',
-                'fullscreen', 'help', 'image', 'importcss',
-                'insertdatetime', 'link', 'lists', 'media', 'nonbreaking',
-                'pagebreak', 'preview', 'quickbars', 'save', 'searchreplace', 'table',
-                'visualblocks', 'visualchars', 'wordcount'
-            ],
-            toolbar: 'undo redo | accordion accordionremove | ' +
-                'importword exportword exportpdf | math | ' +
-                'blocks fontfamily fontsize | bold italic underline strikethrough | ' +
-                'align numlist bullist | link image | table media | ' +
-                'lineheight outdent indent | forecolor backcolor removeformat | ' +
-                'charmap emoticons | code fullscreen preview | save print | ' +
-                'pagebreak anchor codesample | ltr rtl',
-            menubar: 'file edit view insert format tools table help'
-        })
-    </script>
 
 	<script>
 		$(document).ready(function () {
@@ -217,19 +194,30 @@
 			$(window).scrollTop(0);
 		}
 
-		function loadGenreDropdown() {
-			$.ajax({
-				url: "/Genre/GenreDropdown",
-				type: "GET",
-				success: function (data) {
-					$("#genre-dropdown .dropdown-menu").html(data);
-				},
-				error: function () {
-					console.error("Cannot load the genre");
-				}
-			});
-		}
-	</script>
+        $(() => {
+            var connection = new signalR.HubConnectionBuilder()
+                .withUrl("/notification-hub")
+                .build();
+
+            connection.start().catch(err => console.error(err.toString()));
+
+            connection.on("ReceiveNotification", function (message) {
+                showToast(message);
+            });
+
+            function showToast(message) {
+                try {
+                    var data = JSON.parse(message);
+                    $("#toastBody").html(`<a href="${data.Link}" class="text-black">${data.Message}</a>`);
+                    var toast = new bootstrap.Toast(document.getElementById('notificationToast'));
+                    toast.show();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        });
+
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
     @await RenderSectionAsync("Styles", required: false)

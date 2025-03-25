@@ -9,8 +9,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb my-2">
             <li class="breadcrumb-item"><a asp-controller="home" asp-action="index">Trang chủ</a></li>
-            <li class="breadcrumb-item active" aria-current="page"><a asp-controller="FilmManagement"
-                    asp-action="index">Phim
+            <li class="breadcrumb-item active" aria-current="page"><a asp-controller="film" asp-action="index">Phim
                     lẻ</a></li>
             <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
         </ol>
@@ -30,7 +29,25 @@
         <img src="@Model.Poster" class="poster" alt="Movie Poster">
 
         <div class="flex-grow-1">
-            <h4 class="mb-0" style="color: whitesmoke;">@Model.Title</h4>
+            <div class="d-flex align-items-center py-2 gap-2 flex-column flex-md-row">
+                <h4 class="mb-0" style="color: whitesmoke;">@Model.Title</h4>
+                <div class="nav-link tab follow-btn" id="followButton" data-film-id="@Model.Id" data-bs-toggle="pill"
+                    data-bs-target="#pills-actor" type="submit" role="tab" aria-controls="pills-actor"
+                    aria-selected="false" onclick="toggleFollow(this)">
+                    @if (Model.IsFollowed)
+                    {
+                        <i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i>
+
+                        <span>Đã theo dõi</span>
+                    }
+                    else
+                    {
+                        <i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i>
+
+                        <span>Theo dõi</span>
+                    }
+                </div>
+            </div>
             <div>
                 <p class="text-white-50 text-sm mb-1">@Model.Title @Model.ProductionYear</p>
                 <p class="text-sm"><span class="date">Dec. 31, 2023</span>&nbsp;&nbsp;&nbsp;China&nbsp;&nbsp;&nbsp;</p>
@@ -47,7 +64,7 @@
         </div>
     </div>
 
-    <div class="movie-card py-3 border-top border-bottom border-dark border-2">
+    <div class="movie-card py-3 border-top border-bottom border-line border-2">
         <ul class="nav nav-pills mb-3 text-smm" id="pills-tab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active tab" id="pills-info-tab" data-bs-toggle="pill"
@@ -64,10 +81,11 @@
                 <p class="text-smm">@Model.About</p>
                 @if (Model.Trailer is not null)
                 {
-                    <iframe width="560" height="315" src="@Model.Trailer" frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen>
-                    </iframe>
+                    <div class="ratio ratio-16x9">
+                        <iframe src="@Model.Trailer" title="YouTube video player" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    </div>
                 }
             </div>
             <div class="tab-pane fade" id="pills-actor" role="tabpanel" aria-labelledby="pills-actor-tab">
@@ -104,12 +122,17 @@
             </div>
         </div>
     </div>
-
+    <div class="comment-section mt-3">
+        <div class="fb-comments" data-href="@ViewData["Domain"]/Film/Details/@Model.Id" data-width="100%"
+            data-numposts="5"></div>
+    </div>
     <div class="movie-card mt-2">
         <p class="text-base text-white">Phim liên quan</p>
     </div>
 </div>
-
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous"
+    src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v22.0&appId=1589497395335451"></script>
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 	<script src="~/js/rating.js"></script>
@@ -133,4 +156,28 @@
             }
         });
     </script>
+    <script>
+        async function toggleFollow(button) {
+            const filmId = button.getAttribute("data-film-id");
+
+            const response = await fetch("/follow/toggleFollowFilm", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify(filmId)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.isFollowed) {
+                    button.innerHTML = '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>';
+                } else {
+                    button.innerHTML = '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi</span>';
+                }
+            }
+        }
+    </script>
+
 }

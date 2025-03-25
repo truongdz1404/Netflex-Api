@@ -15,6 +15,7 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ApplicationDbContext _context = context;
     private const int PAGE_SIZE = 3;
+
     public IActionResult Index(int? page)
     {
         int pageNumber = page ?? 1;

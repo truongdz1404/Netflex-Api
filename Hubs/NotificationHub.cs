@@ -8,6 +8,7 @@ namespace Netflex.Hubs
     public class NotificationHub : Hub<INotificationClient>
     {
         private readonly ConnectionManager _connectionManager;
+
         public NotificationHub(ConnectionManager connectionManager)
         {
             _connectionManager = connectionManager;

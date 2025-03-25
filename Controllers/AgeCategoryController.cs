@@ -14,6 +14,8 @@ namespace Netflex.Controllers
         {
             _unitOfWork = unitOfWork;
         }
+
+        [Route("/dashboard/age-category")]
         public IActionResult Index(string? SearchString, string? SortBy = "name", int PageNumber = 1)
         {
             var repository = _unitOfWork.Repository<AgeCategory>();
@@ -40,13 +42,15 @@ namespace Netflex.Controllers
                 Name = x.Name
             }).ToPagedList(PageNumber, PAGE_SIZE);
 
-            return View(result);
+            return View("~/Views/Dashboard/AgeCategory/Index.cshtml",result);
         }
 
 
-        public IActionResult Create() => View();
+        [Route("/dashboard/age-category/create")]
+        public IActionResult Create() => View("~/Views/Dashboard/AgeCategory/Create.cshtml");
 
         [HttpPost]
+        [Route("/dashboard/age-category/create")]
         public async Task<IActionResult> Create(AgeCategoryEditModel model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -57,16 +61,18 @@ namespace Netflex.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Route("/dashboard/age-category/edit/{id}")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var category = await _unitOfWork.Repository<AgeCategory>().GetByIdAsync(id);
             if (category == null) return NotFound();
             AgeCategoryEditModel model = new AgeCategoryEditModel() { Name = category.Name };
 
-            return View(model);
+            return View("~/Views/Dashboard/AgeCategory/Edit.cshtml",model);
         }
 
         [HttpPost]
+        [Route("/dashboard/age-category/edit/{id}")]
         public async Task<IActionResult> Edit(Guid id, AgeCategoryEditModel model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -81,6 +87,7 @@ namespace Netflex.Controllers
 
 
         [HttpPost]
+        [Route("/dashboard/age-category/delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var category = await _unitOfWork.Repository<AgeCategory>().GetByIdAsync(id);

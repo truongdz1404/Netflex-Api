@@ -70,3 +70,40 @@
 .disabled{
     display: none;
 }
+
+.movie-item .position-relative {
+    overflow: hidden;
+}
+
+.movie-item .position-relative img {
+    transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+}
+
+.movie-item .position-relative i {
+    opacity: 0;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.movie-item:hover .position-relative img {
+    transform: scale(1.2); 
+    filter: blur(2px);
+}
+
+.movie-item:hover .position-relative i {
+    opacity: 1; 
+}
+
+
+.carousel-inner{
+    overflow: visible !important;
+}
+
+.movie-banner {
+    transition: transform 0.3s ease-in-out;
+    z-index: 1; 
+}
+
+.movie-banner:hover {
+    transform: scale(1.05);
+    z-index: 10;
+}

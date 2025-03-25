@@ -1,0 +1,20 @@
+﻿@model Netflex.Entities.Actor
+@{
+    Layout = "_AdminLayout";
+}
+<h2>Thêm mới diễn viên</h2>
+<form asp-action="Create" enctype="multipart/form-data">
+    <div class="form-group">
+        <label>Tên</label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Ảnh</label>
+        <input type="file" name="photoFile" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>About</label>
+        <textarea asp-for="About" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Lưu</button>
+</form>

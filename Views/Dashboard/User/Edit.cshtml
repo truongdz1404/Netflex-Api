@@ -1,0 +1,111 @@
+﻿@model Netflex.Models.User.EditUserViewModels
+
+@{
+    ViewData["Title"] = "Create User";
+    Layout = "_AdminLayout";
+}
+
+<h1 class="text-center text-dark">Edit User</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <!-- Card với màu sắc đen và xám, viền sáng -->
+        <div class="card border-light shadow-lg">
+            <div class="card-header bg-dark text-white">
+                <strong>Edit User</strong>
+            </div>
+            <div class="card-body bg-light">
+                <form method="POST" enctype="multipart/form-data" asp-controller="user" asp-action="edit">
+
+                    <div class="form-group mb-4">
+                        <label asp-for="UserName" class="control-label text-dark">UserName</label>
+                        <input asp-for="UserName" class="form-control border-dark" placeholder="Enter blog title" />
+                        <span asp-validation-for="UserName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label asp-for="Email" class="control-label text-dark">Email</label>
+                        <input asp-for="Email" id="tiny" class="form-control border-dark"
+                            placeholder="Enter blog content">
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label asp-for="PhoneNumber" class="control-label text-dark">PhoneNumber</label>
+                        <input asp-for="PhoneNumber" class="form-control border-dark" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label asp-for="SelectedRoles" class="control-label text-dark">Assign Roles</label>
+
+                        <div id="currentRoles" class="form-control border-dark" style="cursor:pointer;">
+                            @if (Model.SelectedRoles != null && Model.SelectedRoles.Any())
+                            {
+                                @string.Join(", ", Model.SelectedRoles)
+                            }
+                            else
+                            {
+                                <span>-- Click to select roles --</span>
+                            }
+                        </div>
+
+                        <select asp-for="SelectedRoles" class="form-control border-dark" id="RolesDropdown"
+                            multiple="multiple" style="display:none;">
+                            @foreach (var role in Model.AvailableRoles ?? new List<string>())
+                            {
+                                <option value="@role">@role</option>
+                            }
+                        </select>
+
+                        <span asp-validation-for="SelectedRoles" class="text-danger"></span>
+                    </div>
+
+
+                    <div class="form-group text-center mb-4">
+                        <input type="submit" value="Save" class="btn btn-lg btn-dark text-light" />
+                    </div>
+
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3 text-center">
+    <a asp-action="Index" class="btn btn-secondary btn-lg">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var rolesDropdown = document.getElementById("RolesDropdown");
+            var currentRoles = document.getElementById("currentRoles");
+            var selectedRoles = @Html.Raw(Json.Serialize(ViewBag.SelectedRoles ?? new List<string>()));
+
+            Array.from(rolesDropdown.options).forEach(function (option) {
+                if (selectedRoles.includes(option.value)) {
+                    option.selected = true;
+                }
+            });
+
+            currentRoles.addEventListener('click', function () {
+                currentRoles.style.display = 'none';
+                rolesDropdown.style.display = 'block';
+            });
+
+            rolesDropdown.addEventListener('change', function () {
+                var selectedValues = Array.from(rolesDropdown.selectedOptions).map(option => option.value);
+                currentRoles.innerText = selectedValues.length ? selectedValues.join(', ') : '-- Click to select roles --';
+            });
+        });
+    </script>
+
+
+}

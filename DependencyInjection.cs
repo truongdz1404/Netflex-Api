@@ -48,6 +48,8 @@ public static class DependencyInjection
         services.AddExceptionHandler<CustomExceptionHandler>();
         services.Configure<EmailConfig>(configuration.GetSection("EmailApiKey"));
 
+        services.AddScoped<IFollowRepository, FollowRepository>();
+
         services.AddAuthentication()
         .AddGoogle(options =>
         {

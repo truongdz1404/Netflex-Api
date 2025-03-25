@@ -19,6 +19,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public virtual DbSet<FilmCountry> FilmCountries { get; set; }
     public virtual DbSet<UserNotification> UserNotifications { get; set; }
     public virtual DbSet<Notification> Notifications { get; set; }
+    public virtual DbSet<Follow> Follows { get; set; }
+    public virtual DbSet<Serie> Series { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

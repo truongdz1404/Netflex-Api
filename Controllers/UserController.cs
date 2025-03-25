@@ -18,6 +18,7 @@ namespace Netflex.Controllers
         private const int PAGE_SIZE = 5;
 
         // GET: UserController
+        [Route("/dashboard/user")]
         public async Task<IActionResult> Index(
             int? page, string searchTerm,
             string userId, string userName,
@@ -89,8 +90,9 @@ namespace Netflex.Controllers
 
             var pagedModels = models.ToPagedList(pageNumber, PAGE_SIZE);
 
-            return View(pagedModels);
+            return View("~/Views/Dashboard/User/Index.cshtml",pagedModels);
         }
+
         public async Task<IActionResult> ExportToExcel()
         {
             var users = _userManager.Users.AsQueryable();
@@ -145,6 +147,7 @@ namespace Netflex.Controllers
         }
 
         // GET: UserController/Details/5
+        [Route("/dashboard/user/detail/{id}")]
         public async Task<IActionResult> Details(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -165,10 +168,11 @@ namespace Netflex.Controllers
                 LockoutEnabled = user.LockoutEnabled
             };
 
-            return View(model);
+            return View("~/Views/Dashboard/User/Details.cshtml",model);
         }
 
         // GET: UserController/Create
+        [Route("/dashboard/user/create")]
         public async Task<IActionResult> Create()
         {
             var roles = await _roleManager.Roles.ToListAsync();
@@ -176,12 +180,13 @@ namespace Netflex.Controllers
             {
                 AvailableRoles = roles.Select(r => r.Name ?? string.Empty).ToList()
             };
-            return View(model);
+            return View("~/Views/Dashboard/User/Create.cshtml",model);
         }
 
         // POST: UserController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("/dashboard/user/create")]
         public async Task<IActionResult> Create(UserViewModels model)
         {
             if (ModelState.IsValid)
@@ -193,11 +198,9 @@ namespace Netflex.Controllers
                     PhoneNumber = model.PhoneNumber
                 };
 
-                // Create user with password
                 var result = await _userManager.CreateAsync(user, model.Password ?? string.Empty);
                 if (result.Succeeded)
                 {
-                    // Add selected roles
                     if (model.SelectedRoles != null && model.SelectedRoles.Any())
                     {
                         var addRoleResult = await _userManager.AddToRolesAsync(user, model.SelectedRoles);
@@ -221,7 +224,6 @@ namespace Netflex.Controllers
                 }
             }
 
-            // If model state is invalid or any error occurs, return view
             var roles = await _roleManager.Roles.ToListAsync();
             model.AvailableRoles = roles.Select(r => r.Name ?? string.Empty).ToList();
             return View(model);
@@ -229,6 +231,7 @@ namespace Netflex.Controllers
 
 
         // GET: UserController/Edit/5
+        [Route("/dashboard/user/edit/{id}")]
         public async Task<IActionResult> Edit(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -249,12 +252,13 @@ namespace Netflex.Controllers
                 SelectedRoles = currentRoles.ToList()
             };
             ViewBag.SelectedRoles = model.SelectedRoles;
-            return View(model);
+            return View("~/Views/Dashboard/User/Edit.cshtml",model);
         }
 
         // POST: UserController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("/dashboard/user/edit/{id}")]
         public async Task<IActionResult> Edit(string id, EditUserViewModels model)
         {
             if (id != model.Id)
@@ -307,10 +311,10 @@ namespace Netflex.Controllers
 
             var roles = await _roleManager.Roles.ToListAsync();
             model.AvailableRoles = roles.Select(r => r.Name ?? string.Empty).ToList();
-            return View(model);
+            return View("~/Views/Dashboard/User/Edit.cshtml",model);
         }
 
-
+        [Route("/dashboard/user/lock/{id}")]
         public async Task<IActionResult> Lock(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -329,6 +333,7 @@ namespace Netflex.Controllers
         }
 
         // GET: UserController/Unlock/5
+        [Route("/dashboard/user/unlock/{id}")]
         public async Task<IActionResult> Unlock(string id)
         {
             var user = await _userManager.FindByIdAsync(id);

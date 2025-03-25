@@ -22,56 +22,36 @@
         }
     </div>
 
-    <div class="row">
-        <nav class="text-sm">
-            <ul class="pagination d-flex gap-2">
-                <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
-                    <a class="page-link" href="@Url.Action("index", new { page = Model.PageNumber - 1 })">‹</a>
-                </li>
+    @if (Model.PageCount > 1)
+    {
+        <div class="row">
+            <nav class="text-sm">
+                <ul class="pagination d-flex gap-2">
+                    <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("index", new { page = Model.PageNumber - 1 })">‹</a>
+                    </li>
 
-                @if (Model.PageCount <= 5)
-                {
                     @for (int i = 1; i <= Model.PageCount; i++)
                     {
-                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                            <a class="page-link" href="@Url.Action("index", new { page = i })">@i</a>
-                        </li>
-                    }
-                }
-                else
-                {
-                    <li class="page-item @(1 == Model.PageNumber ? "active" : "")">
-                        <a class="page-link" href="@Url.Action("index", new { page = 1 })">1</a>
-                    </li>
-
-                    @if (Model.PageNumber > 3)
-                    {
-                        <li class="page-item disabled"><span class="page-link">...</span></li>
-                    }
-
-                    @for (int i = Math.Max(2, Model.PageNumber - 1); i <= Math.Min(Model.PageCount - 1, Model.PageNumber +
-                   1); i++)
-                    {
+                        if (Model.PageCount > 5 && (i > 2 && i < Model.PageNumber - 1 || i < Model.PageCount - 1 && i >
+                        Model.PageNumber + 1))
+                        {
+                            if (i == 3 || i == Model.PageCount - 2)
+                            {
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                            }
+                            continue;
+                        }
                         <li class="page-item @(i == Model.PageNumber ? "active" : "")">
                             <a class="page-link" href="@Url.Action("index", new { page = i })">@i</a>
                         </li>
                     }
 
-                    @if (Model.PageNumber < Model.PageCount - 2)
-                    {
-                        <li class="page-item disabled"><span class="page-link">...</span></li>
-                    }
-
-                    <li class="page-item @(Model.PageCount == Model.PageNumber ? "active" : "")">
-                        <a class="page-link"
-                            href="@Url.Action("index", new { page = Model.PageCount })">@Model.PageCount</a>
+                    <li class="page-item @(Model.PageNumber == Model.PageCount ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("index", new { page = Model.PageNumber + 1 })">›</a>
                     </li>
-                }
-
-                <li class="page-item @(Model.PageNumber == Model.PageCount ? "disabled" : "")">
-                    <a class="page-link" href="@Url.Action("index", new { page = Model.PageNumber + 1 })">›</a>
-                </li>
-            </ul>
-        </nav>
-    </div>
+                </ul>
+            </nav>
+        </div>
+    }
 </div>
