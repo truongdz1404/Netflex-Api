@@ -8,7 +8,7 @@ public class CreateFilmViewModel
     public required string Title { get; set; }
     [StringLength(1000)]
     public string? About { get; set; }
-    [RegularExpression(@"^https:\/\/www\.youtube\.com\/watch\?v=(.*?)(?:\&(.*))?$", ErrorMessage = "Trailer must be a valid Youtube link")]
+    [RegularExpression(@"^https:\/\/www\.youtube\.com\/embed\/(.*?)(?:\?(.*))?$", ErrorMessage = "Trailer must be a valid Youtube embed link")]
     [StringLength(1000)]
     public string? Trailer { get; set; }
     [Required, Range(1, int.MaxValue, ErrorMessage = "Production year must be greater than 0")]

@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<Netflex.Models.Blog.BlogViewModel>
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Trang chủ";
 }
 <div class="container py-4">
     <div id="highlightCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -21,7 +21,7 @@
                             for (var j = 0; j < 2 && (i + j) < ViewBag.FeaturedFilms.Count; j++)
                             {
                                 var film = ViewBag.FeaturedFilms[i + j];
-                                <div class="col-md-6">
+                                <div class="col-md-6 position-relative">
                                     <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
                                         <div class="position-relative movie-banner">
                                             <img src="@film.Poster" alt="@film.Title">
@@ -72,7 +72,7 @@
     var category = categories[i];
     var sliderId = $"slider{i}";
 
-    var films = i == 0 ? ViewBag.FeaturedFilms : (i == 1 ? ViewBag.SingleFilms : ViewBag.SeriesFilms);
+    var movies = i == 0 ? ViewBag.FeaturedFilms : (i == 1 ? ViewBag.SingleFilms : ViewBag.SeriesFilms);
 
     <div class="container my-3" id="container-@sliderId">
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -92,32 +92,36 @@
             </div>
         </div>
         <div class="position-relative content-items">
-            <div class="film-slider" style="overflow-x: hidden;">
-                <div class="film-container d-flex" id="films-@sliderId" style="transition: transform 0.3s ease;">
-                    @foreach (var film in films)
+            <div class="movie-slider" style="overflow-x: hidden;">
+                <div class="movie-container d-flex" id="films-@sliderId" style="transition: transform 0.3s ease;">
+                    @foreach (var movie in movies)
                     {
-                        <div class="film-item me-3"
+                        <div class="movie-item me-3"
                             style="min-width: calc(10% - 26px); width: calc(10% - 26px); flex: 0 0 calc(20% - 20px);">
                             @if (i != 2)
                             {
-                                <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
+                                <a href="@Url.Action("Detail", "Film", new { id = movie.Id })" class="text-decoration-none">
                                     <div class="position-relative">
-                                        <img src="@film.Poster" class="img-6x9 w-100" alt="@film.Title">
+                                        <img src="@movie.Poster" class="img-6x9 w-100" alt="@movie.Title">
+                                        <i
+                                            class="fa-solid fa-play position-absolute top-50 start-50 translate-middle fs-1 text-white"></i>
                                     </div>
                                     <p class="text-white text-truncate mt-2 text-smm" style="max-width: 100%;">
-                                        @(film.Title.Length >
+                                        @(movie.Title.Length >
                                             20 ?
-                                            film.Title.Substring(0, 20) + "..." : film.Title)</p>
+                                            movie.Title.Substring(0, 20) + "..." : movie.Title)</p>
                                 </a>
                             }
                             else
                             {
-                                <a href="@Url.Action("Detail", "Serie", new { id = film.Id })" class="text-decoration-none">
+                                <a href="@Url.Action("Detail", "Serie", new { id = movie.Id })" class="text-decoration-none">
                                     <div class="position-relative">
-                                        <img src="@film.Poster" class="img-6x9 w-100" alt="@film.Title">
+                                        <img src="@movie.Poster" class="img-6x9 w-100" alt="@movie.Title">
+                                        <i
+                                            class="fa-solid fa-play position-absolute top-50 start-50 translate-middle fs-1 text-white"></i>
                                     </div>
-                                    <p class="text-white text-truncate mt-2" style="max-width: 100%;">@(film.Title.Length > 20 ?
-                            film.Title.Substring(0, 20) + "..." : film.Title)</p>
+                                    <p class="text-white text-truncate mt-2" style="max-width: 100%;">@(movie.Title.Length > 20 ?
+                            movie.Title.Substring(0, 20) + "..." : movie.Title)</p>
                                 </a>
                             }
                         </div>
@@ -196,7 +200,7 @@
                 return;
             }
 
-            const items = container.querySelectorAll('.film-item');
+            const items = container.querySelectorAll('.movie-item');
             if (items.length === 0) {
                 console.error(`Không có phim nào trong slider ${sliderId}`);
                 return;
@@ -218,7 +222,7 @@
             const container = document.getElementById(`films-${sliderId}`);
             if (!container) return;
 
-            const items = container.querySelectorAll('.film-item');
+            const items = container.querySelectorAll('.movie-item');
             if (items.length === 0) return;
 
             container.setAttribute('data-position', position);
@@ -250,7 +254,7 @@
                 if (!container) continue;
 
                 const position = parseInt(container.getAttribute('data-position') || '0');
-                const items = container.querySelectorAll('.film-item');
+                const items = container.querySelectorAll('.movie-item');
                 const visibleItems = 5;
 
                 if (position > items.length - visibleItems) {

@@ -3,15 +3,11 @@
 <h2>Xác nhận xóa</h2>
 
 
-    onsubmit="return confirm('Are you sure you want to delete this item?')">
-    <button class="btn btn-danger delete" data-id="@Model.Id" data-controller="Actor" data-action="DeleteConfirmed"
-        data-body-message="Bạn có chắc chắn muốn xóa @Model.Name không?"
-        data-redirect-url="@Url.Action("Index", "Actor")">
-        Xóa
-    </button>
+onsubmit="return confirm('Are you sure you want to delete this item?')">
+<button class="btn btn-danger delete" data-id="@Model.Id" data-controller="Actor" data-action="DeleteConfirmed"
+    data-body-message="Bạn có chắc chắn muốn xóa @Model.Name không?" data-redirect-url="@Url.Action("Index", "Actor")">
+    Xóa
+</button>
 
 <a asp-action="Index" class="btn btn-secondary">Hủy</a>
-
-@section Scripts {
-    <script src="~/js/delete.js"></script>
-}
+<script src="~/js/delete.js"></script>

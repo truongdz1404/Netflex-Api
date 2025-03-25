@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,12 +9,22 @@ using Netflex.Models.Episode;
 using X.PagedList.Extensions;
 namespace Netflex.Controllers;
 
-public class EpisodeController(IStorageService storage, IUnitOfWork unitOfWork, ApplicationDbContext context)
-    : BaseController(unitOfWork)
+public class EpisodeController : BaseController
 {
-    private readonly IStorageService _storage = storage;
-    private readonly ApplicationDbContext _context = context;
+    private readonly IStorageService _storage;
+    private readonly ApplicationDbContext _context;
+    private readonly NotificationQueueService _notificationService;
+
     private const int PAGE_SIZE = 3;
+
+    public EpisodeController(IStorageService storage, IUnitOfWork unitOfWork,
+        ApplicationDbContext context, NotificationQueueService notificationService) : base(unitOfWork)
+    {
+        _storage = storage;
+        _context = context;
+        _notificationService = notificationService;
+    }
+
     [Authorize(Roles = "admin")]
     public IActionResult Index(int? page, Guid serieId)
     {
@@ -59,7 +70,7 @@ public class EpisodeController(IStorageService storage, IUnitOfWork unitOfWork, 
 
         ViewBag.Episodes = _unitOfWork.Repository<Episode>().Entities.Where(e => e.SerieId == episode.SerieId).ToList();
         ViewData["SerieTitle"] = serie.Title ?? "Không có serie";
-        ViewData["SerieId"] = serie.Id;        
+        ViewData["SerieId"] = serie.Id;
         return View(model);
     }
     [Authorize(Roles = "admin")]
@@ -155,15 +166,36 @@ public class EpisodeController(IStorageService storage, IUnitOfWork unitOfWork, 
 
         ViewData["SerieTitle"] = serie.Title ?? "Không có serie";
         ViewData["SerieId"] = serie.Id;
+
+        await NotifyNewEpisode(newEpisode, serie);
+
         return RedirectToAction("Index", "Episode", new { serieId = serie.Id });
     }
 
 
-    private void NotifyNewEpisode(Notification notification, Guid serieId)
+    private async Task NotifyNewEpisode(Episode newEpisode, Serie serie)
     {
+        var sendTo = _context.Follows.Where(f => f.SerieId == serie.Id)
+            .Select(f => f.FollowerId).ToList();
 
-        // var sendTo = new string[] { userId };
+        var notification = new Notification
+        {
+            Id = Guid.NewGuid(),
+            Content = JsonSerializer.Serialize(new { Message = "A new episode has been added to the serie: " + serie.Title, Link = $"/episode/detail?id={newEpisode.Id}" }),
+            CreatedAt = DateTime.Now,
+            Status = "System"
+        };
 
+        _context.Notifications.Add(notification);
+        _context.SaveChanges();
+
+        foreach (var id in sendTo)
+        {
+            _context.UserNotifications.Add(new UserNotification { UserId = id, NotificationId = notification.Id, HaveRead = false });
+        }
+
+        _context.SaveChanges();
+        await _notificationService.PushAsync(new Message(sendTo, notification.Content));
     }
 
 }

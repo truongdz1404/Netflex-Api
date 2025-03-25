@@ -107,7 +107,7 @@ namespace Netflex.Controllers
             ViewBag.CreatedAt = createdAt;
             ViewBag.SortOrder = sortOrder;
 
-            return View("~/Views/Dashboard/BlogManagement/Index.cshtml", models);
+            return View("~/Views/Dashboard/Blog/Index.cshtml", models);
         }
 
         public IActionResult ExportToExcel()
@@ -167,14 +167,14 @@ namespace Netflex.Controllers
                 CreaterId = b.CreaterId,
             };
 
-            return View("~/Views/Dashboard/BlogManagement/Details.cshtml", model);
+            return View("~/Views/Dashboard/Blog/Details.cshtml", model);
         }
 
         [Route("/dashboard/blog/create")]
         public IActionResult Create()
         {
             ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName");
-            return View("~/Views/Dashboard/BlogManagement/Create.cshtml");
+            return View("~/Views/Dashboard/Blog/Create.cshtml");
         }
 
         [HttpPost]
@@ -235,7 +235,7 @@ namespace Netflex.Controllers
                 CreaterId = blog.CreaterId
             };
             ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName", blog.CreaterId);
-            return View("~/Views/Dashboard/BlogManagement/Edit.cshtml", blogViewModel);
+            return View("~/Views/Dashboard/Blog/Edit.cshtml", blogViewModel);
         }
 
         [HttpPost]

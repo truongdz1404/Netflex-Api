@@ -5,37 +5,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Netflex</title>
-    <link rel="stylesheet" href="~/css/delete.css" asp-append-version="true" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous"
-        asp-append-version="true">
     <link rel="stylesheet" href="~/font-awesome/css/all.css" crossorigin="anonymous" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"
-        asp-append-version="true">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Netflex.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
     <!-- TinyMCE -->
     <script src="https://cdn.tiny.cloud/1/25kiq8kjalzyqvwkno8j4sgazvesxspatked58wy320zismn/tinymce/7/tinymce.min.js"
         referrerpolicy="origin" asp-append-version="true"></script>
-    <script>
-        tinymce.init({
-            selector: 'textarea#tiny',
-            plugins: [
-                'accordion', 'advlist', 'anchor', 'autolink', 'autosave',
-                'charmap', 'code', 'codesample', 'directionality', 'emoticons',
-                'fullscreen', 'help', 'image', 'importcss',
-                'insertdatetime', 'link', 'lists', 'media', 'nonbreaking',
-                'pagebreak', 'preview', 'quickbars', 'save', 'searchreplace', 'table',
-                'visualblocks', 'visualchars', 'wordcount'
-            ],
-            toolbar: 'undo redo | accordion accordionremove | ' +
-                'importword exportword exportpdf | math | ' +
-                'blocks fontfamily fontsize | bold italic underline strikethrough | ' +
-                'align numlist bullist | link image | table media | ' +
-                'lineheight outdent indent | forecolor backcolor removeformat | ' +
-                'charmap emoticons | code fullscreen preview | save print | ' +
-                'pagebreak anchor codesample | ltr rtl',
-            menubar: 'file edit view insert format tools table help'
-        })
-    </script>
+
     <style>
         ::after,
         ::before {
@@ -55,10 +33,6 @@
         h1 {
             font-weight: 600;
             font-size: 1.5rem;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
         }
 
         .wrapper {
@@ -255,9 +229,11 @@
             @RenderBody()
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"
-        asp-append-version="true"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/easing/easing.min.js"></script>
+    <script src="~/lib/waypoints/waypoints.min.js"></script>
+    <script src="~/js/delete.js" crossorigin="anonymous" asp-append-version="true"></script>
     <script>
         const hamBurger = document.querySelector(".toggle-btn");
 
@@ -265,8 +241,28 @@
             document.querySelector("#sidebar").classList.toggle("expand");
         });
     </script>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/js/delete.js" crossorigin="anonymous" asp-append-version="true"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea#tiny',
+            plugins: [
+                'accordion', 'advlist', 'anchor', 'autolink', 'autosave',
+                'charmap', 'code', 'codesample', 'directionality', 'emoticons',
+                'fullscreen', 'help', 'image', 'importcss',
+                'insertdatetime', 'link', 'lists', 'media', 'nonbreaking',
+                'pagebreak', 'preview', 'quickbars', 'save', 'searchreplace', 'table',
+                'visualblocks', 'visualchars', 'wordcount'
+            ],
+            toolbar: 'undo redo | accordion accordionremove | ' +
+                'importword exportword exportpdf | math | ' +
+                'blocks fontfamily fontsize | bold italic underline strikethrough | ' +
+                'align numlist bullist | link image | table media | ' +
+                'lineheight outdent indent | forecolor backcolor removeformat | ' +
+                'charmap emoticons | code fullscreen preview | save print | ' +
+                'pagebreak anchor codesample | ltr rtl',
+            menubar: 'file edit view insert format tools table help'
+        })
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
     @await RenderSectionAsync("Styles", required: false)
 </body>

@@ -11,8 +11,6 @@ namespace Netflex.Controllers
 {
     public class NotificationController : BaseController
     {
-        private const string Read = "read";
-        private const string Unread = "unread";
         private readonly ApplicationDbContext _context;
         private readonly NotificationQueueService _notificationService;
 
