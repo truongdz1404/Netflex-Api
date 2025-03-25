@@ -1,9 +1,11 @@
 ﻿$(document).ready(function () {
-    let pathSegments = window.location.pathname.split("/");
-    let filmId = pathSegments[pathSegments.length - 1];
+    let pathSegments = window.location.pathname.split("/").filter(segment => segment);
+    let contentId = pathSegments[pathSegments.length - 1]; // ID của phim hoặc series
+    let isSeries = window.location.pathname.toLowerCase().includes("series"); // Kiểm tra nếu là series
 
     let selected = $("#selected-rating");
     let ratings = 0;
+
     getRating();
 
     function highlight(value) {
@@ -17,6 +19,7 @@
     function bindStarEvents() {
         let stars = $(".rating-stars i");
 
+        stars.off("mouseover mouseout click"); // Xóa sự kiện cũ để tránh trùng lặp
         stars.on("mouseover", function () {
             let value = $(this).data("value");
             highlight(value);
@@ -36,42 +39,43 @@
     }
 
     function getRating() {
+        let url = isSeries ? "/Review/GetSerieReview/" + contentId : "/Review/GetFilmReview/" + contentId;
         $.ajax({
-            url: "/Review/GetReview/" + filmId,
+            url: url,
             type: "GET",
-            contentType: "application/json",
             success: function (data) {
                 $("#review-container").html(data);
                 ratings = parseFloat($("#selected-rating").attr("data-rating")) || 0;
-                console.log(data);
+                console.log("Rating data:", data);
                 highlight(ratings);
                 bindStarEvents();
             },
             error: function (xhr, status, error) {
-                console.error("Lỗi khi lấy đánh giá:", error);
-            },
+                console.error("Lỗi khi lấy đánh giá:", error, "Status:", xhr.status);
+            }
         });
     }
 
     function rating(ratingValue) {
+        let url = isSeries ? "/Review/SerieRating/" + contentId : "/Review/FilmRating/" + contentId;
         var reviewData = {
-            Rating: ratingValue,
-            FilmId: filmId,
+            Rating: ratingValue
         };
 
         $.ajax({
-            url: "/Review/Rating/" + filmId,
+            url: url,
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify(reviewData),
             success: function (data) {
                 $("#review-container").html(data);
+                ratings = parseFloat($("#selected-rating").attr("data-rating")) || 0;
                 highlight(ratings);
                 bindStarEvents();
             },
             error: function (xhr, status, error) {
-                console.error("Lỗi khi gửi đánh giá:", error);
-            },
+                console.error("Lỗi khi gửi đánh giá:", error, "Status:", xhr.status);
+            }
         });
     }
 });

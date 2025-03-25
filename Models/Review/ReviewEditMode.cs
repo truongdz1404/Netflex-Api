@@ -6,6 +6,7 @@ namespace Netflex.Models.Review
     {
         [Range(1, 10)]
         public required int Rating { get; set; }
-        public Guid FilmId { get; set; }
+        public Guid? FilmId { get; set; }
+        public Guid SerieId { get; set; }
     }
 }
