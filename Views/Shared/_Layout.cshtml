@@ -194,6 +194,18 @@
 			$(window).scrollTop(0);
 		}
 
+        function loadGenreDropdown() {
+            $.ajax({
+                url: "/Genre/GenreDropdown",
+                type: "GET",
+                success: function (data) {
+                    $("#genre-dropdown .dropdown-menu").html(data);
+                },
+                error: function () {
+                    console.error("Cannot load the genre");
+                }
+            });
+        }
         $(() => {
             var connection = new signalR.HubConnectionBuilder()
                 .withUrl("/notification-hub")
