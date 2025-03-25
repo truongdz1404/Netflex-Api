@@ -100,12 +100,9 @@
                                     asp-route-id="@item.Id">Edit</a>
                                 <a class="btn btn-info btn-sm" asp-controller="episode" asp-action="index"
                                     asp-route-SerieManagementId="@item.Id">Episodes</a>
-                                <form method="post" asp-controller="SerieManagement" asp-action="Delete"
-                                    onsubmit="return confirm('Bạn có muốn xóa phim này?')">
-                                    <input type="hidden" name="id" value="@item.Id" />
-                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                </form>
-
+                                <a class="btn btn-danger btn-sm delete" data-id="@item.Id" data-controller="serie"
+                                    data-action="delete" data-body-message="Bạn có muốn xóa phim lẻ này?"
+                                    data-redirect-url="/dashboard/serie">Delete</a>
                             </td>
                         </tr>
                     }
@@ -196,23 +193,5 @@
             document.getElementById('hiddenSortOrder').value = order;
             submitForm();
         }
-
-        // Delete confirmation handling for delete buttons
-        document.addEventListener('DOMContentLoaded', function () {
-            const deleteButtons = document.querySelectorAll('.delete');
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const id = this.getAttribute('data-id');
-                    const controller = this.getAttribute('data-controller');
-                    const action = this.getAttribute('data-action');
-                    const message = this.getAttribute('data-body-message');
-
-                    if (confirm(message)) {
-                        window.location.href = `/${controller}/${action}/${id}`;
-                    }
-                });
-            });
-        });
     </script>
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Netflex.Database;
 using Netflex.Models.Film;
+using OfficeOpenXml;
 using X.PagedList.Extensions;
 namespace Netflex.Controllers;
 
@@ -15,26 +16,113 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ApplicationDbContext _context = context;
     private const int PAGE_SIZE = 3;
-
-    public IActionResult Index(int? page)
+    [Route("dashboard/film")]
+    public IActionResult Index(string? searchTerm, int? productionYear, string? sortOrder, int? page, bool export = false)
     {
         int pageNumber = page ?? 1;
 
-        var models = _unitOfWork.Repository<Film>().Entities.Select(
-            film => new FilmViewModel()
-            {
-                Id = film.Id,
-                Title = film.Title,
-                Poster = film.Poster,
-                Path = film.Path,
-                Trailer = film.Trailer,
-                ProductionYear = film.ProductionYear
-            }
-        ).ToPagedList(pageNumber, PAGE_SIZE);
+        var query = _unitOfWork.Repository<Film>().Entities.AsQueryable();
 
-        return View(models);
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            query = query.Where(f => f.Title.ToLower().Contains(searchTerm.ToLower()));
+        }
+        if (productionYear.HasValue)
+        {
+            query = query.Where(f => f.ProductionYear == productionYear.Value);
+        }
+
+        query = sortOrder switch
+        {
+            "title" => query.OrderBy(f => f.Title),
+            "title_desc" => query.OrderByDescending(f => f.Title),
+            "production_year" => query.OrderBy(f => f.ProductionYear),
+            "production_year_desc" => query.OrderByDescending(f => f.ProductionYear),
+            _ => query.OrderBy(f => f.Title)
+        };
+        if (export)
+        {
+            return ExportToExcel(searchTerm, productionYear, sortOrder);
+        }
+
+        var models = query.Select(film => new FilmViewModel()
+        {
+            Id = film.Id,
+            Title = film.Title,
+            Poster = film.Poster,
+            Path = film.Path,
+            Trailer = film.Trailer,
+            ProductionYear = film.ProductionYear
+        }).ToPagedList(pageNumber, PAGE_SIZE);
+
+        ViewBag.SearchTerm = searchTerm;
+        ViewBag.ProductionYear = productionYear;
+        ViewBag.SortOrder = sortOrder;
+
+        return View("~/Views/Dashboard/Film/Index.cshtml", models);
+
+    }
+    public IActionResult ExportToExcel(string? searchTerm, int? productionYear, string? sortOrder)
+    {
+        var query = _unitOfWork.Repository<Film>().Entities.AsQueryable();
+
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            query = query.Where(f => f.Title.Contains(searchTerm));
+        }
+
+        if (productionYear.HasValue)
+        {
+            query = query.Where(f => f.ProductionYear == productionYear);
+        }
+
+        query = sortOrder switch
+        {
+            "title" => query.OrderBy(f => f.Title),
+            "title_desc" => query.OrderByDescending(f => f.Title),
+            "production_year" => query.OrderBy(f => f.ProductionYear),
+            "production_year_desc" => query.OrderByDescending(f => f.ProductionYear),
+            _ => query.OrderBy(f => f.Title)
+        };
+
+        var films = query.Select(f => new FilmViewModel
+        {
+            Id = f.Id,
+            Title = f.Title,
+            Poster = f.Poster,
+            Trailer = f.Trailer,
+            ProductionYear = f.ProductionYear
+        }).ToList();
+
+        if (!films.Any())
+        {
+            return Content("No films found for export.", "text/plain");
+        }
+
+        using var package = new ExcelPackage();
+        var worksheet = package.Workbook.Worksheets.Add("Films");
+
+        worksheet.Cells[1, 1].Value = "Id";
+        worksheet.Cells[1, 2].Value = "Title";
+        worksheet.Cells[1, 3].Value = "Production Year";
+        worksheet.Cells[1, 4].Value = "Trailer Link";
+        Console.WriteLine($"Exporting {films.Count} films");
+
+        for (int i = 0; i < films.Count; i++)
+        {
+            worksheet.Cells[i + 2, 1].Value = films[i].Title;
+            worksheet.Cells[i + 2, 2].Value = films[i].ProductionYear;
+            worksheet.Cells[i + 2, 3].Value = films[i].Trailer;
+        }
+
+        var stream = new MemoryStream();
+        package.SaveAs(stream);
+        stream.Position = 0;
+
+        return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Films.xlsx");
     }
 
+    [Route("/dashboard/film/detail/{id}")]
     public IActionResult Detail(Guid? id)
     {
         if (id == null)
@@ -53,10 +141,12 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
             ProductionYear = film.ProductionYear
         };
 
-        return View(model);
+        return View("~/Views/Dashboard/Film/Detail.cshtml", model);
+
     }
 
     [HttpDelete]
+    [Route("/dashboard/film/delete/{id}")]
     public async Task<IActionResult> Delete(Guid? id)
     {
         if (id == null)
@@ -64,11 +154,17 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
         var film = _unitOfWork.Repository<Film>().Entities.FirstOrDefault(m => m.Id.Equals(id));
         if (film == null)
             return NotFound();
+        var followsToRemove = _unitOfWork.Repository<Follow>().Entities.Where(f => f.FilmId == id).ToList();
+        foreach (var follow in followsToRemove)
+        {
+            await _unitOfWork.Repository<Follow>().DeleteAsync(follow);
+        }
         await _unitOfWork.Repository<Film>().DeleteAsync(film);
         await _unitOfWork.Save(CancellationToken.None);
-        return RedirectToAction("index", "film");
+        return RedirectToAction("index", "filmmanagement");
     }
 
+    [Route("/dashboard/film/edit/{id}")]
     public async Task<IActionResult> Edit(Guid? id)
     {
         if (id == null)
@@ -90,10 +186,11 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
             ActorIds = _context.FilmActors.Where(x => x.FilmId == film.Id).Select(x => x.ActorId).ToList(),
         };
         await PopulateViewBags(model);
-        return View(model);
+        return View("~/Views/Dashboard/Film/Edit.cshtml", model);
     }
 
     [HttpPost]
+    [Route("/dashboard/film/edit/{id}")]
     public async Task<IActionResult> Edit(EditFilmViewModel update)
     {
         if (!ModelState.IsValid)
@@ -152,19 +249,21 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
 
         await _context.SaveChangesAsync();
         await _unitOfWork.Save(CancellationToken.None);
-        return RedirectToAction("index", "film");
+        return RedirectToAction("index", "filmmanagement");
     }
 
+    [Route("/dashboard/film/create")]
     public async Task<IActionResult> Create()
     {
         ViewBag.Actors = await _unitOfWork.Repository<Actor>().GetAllAsync();
         ViewBag.Genres = await _unitOfWork.Repository<Genre>().GetAllAsync();
         ViewBag.Countries = await _unitOfWork.Repository<Country>().GetAllAsync();
         ViewBag.AgeCategories = await _unitOfWork.Repository<AgeCategory>().GetAllAsync();
-        return View();
+        return View("~/Views/Dashboard/film/Create.cshtml");
     }
 
     [HttpPost]
+    [Route("/dashboard/film/create")]
     public async Task<IActionResult> Create(CreateFilmViewModel film)
     {
         if (!ModelState.IsValid)
@@ -218,7 +317,7 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
 
         await _context.SaveChangesAsync();
         await _unitOfWork.Save(CancellationToken.None);
-        return RedirectToAction("index", "film");
+        return RedirectToAction("index", "filmmanagement");
     }
 
     private async Task PopulateViewBags(EditFilmViewModel model)

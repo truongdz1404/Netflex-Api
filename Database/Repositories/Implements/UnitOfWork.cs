@@ -19,7 +19,7 @@ public class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
             var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(typeof(T)), _dbContext);
 
             _repositories.Add(type, repositoryInstance);
-        }
+}
         return (IBaseRepository<T>)_repositories[type]!;
     }
 

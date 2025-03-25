@@ -3,48 +3,115 @@
 <html lang="en">
 
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>@ViewData["Title"] - Netflex</title>
-	<link rel="stylesheet" href="~/font-awesome/css/all.css" crossorigin="anonymous" />
-	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/Netflex.styles.css" asp-append-version="true" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Netflex</title>
+    <link rel="stylesheet" href="~/css/delete.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/font-awesome/css/all.css" crossorigin="anonymous" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Netflex.styles.css" asp-append-version="true" />
 </head>
 
 <body class="text-white-50">
-	<header>
-		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark">
-			<div class="container-fluid container-xxl">
-				<a class="navbar-brand text-white-80 fw-bold text-sm-end" asp-area="" asp-controller="home"
-				   asp-action="index">NETFLEX</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-						aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between" data-bs-theme="dark">
-					<ul class="navbar-nav flex-grow-1">
-						<li class="nav-item">
-							<a class="nav-link" asp-area="" asp-controller="home" asp-action="index">Trang chủ</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" asp-area="" asp-controller="home" asp-action="privacy">Phim lẻ</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" asp-area="" asp-controller="home" asp-action="privacy">Phim bộ</a>
-						</li>
-						<li class="nav-item dropdown" id="genre-dropdown">
-							<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-							   aria-expanded="false">
-								Thể loại
-							</a>
-							<div class="dropdown-menu dropdown-menu-dark">
-								<div class="dropdown-grid text-white-50">
-                                    @await Html.PartialAsync("_GenresPartial", ViewData["Genres"] as List<GenreViewModel>)
-								</div>
-							</div>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark">
+            <div class="container-fluid container-xxl">
+                <a class="navbar-brand text-white-80 fw-bold text-sm-end" asp-area="" asp-controller="home"
+                    asp-action="index">NETFLEX</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between" data-bs-theme="dark">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="home" asp-action="index">Trang chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="film" asp-action="index">Phim lẻ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="serie" asp-action="index">Phim bộ</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Thể loại
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-dark">
+                                <div class="dropdown-grid text-white-50">
+                                    @foreach (var item in ViewBag.Genres)
+                                    {
+                                        <a class="dropdown-item"
+                                            href="@Url.Action("Index", "Film", new { genreId = item.Id })">
+                                            <i class="fa-solid fa-caret-right pe-2"></i>@item.Name</a>
+                                    }
 
-						</li>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="fa-solid fa-caret-right pe-2"></i>Phim Cổ Trang</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Bí
+                                        Ẩn</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Võ
+                                        Thuật</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Phiêu
+                                        Lưu</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Hình
+                                        Sự</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Viễn
+                                        Tưởng</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Thần
+                                        Thoại</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>TV
+                                        Shows</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Tâm
+                                        Lý</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Kinh
+                                        Dị</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Kịch
+                                        Tính</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Hài</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Gia
+                                        Đình</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Netflix</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Hoạt
+                                        Hình</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Tình
+                                        Cảm</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Hành
+                                        Động</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Chiến
+                                        Tranh</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        BL</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Khoa
+                                        Học</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Âm
+                                        Nhạc</a>
+                                    <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
+                                        Chính
+                                        Kịch</a>
+                                </div>
+                            </div>
+                        </li>
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="countryDropdown" role="button"
@@ -56,7 +123,7 @@
                                     @foreach (var item in ViewBag.Countries)
                                     {
                                         <a class="dropdown-item"
-                                            href="@Url.Action("index", "FilmGenreCountry", new { countryId = item.Id })">
+                                            href="@Url.Action("Index", "Film", new { countryId = item.Id })">
                                             <i class="fa-solid fa-caret-right pe-2"></i>@item.Name</a>
                                     }
                                     <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
@@ -116,7 +183,7 @@
                 <ul class="menu-year overflow-auto">
                     @for (int i = DateTime.Now.Year; i >= 1981; i--)
                     {
-                        <li><a href="@Url.Action("index", "FilmRelease", new { year = i })">@i</a></li>
+                        <li><a href="@Url.Action("index", "Film", new { year = i })">@i</a></li>
                     }
                 </ul>
                 <a href="@Url.Action("Detail", "Serie", new { id = ViewBag.StarSeries[0].Id })"
@@ -164,7 +231,6 @@
             </div>
         </div>
     </div>
-
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>

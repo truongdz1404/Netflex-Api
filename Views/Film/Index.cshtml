@@ -1,14 +1,15 @@
 @model IPagedList<FilmViewModel>
 @using X.PagedList.Mvc.Core
 @{
-    ViewData["Title"] = "Phim lẻ";
+    @* ViewData["Title"] = "Phim lẻ"; *@
     Layout = "_Layout";
 }
 
 <div class="container">
-    <h3 class="text-white text-center my-3">Phim lẻ</h3>
+    <h3 class="text-white text-center my-3">@ViewData["Title"]</h3>
 
-    <div id="highlightCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+    @if(@ViewData["Title"]?.ToString() == "Phim lẻ"){
+        <div id="highlightCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
         <div class="carousel-indicators">
             @for (var i = 0; i < Model.Count(); i += 2)
             {
@@ -66,9 +67,10 @@
             }
         </div>
     </div>
+    }
     <div class="d-flex align-items-center my-3 mt-5">
         <div class="vertical-line"></div>
-        <p class="ms-2 mb-0 text-md text-white fw-bold">Phim lẻ mới cập nhật</p>
+        <p class="ms-2 mb-0 text-md text-white fw-bold">@ViewData["Title"] mới cập nhật</p>
     </div>
     <div class="row">
         @foreach (var film in Model)
