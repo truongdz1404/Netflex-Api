@@ -75,7 +75,7 @@
         @foreach (var serie in Model)
         {
             <div class="col-4 col-md-3 col-xl-2 mb-2 movie-item">
-                <a href="@Url.Action("Detail", "Serie", new { id = serie.Id })" class="text-decoration-none">
+                <a href="@Url.Action("detail", "serie", new { id = serie.Id })" class="text-decoration-none">
                     <div class="position-relative">
                         <img src="@serie.Poster" class="img-6x9 rounded" alt="@serie.Title">
                         <i class="fa-solid fa-play position-absolute top-50 start-50 translate-middle fs-1 text-white"></i>
