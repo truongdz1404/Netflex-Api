@@ -14,6 +14,19 @@
     color: rgba(255, 255, 255, .28);
 }
 
+.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.img-6x9 {
+    width: 100%;          
+    aspect-ratio: 2 / 3; 
+    object-fit: cover;  
+}
+
 .rating-stars i {
     color: #258cfb;
     cursor: pointer;
