@@ -9,7 +9,7 @@ html {
 }
 
 body {
-  font-family: "Inter", Helvetica, Arial, sans-serif;
+  font-family: "Inter", Helvetica, Arial, sans-serif !important;
 }
 
 @media (min-width: 768px) {
@@ -159,4 +159,16 @@ video {
 
 .border-line {
   border-color: rgba(255, 255, 255, .08) !important;
+}
+
+.bg-light {
+  background-color: #F3F6F9 !important;
+}
+
+.blur-on-hover img {
+  transition: filter 0.3s ease-in-out;
+}
+
+.blur-on-hover:hover img {
+  filter: blur(2px);
 }

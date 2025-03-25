@@ -73,11 +73,11 @@
     <div class="row">
         @foreach (var film in Model)
         {
-            <div class="col-4 col-md-3 col-xl-2 mb-2">
+            <div class="col-4 col-md-3 col-xl-2 mb-2 movie-item">
                 <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
                     <div class="position-relative">
                         <img src="@film.Poster" class="img-6x9 rounded" alt="@film.Title">
-                        @* <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span> *@
+                        <i class="fa-solid fa-play position-absolute top-50 start-50 translate-middle fs-1 text-white"></i>
                     </div>
                     <p class="text-white text-truncate mt-2 text-smm" style="max-width: 100%;">@(film.Title.Length > 20 ?
                     film.Title.Substring(0, 20) + "..." : film.Title)</p>

@@ -1,6 +1,117 @@
-﻿@model IEnumerable<Netflex.Models.Blog.BlogViewModel>
-
+﻿@model Netflex.Models.Dashboard.DashboardViewModel
 @{
-    ViewData["Title"] = "Admin";
+    ViewData["Title"] = "Dashboard";
     Layout = "_AdminLayout";
 }
+
+<div>
+    <div class="container-fluid pt-4 px-4">
+        <div class="row g-4">
+            <div class="col-sm-6 col-xl-3">
+                <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                    <i class="fa fa-chart-line fa-3x text-primary"></i>
+                    <div class="ms-3">
+                        <p class="mb-2">Phim lẻ hôm nay</p>
+                        <h6 class="mb-0 fw-bold">@Model.TodayFilms</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                    <i class="fa fa-chart-bar fa-3x text-primary"></i>
+                    <div class="ms-3">
+                        <p class="mb-2">Phim bộ hôm nay</p>
+                        <h6 class="mb-0 fw-bold">@Model.TodaySeries</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                    <i class="fa-solid fa-rss text-primary fa-3x"></i>
+                    <div class="ms-3">
+                        <p class="mb-2">Bài viết hôm nay</p>
+                        <h6 class="mb-0 fw-bold">@Model.TodayBlogs</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                    <i class="fa fa-chart-area fa-3x text-primary"></i>
+                    <div class="ms-3">
+                        <p class="mb-2">Online User</p>
+                        <h6 class="mb-0 fw-bold">@Model.OnlineUsers</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-fluid pt-4 px-4">
+        <div class="row g-4">
+            <div class="col-sm-12 col-xl-6">
+                <div class="bg-light text-center rounded p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <h6 class="mb-0 fw-bold">Thông kê đăng phim</h6>
+                    </div>
+                    <canvas id="worldwide-sales"></canvas>
+                </div>
+            </div>
+            <div class="col-sm-12 col-xl-6">
+                <div class="bg-light text-center rounded p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <h6 class="mb-0 fw-bold">Người đăng ký</h6>
+                    </div>
+                    <canvas id="salse-revenue"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/chart/chart.min.js"></script>
+
+<script>
+    var ctx1 = $("#worldwide-sales").get(0).getContext("2d");
+    var myChart1 = new Chart(ctx1, {
+        type: "bar",
+        data: {
+            labels: ["2016", "2017", "2018", "2019", "2020", "2021", "2022"],
+            datasets: [{
+                label: "Film",
+                data: [15, 30, 55, 65, 60, 80, 95],
+                backgroundColor: "rgba(0, 156, 255, .7)"
+            },
+            {
+                label: "Serie",
+                data: [8, 35, 40, 60, 70, 55, 75],
+                backgroundColor: "rgba(0, 156, 255, .5)"
+            }
+            ]
+        },
+        options: {
+            responsive: true
+        }
+    });
+
+
+    var ctx2 = $("#salse-revenue").get(0).getContext("2d");
+    var myChart2 = new Chart(ctx2, {
+        type: "line",
+        data: {
+            labels: ["2016", "2017", "2018", "2019", "2020", "2021", "2022"],
+            datasets: [{
+                label: "User",
+                data: [15, 30, 55, 45, 70, 65, 85],
+                backgroundColor: "rgba(0, 156, 255, .5)",
+                fill: true
+            }
+            ]
+        },
+        options: {
+            responsive: true
+        }
+    });
+
+</script>

@@ -74,10 +74,11 @@
     <div class="row">
         @foreach (var serie in Model)
         {
-            <div class="col-4 col-md-3 col-xl-2 mb-2">
+            <div class="col-4 col-md-3 col-xl-2 mb-2 movie-item">
                 <a href="@Url.Action("Detail", "Serie", new { id = serie.Id })" class="text-decoration-none">
                     <div class="position-relative">
                         <img src="@serie.Poster" class="img-6x9 rounded" alt="@serie.Title">
+                        <i class="fa-solid fa-play position-absolute top-50 start-50 translate-middle fs-1 text-white"></i>
                     </div>
                     <p class="text-white text-truncate mt-2 text-smm" style="max-width: 100%;">
                         @(serie.Title.Length > 20 ? serie.Title.Substring(0, 20) + "..." : serie.Title)
