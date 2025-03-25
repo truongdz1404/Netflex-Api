@@ -8,7 +8,7 @@ namespace Netflex.Entities
         public string About { get; set; } = string.Empty;
         public string Poster { get; set; } = string.Empty;
         public int ProductionYear { get; set; }
-        public Guid AgeCategoryId { get; set; }
+        public Guid? AgeCategoryId { get; set; }
         public DateTime CreatedAt { get; set; }
 
         public ICollection<SerieActor> SerieActors { get; set; } = [];

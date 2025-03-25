@@ -81,7 +81,7 @@ namespace Netflex.Controllers
 
             };
             ViewBag.Episodes = _unitOfWork.Repository<Episode>().Entities.Where(e => e.SerieId == id).ToList();
-           
+
             var actorIds = _context.SerieActors
                            .Where(fa => fa.SerieId == id)
                            .Select(fa => fa.ActorId)

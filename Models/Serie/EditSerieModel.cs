@@ -17,7 +17,7 @@ public class EditSerieModel
     public int ProductionYear { get; set; }
 
     [Required(ErrorMessage = "Phải chọn độ tuổi")]
-    public Guid AgeCategoryId { get; set; }
+    public Guid? AgeCategoryId { get; set; }
     [MaxFileSize(5 * 1024 * 1024), AllowedExtensions([".jpg", ".png", ".jpeg"])]
     public string PosterUrl { get; set; } = null!;
     public IFormFile? Poster { get; set; }
