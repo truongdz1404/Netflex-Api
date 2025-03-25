@@ -36,14 +36,11 @@
                              : film.About))</p>
                 </div>
                 <div class="col-md-1 text-smm">
-                    <button class="delete btn btn-danger btn-sm" 
-                            data-id="@item.Id" 
-                            data-controller="Follow"
-                            data-action="Delete"
-                            data-body-message="Bạn có muốn xóa phim này khỏi danh sách theo dõi không?"
-                            data-redirect-url="@Url.Action("Index", "Follow")">
+                    <a class="btn btn-danger btn-sm delete" data-id="@item.Id" 
+                        data-url="/follow/delete" data-body-message="Bạn có muốn xóa phim lẻ này?"
+                        data-redirect-url="/follow">
                         <i class="fa-solid fa-xmark fa-2xl"></i>
-                    </button>
+                    </a>
                 </div>
             </div>
         }
@@ -68,14 +65,11 @@
                     <p>@(string.IsNullOrEmpty(serie.About) ? "" : (serie.About.Length > 100 ? serie.About.Substring(0, 100) + "..." : serie.About))</p>
                 </div>
                 <div class="col-md-1 text-smm">
-                    <button class="delete btn btn-danger btn-sm" 
-                        data-id="@item.Id" 
-                        data-controller="Follow"
-                        data-action="Delete"
-                        data-body-message="Bạn có muốn xóa phim này khỏi danh sách theo dõi không?"
-                        data-redirect-url="@Url.Action("Index", "Follow")">
+                    <a class="btn btn-danger btn-sm delete" data-id="@item.Id" 
+                        data-url="/follow/delete" data-body-message="Bạn có muốn xóa phim bộ này?"
+                        data-redirect-url="/follow">
                         <i class="fa-solid fa-xmark fa-2xl"></i>
-                    </button>
+                    </a>
                 </div>
             </div>
         }
