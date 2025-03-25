@@ -20,8 +20,8 @@
     <table class="table text-start align-middle table-bordered table-hover mb-0">
         <thead>
             <tr class="text-dark">
-                <th>Tên Quốc gia</th>
-                <th>Hành động</th>
+                <th class="col-md-10">Tên Quốc gia</th>
+                <th class="col-md-2">Hành động</th>
             </tr>
         </thead>
         <tbody>
@@ -30,9 +30,11 @@
                 <tr>
                     <td>@country.Name</td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@country.Id" class="btn btn-warning">Sửa</a>
-                        <a asp-action="Delete" asp-route-id="@country.Id" class="btn btn-danger"
-                            onclick="return confirmDelete();">Xóa</a>
+                        <a class="btn btn-warning btn-sm delete" asp-action="Edit" asp-route-id="@country.Id" class="btn btn-warning">Sửa</a>
+                        <a class="btn btn-danger btn-sm delete" data-id="@country.Id" data-url="/dashboard/country/delete"
+                            data-body-message="Bạn có muốn xóa quốc gia này không?" data-redirect-url="/dashboard/country">
+                            Xóa
+                        </a>
                     </td>
                 </tr>
             }
@@ -42,12 +44,13 @@
 
 <div class="row">
     <!-- Pagination -->
-    <div class="d-flex justify-content-start mt-4">
+    <div class="d-flex justify-content-center mt-4">
         <ul class="pagination">
+            <!-- Previous Page Link -->
             @if (Model.HasPreviousPage)
             {
                 <li class="page-item">
-                    <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
+                    <a class="page-link" href="/dashboard/country?page=@(Model.PageNumber - 1)">Previous</a>
                 </li>
             }
             else
@@ -57,17 +60,19 @@
                 </li>
             }
 
+            <!-- Page Number Links -->
             @for (var i = 1; i <= Model.PageCount; i++)
             {
                 <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                    <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                    <a class="page-link" href="/dashboard/country?page=@i">@i</a>
                 </li>
             }
 
+            <!-- Next Page Link -->
             @if (Model.HasNextPage)
             {
                 <li class="page-item">
-                    <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
+                    <a class="page-link" href="/dashboard/country?page=@(Model.PageNumber + 1)">Next</a>
                 </li>
             }
             else
