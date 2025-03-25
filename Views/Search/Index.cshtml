@@ -34,10 +34,15 @@
 							<div>
 								<img src="@film.Poster" alt="@film.Title" class="image-movie">
 							</div>
-							<div class="flex-grow-1">
+							<div class="flex-grow-1 overflow-hidden">
 								<p class="m-0">@film.Title</p>
-								<p class="text-white-50 m-0">@film.ProductionYear</p>
-								<p class="text-white-50 m-0">@film.About</p>
+								<p class="text-white-50 m-0 text-smm">@film.ProductionYear</p>
+								@if (film.About is not null)
+								{
+									<p class="text-white-50 m-0 text-smm">@Html.Raw(film.About.Length > 300 ?
+									film.About.Substring(0, 300) +
+									"..." : film.About)</p>
+								}
 							</div>
 						</div>
 					</div>
