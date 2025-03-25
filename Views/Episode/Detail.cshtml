@@ -8,10 +8,9 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb my-2">
             <li class="breadcrumb-item"><a asp-controller="home" asp-action="index">Trang chủ</a></li>
-            <li class="breadcrumb-item active" aria-current="page"><a asp-controller="film" asp-action="index">Phim
+            <li class="breadcrumb-item active" aria-current="page"><a asp-controller="serie" asp-action="index">Phim
                     bộ</a></li>
-            <li class="breadcrumb-item"><a asp-controller="episode" asp-action="index"
-                    asp-route-serieId="@ViewData["SerieId"]">@ViewData["SerieTitle"]</a></li>
+            <li class="breadcrumb-item"><a href="/serie/detail/@ViewData["SerieId"]">@ViewData["SerieTitle"]</a></li>
             <li class="breadcrumb-item active" aria-current="page">Tập @Model.Number</li>
         </ol>
     </nav>
@@ -26,18 +25,16 @@
         </div>
     </div>
 
-    <div class="d-flex my-4 gap-4 movie-card">
-        @* <img src="@Model.Poster" class="poster" alt="Movie Poster"> *@
-
+    <div class="d-flex mt-4 gap-4 movie-card">
         <div class="flex-grow-1">
-            <h4 class="mb-4" style="color: whitesmoke;">Chọn tập phim</h4>
-            <div class="d-flex gap-2 mb-4">
+            <h4 class="text-base" style="color: whitesmoke;">Chọn tập phim</h4>
+            <div class="d-flex gap-2 my-3 border-bottom border-line pb-4">
                 @for (int i = 1; i <= ViewBag.Episodes.Count; i++)
                 {
                     bool isActive = i == Model.Number;
                     <div class="rounded-pill">
                         <a asp-controller="episode" asp-action="detail" asp-route-id="@ViewBag.Episodes[i - 1].Id"
-                            class="border border-line rounded-3 episode-link @(isActive ? "bg-dark text-secondary disabled" : "bg-secondary text-white") py-2 px-3"
+                            class="border border-line rounded-3 episode-link @(isActive ? "bg-dark text-secondary disabled" : "bg-secondary text-white") py-2 px-3 text-sm"
                             style="@(isActive ? "pointer-events: none;" : "")">
                             Tập @ViewBag.Episodes[i - 1].Number
                         </a>
@@ -45,11 +42,7 @@
                     </div>
                 }
             </div>
-            <h4 class="mb-0" style="color: whitesmoke;">@ViewData["SerieTitle"] - Tập @Model.Number</h4>
-            @* <div>
-                <p class="text-white-50 text-sm mb-1">@Model.Title @Model.ProductionYear</p>
-                <p class="text-sm"><span class="date">Dec. 31, 2023</span>&nbsp;&nbsp;&nbsp;China&nbsp;&nbsp;&nbsp;</p>
-            </div> *@
+            <h5 class="mb-0" style="color: whitesmoke;">@ViewData["SerieTitle"] - Tập @Model.Number</h5>
 
             <div class="mt-2 genres">
                 @foreach (var genre in ViewBag.Genres)
@@ -60,7 +53,7 @@
         </div>
     </div>
 
-    <div class="movie-card py-3 border-line border-2">
+    <div class="movie-card py-3 border-line border-bottom border-2">
         <ul class="nav nav-pills mb-3 text-smm" id="pills-tab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active tab" id="pills-info-tab" data-bs-toggle="pill"
@@ -121,12 +114,11 @@
 <div id="fb-root"></div>
 <script async defer crossorigin="anonymous"
     src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v22.0&appId=1589497395335451"></script>
-<script>
-    @section Scripts {
-            <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
-            $(document).ready(function () {
-                let stars = $(".rating-stars i");
+        $(document).ready(function () {
+            let stars = $(".rating-stars i");
             let selected = $("#selected-rating");
             let ratings = Math.floor(@Ratings);
 
@@ -134,17 +126,17 @@
 
             stars.on("mouseover", function () {
                 let value = $(this).data("value");
-            highlight(value);
-                            });
+                highlight(value);
+            });
 
             stars.on("mouseout", function () {
                 let currentValue = selected.text().trim() === "0" ? ratings : selected.text();
-            highlight(currentValue);
-                            });
+                highlight(currentValue);
+            });
 
             stars.on("click", function () {
                 selected.text($(this).data("value"));
-                            });
+            });
 
             function highlight(value) {
                 stars.each(function () {
@@ -152,27 +144,27 @@
                     $(this).toggleClass("fas", starValue <= value);
                     $(this).toggleClass("far", starValue > value);
                 });
-                            }
-                        });
+            }
+        });
     </script>
     <script>
-            $(document).ready(function () {
-                let video = $("#video").get(0);
+        $(document).ready(function () {
+            let video = $("#video").get(0);
             video.disablePictureInPicture = true;
             video.addTextTrack("captions");
 
             if (Hls.isSupported()) {
                 let hls = new Hls({
-                debug: true,
-                                });
-            hls.loadSource(@Html.Raw(Json.Serialize(Model.File)));
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-                video.muted = true;
-                                });
-                            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    debug: true,
+                });
+                hls.loadSource(@Html.Raw(Json.Serialize(Model.File)));
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+                    video.muted = true;
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = @Html.Raw(Json.Serialize(Model.File));
-                            }
-                        });
+            }
+        });
     </script>
 }

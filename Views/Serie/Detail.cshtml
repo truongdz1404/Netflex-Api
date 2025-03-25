@@ -41,52 +41,29 @@
                 <p class="text-white-50 text-sm mb-1">@Model.Title @Model.ProductionYear</p>
                 <p class="text-sm"><span class="date">Dec. 31, 2023</span>&nbsp;&nbsp;&nbsp;China&nbsp;&nbsp;&nbsp;</p>
             </div>
-            <div
-                class="d-flex align-items-center align-items-md-start py-2 border-top border-bottom border-line gap-2 flex-column flex-md-row">
-                <div class="d-flex gap-2">
-                    <div class="points rounded p-2 d-flex align-items-center justify-content-center">
-                        <p class="fs-4 fw-bold m-0">@Ratings</p>
-                    </div>
-                    <div>
-                        <div class="rating-stars">
-                            @for (int i = 1; i <= 10; i++)
-                            {
-                                <i class="far fa-star" data-value="@i"></i>
-                            }
-                        </div>
-                        <span class="text-white-50 text-xs "><i class="fa-solid fa-circle-user"></i> 69 đánh giá</span>
-                    </div>
-                </div>
-                <p class="text-xs py-1 rounded text-center my-ratings order-last order-md-0">Đánh giá của bạn: <span
-                        id="selected-rating">0</span></p>
+            <div id="review-container">
             </div>
+
             <div class="mt-2 genres">
-                 @foreach (var item in ViewBag.Genres)
+                @foreach (var item in ViewBag.Genres)
                 {
-                    <a class="text-sm"  href="@Url.Action("Index", "Film", new { genreId = item.Id })">@item.Name</a>
+                    <a class="text-sm" href="@Url.Action("Index", "film", new { genreId = item.Id })">@item.Name</a>
                 }
             </div>
         </div>
     </div>
 
     <div class="movie-card py-3 border-top border-bottom border-line border-2">
-        <p class="mb-4 text-base" style="color: whitesmoke;">Chọn tập phim</p>
-        <div class="d-flex gap-2 mb-4">
-            @for (int i = 1; i <= ViewBag.Episodes.Count; i++)
-            {
-                <div class="rounded-pill">
-                    <a asp-controller="episode" asp-action="detail" asp-route-id="@ViewBag.Episodes[i - 1].Id"
-                        class="border border-line rounded-3 episode-link bg-secondary text-white py-2 px-3">
-                        Tập @ViewBag.Episodes[i - 1].Number
-                    </a>
-                </div>
-            }
-        </div>
+
         <ul class="nav nav-pills mb-3 text-smm" id="pills-tab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active tab" id="pills-info-tab" data-bs-toggle="pill"
-                    data-bs-target="#pills-info" type="button" role="tab" aria-controls="pills-info"
-                    aria-selected="true">Thông tin</button>
+                <button class="nav-link active tab" id="pills-espisode-tab" data-bs-toggle="pill"
+                    data-bs-target="#pills-espisode" type="button" role="tab" aria-controls="pills-espisode"
+                    aria-selected="true">Xem phim</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link tab" id="pills-info-tab" data-bs-toggle="pill" data-bs-target="#pills-info"
+                    type="button" role="tab" aria-controls="pills-info" aria-selected="true">Thông tin</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link tab" id="pills-actor-tab" data-bs-toggle="pill" data-bs-target="#pills-actor"
@@ -94,7 +71,23 @@
             </li>
         </ul>
         <div class="tab-content" id="pills-tabContent">
-            <div class="tab-pane fade show active" id="pills-info" role="tabpanel" aria-labelledby="pills-info-tab">
+            <div class="tab-pane fade show active" id="pills-espisode" role="tabpanel"
+                aria-labelledby="pills-espisode-tab">
+                <p class="text-base" style="color: whitesmoke;">Chọn tập phim</p>
+
+                <div class="d-flex gap-2 my-3">
+                    @for (int i = 1; i <= ViewBag.Episodes.Count; i++)
+                    {
+                        <div class="rounded-pill">
+                            <a asp-controller="episode" asp-action="detail" asp-route-id="@ViewBag.Episodes[i - 1].Id"
+                                class="border border-line rounded episode-link bg-secondary text-white py-2 px-3 text-sm">
+                                Tập @ViewBag.Episodes[i - 1].Number
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="tab-pane fade" id="pills-info" role="tabpanel" aria-labelledby="pills-info-tab">
                 <p class="text-smm">@Model.About</p>
             </div>
             <div class="tab-pane fade" id="pills-actor" role="tabpanel" aria-labelledby="pills-actor-tab">
@@ -120,21 +113,21 @@
     </div>
     <div class="movie-card mt-2">
         <p class="text-base text-white">Phim liên quan</p>
-         @if(ViewBag.RelatedFilms != null && ViewBag.RelatedFilms.Count > 0){
-         @foreach (var film in ViewBag.RelatedFilms)
+        @if (ViewBag.RelatedFilms != null && ViewBag.RelatedFilms.Count > 0)
         {
-            <div class="col-4 col-md-3 col-xl-2 mb-2">
-                <a href="@Url.Action("Detail", "Film", new { id = film.Id })" class="text-decoration-none">
-                    <div class="position-relative">
-                        <img src="@film.Poster" class="img-6x9 rounded" alt="@film.Title">
-                        @* <span class="badge bg-primary position-absolute bottom-0 start-0 m-2">HD VIETSUB</span> *@
-                    </div>
-                    <p class="text-white text-truncate mt-2 text-smm" style="max-width: 100%;">@(film.Title.Length > 20 ?
+            @foreach (var film in ViewBag.RelatedFilms)
+            {
+                <div class="col-4 col-md-3 col-xl-2 mb-2">
+                    <a href="@Url.Action("detail", "film", new { id = film.Id })" class="text-decoration-none">
+                        <div class="position-relative">
+                            <img src="@film.Poster" class="img-6x9 rounded" alt="@film.Title">
+                        </div>
+                        <p class="text-white text-truncate mt-2 text-smm" style="max-width: 100%;">@(film.Title.Length > 20 ?
                     film.Title.Substring(0, 20) + "..." : film.Title)</p>
-                </a>
-            </div>
+                    </a>
+                </div>
+            }
         }
-       }
     </div>
 </div>
 <script async defer crossorigin="anonymous"
@@ -142,27 +135,7 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script>
-        $(document).ready(function () {
-            let stars = $(".rating-stars i");
-            let selected = $("#selected-rating");
-            let ratings = Math.floor(@Ratings);
-
-            highlight(ratings);
-
-            stars.on("mouseover", function () {
-                let value = $(this).data("value");
-                highlight(value);
-            });
-
-            stars.on("mouseout", function () {
-                let currentValue = selected.text().trim() === "0" ? ratings : selected.text();
-                highlight(currentValue);
-            });
-
-            stars.on("click", function () {
-                selected.text($(this).data("value"));
-            });
+    <script src="~/js/rating.js"></script>
 
             function highlight(value) {
                 stars.each(function () {
@@ -182,7 +155,6 @@
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    // Nếu bạn đang dùng Anti-Forgery Token, hãy thêm header này:
                     "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
                 },
                 body: JSON.stringify(serieId)
@@ -193,7 +165,7 @@
                 if (result.isFollowed) {
                     button.innerHTML = '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>';
                 } else {
-                    button.innerHTML = '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi phim</span>';
+                    button.innerHTML = '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi</span>';
                 }
             } else {
                 console.error("Có lỗi xảy ra khi cập nhật trạng thái theo dõi");

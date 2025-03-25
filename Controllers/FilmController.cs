@@ -157,5 +157,36 @@ namespace Netflex.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="searchTitle"></param>
+        /// <returns></returns>
+        public IActionResult SearchByTitle(int? page, string? searchTitle)
+        {
+            int pageNumber = page ?? 1;
+            var query = _unitOfWork.Repository<Film>().Entities;
+            if (!string.IsNullOrEmpty(searchTitle))
+            {
+                query = query.Where(f => f.Title.ToLower().Contains(searchTitle));
+            }
+
+            var models = query.Select(
+                film => new DetailFilmViewModel()
+                {
+                    Id = film.Id,
+                    Title = film.Title,
+                    About = film.About,
+                    Poster = film.Poster,
+                    Path = film.Path,
+                    Trailer = film.Trailer,
+                    ProductionYear = film.ProductionYear,
+                }
+            ).OrderBy(f => f.ProductionYear)
+            .ToPagedList(pageNumber, PAGE_SIZE);
+
+            return View(models);
+        }
     }
 }

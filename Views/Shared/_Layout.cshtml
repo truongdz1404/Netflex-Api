@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Netflex.Models.Genre
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -42,7 +43,7 @@
                                     @foreach (var item in ViewBag.Genres)
                                     {
                                         <a class="dropdown-item"
-                                            href="@Url.Action("Index", "Film", new { genreId = item.Id })">
+                                            href="@Url.Action("Index", "film", new { genreId = item.Id })">
                                             <i class="fa-solid fa-caret-right pe-2"></i>@item.Name</a>
                                     }
 
@@ -121,7 +122,7 @@
                                     @foreach (var item in ViewBag.Countries)
                                     {
                                         <a class="dropdown-item"
-                                            href="@Url.Action("Index", "Film", new { countryId = item.Id })">
+                                            href="@Url.Action("Index", "film", new { countryId = item.Id })">
                                             <i class="fa-solid fa-caret-right pe-2"></i>@item.Name</a>
                                     }
                                     <a class="dropdown-item" href="#"><i class="fa-solid fa-caret-right pe-2"></i>Phim
@@ -150,8 +151,8 @@
                             </div>
                         </li>
                     </ul>
-                    <form class="d-none d-lg-flex search-box">
-                        <input class="search" placeholder="Tìm kiếm..." aria-label="Search">
+                    <form class="d-none d-lg-flex search-box" action="@Url.Action("SearchByTitle", "Film")">
+                        <input class="search" placeholder="Tìm kiếm..." aria-label="Search" name="searchTitle">
                         <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
                     </form>
                     @await Html.PartialAsync("_LoginPartial")
@@ -181,10 +182,10 @@
                 <ul class="menu-year overflow-auto">
                     @for (int i = DateTime.Now.Year; i >= 1981; i--)
                     {
-                        <li><a href="@Url.Action("index", "Film", new { year = i })">@i</a></li>
+                        <li><a href="@Url.Action("index", "film", new { year = i })">@i</a></li>
                     }
                 </ul>
-                <a href="@Url.Action("Detail", "Serie", new { id = ViewBag.StarSeries[0].Id })"
+                <a href="@Url.Action("detail", "serie", new { id = ViewBag.StarSeries[0].Id })"
                     class="d-block movie-banner position-relative my-4">
                     <div class="position-absolute bottom-0  movie-banner-content p-2">
                         <p class="m-0 text-white text-truncate" style="max-width:10rem;">@ViewBag.StarSeries[0].Title
@@ -197,7 +198,7 @@
                     @for (int i = 1; i < ViewBag.StarSeries.Count; i++)
                     {
                         var item = ViewBag.StarSeries[i];
-                        <a class="movie-item" href="@Url.Action("Detail", "Serie", new { id = item.Id })">
+                        <a class="movie-item" href="@Url.Action("detail", "serie", new { id = item.Id })">
                             <img src=@item.Poster alt="Movie Poster">
                             <div class="p-2">
                                 <p class="text-truncate" style="max-width:10rem;">@item.Title
@@ -234,28 +235,41 @@
     <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    <script>
+	<script>
+		$(document).ready(function () {
+			updateSidebarHeight();
+			$(window).on("resize", updateSidebarHeight);
+			$(window).on("load", scrollToTop);
 
+			// Load Genre Dropdown
+			loadGenreDropdown();
+		});
 
-        $(document).ready(function () {
-            updateSidebarHeight();
-            $(window).on("resize", updateSidebarHeight);
-            $(window).on("load", scrollToTop);
-        });
+		function updateSidebarHeight() {
+			let mainContent = $(".main-content");
+			let sidebar = $(".sidebar");
 
-        function updateSidebarHeight() {
-            let mainContent = $(".main-content");
-            let sidebar = $(".sidebar");
+			if (mainContent.length && sidebar.length) {
+				sidebar.css("max-height", mainContent.outerHeight() + "px");
+			}
+		}
 
-            if (mainContent.length && sidebar.length) {
-                sidebar.css("max-height", mainContent.outerHeight() + "px");
-            }
+		function scrollToTop() {
+			$(window).scrollTop(0);
+		}
+
+        function loadGenreDropdown() {
+            $.ajax({
+                url: "/Genre/GenreDropdown",
+                type: "GET",
+                success: function (data) {
+                    $("#genre-dropdown .dropdown-menu").html(data);
+                },
+                error: function () {
+                    console.error("Cannot load the genre");
+                }
+            });
         }
-
-        function scrollToTop() {
-            $(window).scrollTop(0);
-        }
-
         $(() => {
             var connection = new signalR.HubConnectionBuilder()
                 .withUrl("/notification-hub")
