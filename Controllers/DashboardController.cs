@@ -90,7 +90,7 @@ namespace Netflex.Controllers
         }
 
 
-        [HttpGet("/dashboard/blog")]
+        [HttpGet("/dashboard/blog-statics")]
         public IActionResult GetBlogStatics()
         {
             var now = DateTime.UtcNow;
