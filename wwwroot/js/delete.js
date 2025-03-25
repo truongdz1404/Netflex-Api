@@ -29,12 +29,11 @@ $((function(){
 
         target = e.target;
         var Id = $(target).data('id');
-        var controller = $(target).data('controller');
-        var action = $(target).data('action');
+        var link = $(target).data('url');
         var bodyMessage = $(target).data('body-message');
         redirectUrl = $(target).data('redirect-url');
+        url = link + "/" + Id; 
 
-        url = "/"+ "dashboard" + "/" +controller+"/"+action+"/"+Id;
         $(".delete-modal-body").text(bodyMessage);
         $("#deleteModal").modal('show');
     });

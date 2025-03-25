@@ -115,11 +115,10 @@
                         <td class="text-center action-column">
                             <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Sửa</a>
                             <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.Id">Chi tiết</a>
-                            <button class="delete btn btn-danger btn-sm" data-id="@item.Id" data-controller="BlogManagement"
-                                data-action="Delete" data-body-message="Are you sure you want to delete this blog?"
-                                data-redirect-url="@Url.Action("Index", "BlogManagement")">
-                                Delete
-                            </button>
+                            @* <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Xóa</a> *@
+                            <a class="btn btn-danger btn-sm delete" data-id="@item.Id" 
+                                data-url="/dashboard/blog/delete" data-body-message="Bạn có muốn xóa phim lẻ này?"
+                                data-redirect-url="/dashboard/blog">Xóa</a>
                         </td>
                     </tr>
                 }
@@ -135,7 +134,7 @@
                 @if (Model.HasPreviousPage)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
+                        <a class="page-link" href="/dashboard/blog?page=@(Model.PageNumber - 1)">Previous</a>
                     </li>
                 }
                 else
@@ -149,7 +148,7 @@
                 @for (var i = 1; i <= Model.PageCount; i++)
                 {
                     <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                        <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                        <a class="page-link" href="/dashboard/blog?page=@i">@i</a>
                     </li>
                 }
 
@@ -157,7 +156,7 @@
                 @if (Model.HasNextPage)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
+                        <a class="page-link" href="/dashboard/blog?page=@(Model.PageNumber + 1)">Next</a>
                     </li>
                 }
                 else

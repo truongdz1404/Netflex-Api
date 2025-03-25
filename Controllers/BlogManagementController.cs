@@ -263,7 +263,9 @@ namespace Netflex.Controllers
             return RedirectToAction("index", "blogmanagement");
         }
 
+        
         [Route("/dashboard/blog/delete/{id}")]
+        [HttpDelete]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
