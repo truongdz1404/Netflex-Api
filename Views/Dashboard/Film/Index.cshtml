@@ -101,8 +101,8 @@
                                 asp-route-id="@item.Id">Edit</a>
                             <a class="btn btn-info btn-sm" asp-controller="FilmManagement" asp-action="detail"
                                 asp-route-id="@item.Id">Details</a>
-                            <a class="btn btn-danger btn-sm delete" data-id="@item.Id" data-controller="film"
-                                data-action="delete" data-body-message="Bạn có muốn xóa phim lẻ này?"
+                            <a class="btn btn-danger btn-sm delete" data-id="@item.Id"
+                                data-body-message="Bạn có muốn xóa phim lẻ này?" data-url="/dashboard/film/delete"
                                 data-redirect-url="/dashboard/film">Delete</a>
                         </td>
                     </tr>
@@ -191,6 +191,6 @@
             submitForm();
         }
 
-       
+
     </script>
 }

@@ -98,10 +98,8 @@
                             <td class="text-center action-column">
                                 <a class="btn btn-warning btn-sm" asp-controller="SerieManagement" asp-action="edit"
                                     asp-route-id="@item.Id">Edit</a>
-                                <a class="btn btn-info btn-sm" asp-controller="episode" asp-action="index"
-                                    asp-route-SerieManagementId="@item.Id">Episodes</a>
-                                <a class="btn btn-danger btn-sm delete" data-id="@item.Id" data-controller="serie"
-                                    data-action="delete" data-body-message="Bạn có muốn xóa phim lẻ này?"
+                                <a class="btn btn-danger btn-sm delete" data-id="@item.Id" 
+                                data-url="/dashboard/serie/delete" data-body-message="Bạn có muốn xóa phim lẻ này?"
                                     data-redirect-url="/dashboard/serie">Delete</a>
                             </td>
                         </tr>
@@ -118,7 +116,8 @@
                     @if (Model.HasPreviousPage)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
+                            <a class="page-link"
+                                href="/dashboard/serie?page=@(Model.PageNumber - 1)&searchTerm=@(ViewBag.SearchTerm)&productionYear=@(ViewBag.ProductionYear)&sortOrder=@(ViewBag.SortOrder)">Previous</a>
                         </li>
                     }
                     else
@@ -132,7 +131,8 @@
                     @for (var i = 1; i <= Model.PageCount; i++)
                     {
                         <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                            <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                            <a class="page-link"
+                                href="/dashboard/serie?page=@(i)&searchTerm=@(ViewBag.SearchTerm)&productionYear=@(ViewBag.ProductionYear)&sortOrder=@(ViewBag.SortOrder)">@i</a>
                         </li>
                     }
 
@@ -140,7 +140,8 @@
                     @if (Model.HasNextPage)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
+                            <a class="page-link"
+                                href="/dashboard/serie?page=@(Model.PageNumber + 1)&searchTerm=@(ViewBag.SearchTerm)&productionYear=@(ViewBag.ProductionYear)&sortOrder=@(ViewBag.SortOrder)">Next</a>
                         </li>
                     }
                     else
