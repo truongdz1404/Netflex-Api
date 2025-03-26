@@ -79,7 +79,7 @@
             <div class="col-4 col-md-3 col-xl-2 mb-2 movie-item">
                 <a href="@Url.Action("detail", "film", new { id = film.Id })" class="text-decoration-none">
                     <div class="position-relative">
-                        <img src="@film.Poster" class="img-6x9 rounded" alt="@film.Title">
+                        <img src="@film.Poster" class="img-6x9" alt="@film.Title">
                         <i class="fa-solid fa-play position-absolute top-50 start-50 translate-middle fs-1 text-white"></i>
                     </div>
                     <p class="text-white text-truncate mt-2 text-smm" style="max-width: 100%;">@(film.Title.Length > 20 ?
