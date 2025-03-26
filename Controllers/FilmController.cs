@@ -55,6 +55,7 @@ namespace Netflex.Controllers
             }
 
             var models = filmQuery
+                .OrderByDescending(f => f.CreatedAt)
                 .Select(film => new FilmViewModel()
                 {
                     Id = film.Id,
@@ -65,7 +66,6 @@ namespace Netflex.Controllers
                     ProductionYear = film.ProductionYear,
                     CreatedAt = film.CreatedAt
                 })
-                .OrderByDescending(f => f.CreatedAt)
                 .ToPagedList(pageNumber, PAGE_SIZE);
 
             string genreName = genreId.HasValue

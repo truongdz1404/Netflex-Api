@@ -31,7 +31,7 @@ namespace Netflex.Controllers
         {
             int pageNumber = page ?? 1;
 
-            var models = _unitOfWork.Repository<Serie>().Entities.Select(
+            var models = _unitOfWork.Repository<Serie>().Entities.OrderByDescending(m => m.CreatedAt).Select(
                 serie => new SerieViewModel()
                 {
                     Id = serie.Id,
@@ -41,7 +41,7 @@ namespace Netflex.Controllers
                     AgeCategoryId = serie.AgeCategoryId,
                     ProductionYear = serie.ProductionYear
                 }
-            ).OrderByDescending(m => m.CreatedAt).ToPagedList(pageNumber, PAGE_SIZE);
+            ).ToPagedList(pageNumber, PAGE_SIZE);
 
             return View(models);
         }
