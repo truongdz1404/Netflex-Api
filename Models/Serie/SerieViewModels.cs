@@ -3,7 +3,7 @@ namespace Netflex.Models.Serie;
 public class SerieViewModel
 {
     public required Guid Id { get; set; }
-
+    public double? Rating { get; set; }
     public required string Title { get; set; }
     public string? About { get; set; }
     public int ProductionYear { get; set; }

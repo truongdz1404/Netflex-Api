@@ -32,20 +32,39 @@ namespace Netflex.Controllers
 
         public async Task GetStarSeries()
         {
+            var series = await _unitOfWork.Repository<Serie>()
+                .Entities
+                .OrderBy(f => f.CreatedAt)
+                .Take(10)
+                .Select(serie => new SerieViewModel()
+                {
+                    Id = serie.Id,
+                    Title = serie.Title,
+                    Poster = serie.Poster,
+                    ProductionYear = serie.ProductionYear,
+                    CreatedAt = serie.CreatedAt,
+                })
+                .ToListAsync();
 
-            var models = await _unitOfWork.Repository<Serie>().Entities.Select(
-          serie => new SerieViewModel()
-          {
-              Id = serie.Id,
-              Title = serie.Title,
-              Poster = serie.Poster,
-              ProductionYear = serie.ProductionYear,
-              CreatedAt = serie.CreatedAt
-          }
-      ).OrderBy(f => f.CreatedAt).Take(10)
-      .ToListAsync();
-            ViewBag.StarSeries = models;
+            // var serieIds = series.Select(s => s.Id).ToList();
+            // var reviews = await _unitOfWork.Repository<Review>()
+            // .Entities
+            // .Where(r => r.SerieId.HasValue && serieIds.Contains(r.SerieId.Value))
+            // .GroupBy(r => r.SerieId != null ? r.SerieId.Value : Guid.Empty)
+            // .Select(g => new
+            // {
+            //     SerieId = g.Key,
+            //     AverageRating = g.Average(r => r.Rating)
+            // })
+            // .ToListAsync();
 
+            // foreach (var serie in series)
+            // {
+            //     var review = reviews.FirstOrDefault(r => r.SerieId == serie.Id);
+            //     serie.Rating = review != null ? review.AverageRating : 1;
+            // }
+
+            ViewBag.StarSeries = series;
         }
 
     }
