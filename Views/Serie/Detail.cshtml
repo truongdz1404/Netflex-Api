@@ -149,25 +149,31 @@
         async function toggleFollow(button) {
             const serieId = button.getAttribute("data-serie-id");
 
-            const response = await fetch("/Follow/ToggleFollowSerie", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
-                },
-                body: JSON.stringify(serieId)
-            });
+            const isFollowed = button.querySelector("i").classList.contains("fa-regular");
+            button.innerHTML = isFollowed
+                ? '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>'
+                : '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi</span>';
 
-            if (response.ok) {
-                const result = await response.json();
-                if (result.isFollowed) {
-                    button.innerHTML = '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>';
-                } else {
-                    button.innerHTML = '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi</span>';
+            try {
+                const response = await fetch("/follow/toggleFollowSerie", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify(serieId)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Lỗi khi thay đổi trạng thái");
                 }
-            } else {
-                console.error("Có lỗi xảy ra khi cập nhật trạng thái theo dõi");
+            } catch (error) {
+                button.innerHTML = isFollowed
+                    ? '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi</span>'
+                    : '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>';
+                alert("Có lỗi xảy ra khi thay đổi trạng thái, vui lòng thử lại!");
             }
         }
+
     </script>
 }

@@ -1,21 +1,9 @@
-﻿.carousel-caption {
-    bottom: 15px;
-    left: 15px;
-    right: 15px;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 5px;
-}
-
-.text-truncate {
+﻿.text-truncate {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.badge {
-    font-size: 12px;
-    padding: 5px 10px;
-}
 
 .img-6x9 {
     width: 100%;
@@ -27,4 +15,37 @@
     width: 3.2px;
     height: 24px;
     background-color: #00aaff;
+}
+
+.pagination .page-item.active .page-link {
+    background: rgba(0, 0, 0, .1);
+    border-color: rgba(0, 0, 0, .5);
+    border: 1px solid;
+  }
+  
+.pagination .page-link {
+    color: white;
+    background: rgba(0, 0, 0, .1);
+    border: 1px solid;
+    border-radius: 0;
+    border-color: rgba(0, 0, 0, .5);
+}
+  
+.disabled{
+    display: none;
+}
+
+.movie-image{
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+}
+.movie-banner{
+    height: 120px;
+}
+
+.movie-list .movie-item:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    padding-bottom: 0.8rem;
+    margin-bottom: 1rem;
 }
