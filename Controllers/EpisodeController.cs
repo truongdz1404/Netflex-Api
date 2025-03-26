@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Netflex.Database;
 using Netflex.Models.Episode;
+using OfficeOpenXml;
 using X.PagedList.Extensions;
 namespace Netflex.Controllers;
 
@@ -27,25 +28,47 @@ public class EpisodeController : BaseController
 
     [Authorize(Roles = "admin")]
     [Route("/dashboard/episode/index/{serieId}")]
-    public IActionResult Index(int? page, Guid serieId)
+    public IActionResult Index(string? searchTerm, string? sortOrder, int? page, Guid serieId)
     {
         int pageNumber = page ?? 1;
-        var serie = _unitOfWork.Repository<Serie>().Entities.FirstOrDefault(m => m.Id.Equals(serieId)) ?? throw new NullReferenceException("Serie not found");
-        var models = _unitOfWork.Repository<Episode>().Entities.Where(e => e.SerieId == serieId).Select(
-            episode => new EpisodeViewModel()
-            {
-                Id = episode.Id,
-                Title = episode.Title,
-                Path = episode.Path,
-                Number = episode.Number,
-                About = episode.About,
-                Serie = serie.Title
-            }
-        ).OrderBy(e => e.Number).ToPagedList(pageNumber, PAGE_SIZE);
+        var serie = _unitOfWork.Repository<Serie>().Entities.FirstOrDefault(m => m.Id.Equals(serieId))
+            ?? throw new NullReferenceException("Serie not found");
+
+        var query = _unitOfWork.Repository<Episode>().Entities
+            .Where(e => e.SerieId == serieId)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            query = query.Where(e => e.Title.ToLower().Contains(searchTerm.ToLower()));
+        }
+        query = sortOrder switch
+        {
+            "title" => query.OrderBy(e => e.Title),
+            "title_desc" => query.OrderByDescending(e => e.Title),
+            "number" => query.OrderBy(e => e.Number),
+            "number_desc" => query.OrderByDescending(e => e.Number),
+            _ => query.OrderBy(e => e.Number)
+        };
+
+        var models = query.Select(episode => new EpisodeViewModel()
+        {
+            Id = episode.Id,
+            Title = episode.Title,
+            Path = episode.Path,
+            Number = episode.Number,
+            About = episode.About,
+            Serie = serie.Title
+        }).ToPagedList(pageNumber, PAGE_SIZE);
+
         ViewData["SerieTitle"] = serie.Title ?? "Không có serie";
         ViewData["SerieId"] = serie.Id;
+        ViewBag.SearchTerm = searchTerm;
+        ViewBag.SortOrder = sortOrder;
+
         return View("~/Views/Dashboard/Episode/Index.cshtml", models);
     }
+
 
     public IActionResult Detail(Guid? id)
     {
@@ -65,13 +88,23 @@ public class EpisodeController : BaseController
             File = episode.Path,
             Serie = serie.Title
         };
-        var genreIds = _context.SerieGenres.Where(x => x.SerieId == serie.Id).Select(x => x.GenreId).ToList();
+        var genreIds = _context.SerieGenres.Where(x => x.SerieId == episode.SerieId).Select(x => x.GenreId).ToList();
+
         ViewBag.Genres = _unitOfWork.Repository<Genre>().Entities.Where(g => genreIds.Contains(g.Id)).ToList();
+
+        var actorIds = _context.SerieActors.Where(x => x.SerieId == episode.SerieId).Select(x => x.ActorId).ToList();
+
+        ViewBag.Actors = _unitOfWork.Repository<Actor>().Entities.Where(g => actorIds.Contains(g.Id)).ToList();
+
+
         Console.WriteLine($"SerieGenres Count: {serie.SerieGenres?.Count()}");
 
         ViewBag.Episodes = _unitOfWork.Repository<Episode>().Entities.Where(e => e.SerieId == episode.SerieId).ToList();
         ViewData["SerieTitle"] = serie.Title ?? "Không có serie";
         ViewData["SerieId"] = serie.Id;
+
+
+
         return View(model);
     }
     [Authorize(Roles = "admin")]
@@ -142,13 +175,18 @@ public class EpisodeController : BaseController
     {
         ViewData["SerieTitle"] = serieTitle;
         ViewData["SerieId"] = serieId;
-        return View();
+        return View("/Views/Dashboard/Episode/Create.cshtml");
     }
+    [Route("/dashboard/episode/create/{serieId}")]
+    [Route("/episode/create")]
     [Authorize(Roles = "admin")]
-    [Route("/dashboard/episode/create")]
     [HttpPost]
-    public async Task<IActionResult> Create(CreateEpisodeModel episode)
+    public async Task<IActionResult> Create(CreateEpisodeModel episode, Guid serieId)
     {
+        var serie = _unitOfWork.Repository<Serie>().Entities.FirstOrDefault(m => m.Id.Equals(serieId)) ?? throw new NullReferenceException("Serie not found");
+
+        ViewData["SerieTitle"] = serie.Title ?? "Không có serie";
+        ViewData["SerieId"] = serie.Id;
         if (!ModelState.IsValid)
         {
             return View("~/Views/Dashboard/Episode/Create.cshtml", episode);
@@ -168,10 +206,7 @@ public class EpisodeController : BaseController
         };
         await _unitOfWork.Repository<Episode>().AddAsync(newEpisode);
         await _unitOfWork.Save(CancellationToken.None);
-        var serie = _unitOfWork.Repository<Serie>().Entities.FirstOrDefault(m => m.Id.Equals(episode.SerieId)) ?? throw new NullReferenceException("Serie not found");
 
-        ViewData["SerieTitle"] = serie.Title ?? "Không có serie";
-        ViewData["SerieId"] = serie.Id;
 
         await NotifyNewEpisode(newEpisode, serie);
 
@@ -188,7 +223,7 @@ public class EpisodeController : BaseController
         {
             Id = Guid.NewGuid(),
             Content = JsonSerializer.Serialize(new { Message = "A new episode has been added to the serie: " + serie.Title, Link = $"/episode/detail?id={newEpisode.Id}" }),
-            CreatedAt = DateTime.Now,
+            CreatedAt = DateTime.UtcNow,
             Status = "System"
         };
 

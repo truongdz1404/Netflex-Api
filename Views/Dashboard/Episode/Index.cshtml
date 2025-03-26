@@ -80,30 +80,43 @@
 
         <div class="d-flex justify-content-center mt-4">
             <ul class="pagination">
+                <!-- Previous Page Link -->
                 @if (Model.HasPreviousPage)
                 {
-                    <li class="page-item"><a class="page-link"
-                            href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a></li>
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="/dashboard/episode/index/@ViewData["SerieId"]?page=@(Model.PageNumber - 1)&searchTerm=@(ViewBag.SearchTerm)&sortOrder=@(ViewBag.SortOrder)">Previous</a>
+                    </li>
                 }
                 else
                 {
-                    <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
                 }
 
+                <!-- Page Number Links -->
                 @for (var i = 1; i <= Model.PageCount; i++)
                 {
-                    <li class="page-item @(i == Model.PageNumber ? "active" : "")"><a class="page-link"
-                            href="@Url.Action("Index", new { page = i })">@i</a></li>
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link"
+                            href="/dashboard/episode/index/@ViewData["SerieId"]?page=@(i)&searchTerm=@(ViewBag.SearchTerm)&sortOrder=@(ViewBag.SortOrder)">@i</a>
+                    </li>
                 }
 
+                <!-- Next Page Link -->
                 @if (Model.HasNextPage)
                 {
-                    <li class="page-item"><a class="page-link"
-                            href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a></li>
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="/dashboard/episode/index/@ViewData["SerieId"]?page=@(Model.PageNumber + 1)&searchTerm=@(ViewBag.SearchTerm)&sortOrder=@(ViewBag.SortOrder)">Next</a>
+                    </li>
                 }
                 else
                 {
-                    <li class="page-item disabled"><span class="page-link">Next</span></li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
                 }
             </ul>
         </div>

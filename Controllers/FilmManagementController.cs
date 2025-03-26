@@ -159,6 +159,11 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
         {
             await _unitOfWork.Repository<Follow>().DeleteAsync(follow);
         }
+        var ratings = _unitOfWork.Repository<Review>().Entities.Where(f => f.FilmId == film.Id).ToList();
+        foreach (var rating in ratings)
+        {
+            await _unitOfWork.Repository<Review>().DeleteAsync(rating);
+        }
         await _unitOfWork.Repository<Film>().DeleteAsync(film);
         await _unitOfWork.Save(CancellationToken.None);
         return RedirectToAction("index", "filmmanagement");

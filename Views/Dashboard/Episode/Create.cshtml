@@ -14,8 +14,9 @@
     </nav>
     <div class="row">
         <div class="col-md-6">
-            <form method="POST" enctype="multipart/form-data" asp-controller="episode" asp-action="create">
-                <input type="hidden" asp-for="SerieId"/>
+            <form method="POST" enctype="multipart/form-data" asp-controller="Episode" asp-action="create"
+                asp-area="dashboard">
+                <input type="hidden" asp-for="SerieId" value="@ViewData["SerieId"]"/>
                 <div class="form-group required">
                     <label asp-for="Title" class="control-label"></label>
                     <input asp-for="Title" type="text" class="form-control" />
@@ -62,5 +63,7 @@
                 }
             });
         });
+
+       
     </script>
 }
