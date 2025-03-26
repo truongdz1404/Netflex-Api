@@ -13,7 +13,7 @@
         </div>
     </div>
 
-    <div class="movie-list my-3 follow-item">
+    <div class="movie-list my-3">
         @foreach (var item in Model)
         {
             string itemType = "";
@@ -30,7 +30,7 @@
                 itemType = "Phim bộ";
             }
 
-            <div class="movie-item d-flex justify-content-between align-items-center">
+            <div class="movie-item d-flex justify-content-between align-items-center follow-item">
                 <a href="@(film != null ? @Url.Action("detail", "film", new { id = film.Id }) 
                 : (serie != null ? @Url.Action("detail", "serie", new { id =serie.Id }) : ""))" class="text-white">
                     <div class="card bg-transparent text-white mb-1 ">
