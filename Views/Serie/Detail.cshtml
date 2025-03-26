@@ -128,22 +128,25 @@
             data-numposts="5"></div>
     </div>
     <div class="movie-card mt-2">
-        <p class="text-base text-white">Phim liên quan</p>
-        @if (ViewBag.RelatedFilms != null && ViewBag.RelatedFilms.Count > 0)
-        {
-            @foreach (var film in ViewBag.RelatedFilms)
+        <p class="text-base text-white">Serie liên quan</p>
+         <div class="row">
+        @if (ViewBag.RelatedSeries != null && ViewBag.RelatedSeries.Count > 0)
             {
-                <div class="col-4 col-md-3 col-xl-2 mb-2">
-                    <a href="@Url.Action("detail", "film", new { id = film.Id })" class="text-decoration-none">
-                        <div class="position-relative">
-                            <img src="@film.Poster" class="img-6x9 rounded" alt="@film.Title">
-                        </div>
-                        <p class="text-white text-truncate mt-2 text-smm" style="max-width: 100%;">@(film.Title.Length > 20 ?
-                    film.Title.Substring(0, 20) + "..." : film.Title)</p>
-                    </a>
-                </div>
+                @foreach (var serie in ViewBag.RelatedSeries)
+                {
+                    <div class="col-4 col-md-3 col-xl-2 mb-2">
+                        <a href="@Url.Action("detail", "serie", new { id = serie.Id })" class="text-decoration-none">
+                            <div class="position-relative">
+                                <img src="@serie.Poster" class="img-6x9 rounded" alt="@serie.Title">
+                            </div>
+                            <p class="text-white text-truncate mt-2 text-smm" style="max-width: 100%;">@(serie.Title.Length > 20
+                        ?
+                        serie.Title.Substring(0, 20) + "..." : serie.Title)</p>
+                        </a>
+                    </div>
+                }
             }
-        }
+            </div>
     </div>
 </div>
 <script async defer crossorigin="anonymous"

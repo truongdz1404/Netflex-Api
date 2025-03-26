@@ -99,6 +99,22 @@ namespace Netflex.Controllers
                 .Where(g => genreIds.Contains(g.Id))
                 .ToList();
 
+            var relatedSerieIds = _context.SerieGenres
+            .Where(fg => genreIds.Contains(fg.GenreId) && fg.SerieId != id)
+            .Select(fg => fg.SerieId)
+            .Distinct()
+            .Take(50)
+            .ToList();
+
+            var relatedSeries = _unitOfWork.Repository<Serie>()
+                .Entities
+                .Where(f => relatedSerieIds.Contains(f.Id))
+                .OrderBy(f => f.Title)
+                .Take(10)
+                .ToList();
+
+            ViewBag.RelatedSeries = relatedSeries;
+
             return View(model);
         }
     }
