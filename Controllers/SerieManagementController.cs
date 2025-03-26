@@ -15,7 +15,7 @@ public class SerieManagementController(IStorageService storage, IUnitOfWork unit
     private readonly IStorageService _storage = storage;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ApplicationDbContext _dbContext = dbContext;
-    private const int PAGE_SIZE = 3;
+    private const int PAGE_SIZE = 6;
 
     [Route("/dashboard/serie")]
     public IActionResult Index(string? searchTerm, int? productionYear, string? sortOrder, int? page, bool export = false)

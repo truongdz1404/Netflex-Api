@@ -14,7 +14,7 @@ namespace Netflex.Controllers
 {
     public class FilmController : BaseController
     {
-        private const int PAGE_SIZE = 10;
+        private const int PAGE_SIZE = 12;
         private readonly ApplicationDbContext _context;
         private readonly IFollowRepository _followRepository;
         private readonly UserManager<User> _userManager;
