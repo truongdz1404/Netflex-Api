@@ -173,12 +173,7 @@
                     },
                     body: JSON.stringify(filmId)
                 });
-
-                if (!response.ok) {
-                    throw new Error("Lỗi khi thay đổi trạng thái");
-                }
             } catch (error) {
-                // Nếu có lỗi, hoàn tác thay đổi UI
                 button.innerHTML = isFollowed
                     ? '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi</span>'
                     : '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>';
