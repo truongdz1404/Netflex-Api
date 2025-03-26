@@ -65,7 +65,7 @@ namespace Netflex.Controllers
                     ProductionYear = film.ProductionYear,
                     CreatedAt = film.CreatedAt
                 })
-                .OrderBy(f => f.CreatedAt)
+                .OrderByDescending(f => f.CreatedAt)
                 .ToPagedList(pageNumber, PAGE_SIZE);
 
             string genreName = genreId.HasValue

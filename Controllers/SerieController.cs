@@ -41,7 +41,7 @@ namespace Netflex.Controllers
                     AgeCategoryId = serie.AgeCategoryId,
                     ProductionYear = serie.ProductionYear
                 }
-            ).ToPagedList(pageNumber, PAGE_SIZE);
+            ).OrderByDescending(m => m.CreatedAt).ToPagedList(pageNumber, PAGE_SIZE);
 
             return View(models);
         }
