@@ -1,4 +1,9 @@
+@using Microsoft.AspNetCore.Identity
+@using Netflex.Entities
+
 @model DetailFilmViewModel
+@inject SignInManager<User> SignInManager
+
 @{
     ViewData["Title"] = Model.Title;
     Layout = "_Layout";
@@ -32,7 +37,7 @@
                 <h4 class="mb-0" style="color: whitesmoke;">@Model.Title</h4>
                 <div class="nav-link tab follow-btn" id="followButton" data-film-id="@Model.Id" data-bs-toggle="pill"
                     data-bs-target="#pills-actor" type="submit" role="tab" aria-controls="pills-actor"
-                    aria-selected="false" onclick="toggleFollow(this)">
+                    aria-selected="false" onclick="toggleFollow(this, '@SignInManager.IsSignedIn(User)')">
                     @if (Model.IsFollowed)
                     {
                         <i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i>
@@ -156,29 +161,33 @@
         });
     </script>
     <script>
-        async function toggleFollow(button) {
-            const filmId = button.getAttribute("data-film-id");
+        async function toggleFollow(button, isLogin) {
+            if (isLogin=="False") {
+                window.location.href = "/Identity/Account/Login";
+                return;
+            } else if (isLogin=="True") {
+                const filmId = button.getAttribute("data-film-id");
 
-            const isFollowed = button.querySelector("i").classList.contains("fa-regular");
-            button.innerHTML = isFollowed
-                ? '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>'
-                : '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi</span>';
-
-            try {
-                const response = await fetch("/follow/toggleFollowFilm", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
-                    },
-                    body: JSON.stringify(filmId)
-                });
-            } catch (error) {
+                const isFollowed = button.querySelector("i").classList.contains("fa-regular");
                 button.innerHTML = isFollowed
-                    ? '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi</span>'
-                    : '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>';
-                alert("Có lỗi xảy ra khi thay đổi trạng thái, vui lòng thử lại!");
-            }
+                    ? '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>'
+                    : '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi</span>';
+
+                try {
+                    const response = await fetch("/follow/toggleFollowFilm", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify(filmId)
+                    });
+                } catch (error) {
+                    button.innerHTML = isFollowed
+                        ? '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi</span>'
+                        : '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>';
+                }
+            }  
         }
     </script>
 }
