@@ -69,7 +69,6 @@
                 <tr>
                     <th style="min-width: 150px;">Title</th>
                     <th style="min-width: 150px; text-align: center;">Poster</th>
-                    <th style="min-width: 150px;">Trailer</th>
                     <th style="min-width: 150px;">Production Year</th>
                     <th style="min-width: 120px; text-align: center;">Actions</th>
                 </tr>
@@ -89,20 +88,15 @@
                             }
                         </td>
                         <td>
-                            <a href="@item.Trailer" target="_blank" class="btn btn-sm btn-primary">
-                                <i class="fa fa-play-circle"></i> Watch Trailer
-                            </a>
-                        </td>
-                        <td>
                             @Html.DisplayFor(modelItem => item.ProductionYear)
                         </td>
                         <td class="text-center action-column">
                             <a class="btn btn-warning btn-sm" asp-controller="FilmManagement" asp-action="edit"
                                 asp-route-id="@item.Id">Edit</a>
-                            <a class="btn btn-info btn-sm" asp-controller="FilmManagement" asp-action="detail"
+                            <a class="btn btn-info btn-sm" asp-controller="Film" asp-action="detail"
                                 asp-route-id="@item.Id">Details</a>
-                            <a class="btn btn-danger btn-sm delete" data-id="@item.Id" data-controller="film"
-                                data-action="delete" data-body-message="Bạn có muốn xóa phim lẻ này?"
+                            <a class="btn btn-danger btn-sm delete" data-id="@item.Id"
+                                data-body-message="Bạn có muốn xóa phim lẻ này?" data-url="/dashboard/film/delete"
                                 data-redirect-url="/dashboard/film">Delete</a>
                         </td>
                     </tr>
@@ -191,6 +185,6 @@
             submitForm();
         }
 
-       
+
     </script>
 }

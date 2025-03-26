@@ -67,8 +67,10 @@
                             <td>
                                 <a class="btn btn-warning btn-sm" asp-controller="Episode" asp-action="edit"
                                     asp-route-id="@item.Id">Edit</a>
-                                <a class="btn btn-danger btn-sm delete" data-id="@item.Id" data-controller="episode"
-                                    data-action="delete" data-body-message="Bạn có muốn xóa tập phim này">Delete</a>
+                                <a class="btn btn-danger btn-sm delete" data-id="@item.Id" 
+                                    data-url="/dashboard/episode/delete"
+                                    dataredirect-url="/dashboard/episode/@ViewData["SerieId"]"
+                                 data-body-message="Bạn có muốn xóa tập phim này">Delete</a>
                             </td>
                         </tr>
                     }
@@ -140,21 +142,5 @@
             submitForm();
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const deleteButtons = document.querySelectorAll('.delete');
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const id = this.getAttribute('data-id');
-                    const controller = this.getAttribute('data-controller');
-                    const action = this.getAttribute('data-action');
-                    const message = this.getAttribute('data-body-message');
-
-                    if (confirm(message)) {
-                        window.location.href = `/${controller}/${action}/${id}`;
-                    }
-                });
-            });
-        });
     </script>
 }

@@ -14,6 +14,19 @@
     color: rgba(255, 255, 255, .28);
 }
 
+.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.img-6x9 {
+    width: 100%;          
+    aspect-ratio: 2 / 3; 
+    object-fit: cover;  
+}
+
 .rating-stars i {
     color: #258cfb;
     cursor: pointer;
@@ -69,6 +82,7 @@
   height: 60px;
   object-fit: cover;
 }
+
 .comment-section {
     background: rgba(255, 255, 255, 0.9);
 }
@@ -80,4 +94,12 @@
     background: rgba(255, 255, 255, 0.9);
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.follow-btn {
+    color: whitesmoke; 
+    padding: 1rem;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    transition: background-color 0.3s ease, transform 0.3s ease; 
 }
