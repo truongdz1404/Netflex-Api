@@ -143,7 +143,7 @@
                 @if (Model.HasPreviousPage)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
+                        <a class="page-link" href="/dashboard/user?page=@(Model.PageNumber - 1)">Previous</a>
                     </li>
                 }
                 else
@@ -157,7 +157,7 @@
                 @for (var i = 1; i <= Model.PageCount; i++)
                 {
                     <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                        <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                        <a class="page-link" href="/dashboard/user?page=@i">@i</a>
                     </li>
                 }
 
@@ -165,7 +165,7 @@
                 @if (Model.HasNextPage)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
+                        <a class="page-link" href="/dashboard/user?page=@(Model.PageNumber + 1)">Next</a>
                     </li>
                 }
                 else

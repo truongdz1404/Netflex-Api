@@ -182,7 +182,7 @@
                     <a class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
                         aria-expanded="false" aria-controls="auth">
                         <i class="fa-solid fa-film me-2 position-relative"></i>
-                        <span>Film</span>
+                        <span>Management</span>
                     </a>
                     <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                         <li class="sidebar-item">
@@ -208,24 +208,11 @@
                         </li>
                     </ul>
                 </li>
-
-                <li class="sidebar-item">
-                    <a href="#" class="sidebar-link">
-                        <i class="fa-solid fa-bell me-2 position-relative"></i>
-                        <span>Notification</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="#" class="sidebar-link">
-                        <i class="fa-solid fa-gear me-2 position-relative"></i>
-                        <span>Setting</span>
-                    </a>
-                </li>
             </ul>
             <div class="sidebar-footer">
-                <a href="#" class="sidebar-link">
-                    <i class="lni lni-exit"></i>
-                    <span>Logout</span>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="sidebar-link">
+                    <i class="fa-solid fa-door-open me-2 position-relative"></i>
+                    <span>Back</span>
                 </a>
             </div>
         </aside>

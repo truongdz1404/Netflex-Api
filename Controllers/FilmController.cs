@@ -143,7 +143,7 @@ namespace Netflex.Controllers
                 .Where(fg => genreIds.Contains(fg.GenreId) && fg.FilmId != id)
                 .Select(fg => fg.FilmId)
                 .Distinct()
-                .Take(50) 
+                .Take(50)
                 .ToList();
 
             var relatedFilms = _unitOfWork.Repository<Film>()
@@ -156,6 +156,5 @@ namespace Netflex.Controllers
             ViewBag.RelatedFilms = relatedFilms;
             return View(model);
         }
-
     }
 }

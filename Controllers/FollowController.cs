@@ -236,8 +236,9 @@ namespace Netflex.Controllers
                 return Json(new { isFollowed = true });
             }
         }
-        [Route("/follow/delete/{id}")]
+
         [HttpDelete]
+        [Route("/follow/delete/{id}")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)

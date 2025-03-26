@@ -20,10 +20,10 @@
 <table class="table table-bordered table-hover">
     <thead class="table-dark">
         <tr>
-            <th>Ảnh</th>
-            <th>Tên</th>
-            <th>About</th>
-            <th>Hành động</th>
+            <th class="col-md-1">Ảnh</th>
+            <th class="col-md-1">Tên</th>
+            <th class="col-md-8">About</th>
+            <th class="col-md-2">Hành động</th>
         </tr>
     </thead>
     <tbody>
@@ -41,10 +41,8 @@
                 <td>
                     <a asp-action="Details" asp-route-id="@actor.Id" class="btn btn-info btn-sm">Chi tiết</a>
                     <a asp-action="Edit" asp-route-id="@actor.Id" class="btn btn-warning btn-sm">Sửa</a>
-                    @* <a asp-action="Delete" asp-route-id="@actor.Id" class="btn btn-danger btn-sm" onclick="return confirmDelete();">Xóa</a> *@
-                    <a class="btn btn-danger btn-sm delete" data-id="@actor.Id" 
-                        data-url="/dashboard/actor/delete" data-body-message="Bạn có muốn xóa phim bộ này?"
-                        data-redirect-url="/dashboard/actor">
+                    <a class="btn btn-danger btn-sm delete" data-id="@actor.Id" data-url="/dashboard/actor/delete"
+                        data-body-message="Bạn có muốn xóa diễn viên này không?" data-redirect-url="/dashboard/actor">
                         Xóa
                     </a>
                 </td>
@@ -53,13 +51,47 @@
     </tbody>
 </table>
 
-<div class="d-flex justify-content-center mt-3">
-    <style>
-        .pagination li {
-            margin-right: 5px;
-        }
-    </style>
-    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchString = ViewBag.SearchString }))
+<div class="row">
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-4">
+        <ul class="pagination">
+            <!-- Previous Page Link -->
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="/dashboard/actor?page=@(Model.PageNumber - 1)">Previous</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+            }
+
+            <!-- Page Number Links -->
+            @for (var i = 1; i <= Model.PageCount; i++)
+            {
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link" href="/dashboard/actor?page=@i">@i</a>
+                </li>
+            }
+
+            <!-- Next Page Link -->
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="/dashboard/actor?page=@(Model.PageNumber + 1)">Next</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
+            }
+        </ul>
+    </div>
 </div>
 <script type="text/javascript">
     function confirmDelete() {
