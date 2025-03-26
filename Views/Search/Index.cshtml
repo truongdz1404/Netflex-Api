@@ -33,7 +33,7 @@
 			{
 				<div class="movie-item">
 					<a href="@(item.Type == "Film" ? @Url.Action("detail", "film", new { id = item.Id }) 
-                :  @Url.Action("detail", "film", new { id =item.Id }))" class="text-white">
+                :  @Url.Action("detail", "serie", new { id =item.Id }))" class="text-white">
 						<div class="card bg-transparent text-white mb-1 ">
 							<div class="d-flex gap-4 movie-banner">
 								<div class=" position-relative">
