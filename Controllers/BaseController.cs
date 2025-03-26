@@ -32,40 +32,38 @@ namespace Netflex.Controllers
 
         public async Task GetStarSeries()
         {
-            var series = await _unitOfWork.Repository<Serie>()
+            var oneMonthAgo = DateTime.UtcNow.AddMonths(-1);
+
+            var seriesQuery = _unitOfWork.Repository<Serie>()
                 .Entities
-                .OrderBy(f => f.CreatedAt)
-                .Take(10)
-                .Select(serie => new SerieViewModel()
-                {
-                    Id = serie.Id,
-                    Title = serie.Title,
-                    Poster = serie.Poster,
-                    ProductionYear = serie.ProductionYear,
-                    CreatedAt = serie.CreatedAt,
-                })
+                .Where(s => s.CreatedAt >= oneMonthAgo);
+
+            var seriesWithRatings = await seriesQuery
+                .GroupJoin(
+                    _unitOfWork.Repository<Review>().Entities,
+                    serie => serie.Id,
+                    review => review.SerieId,
+                    (serie, reviews) => new
+                    {
+                        Serie = serie,
+                        AverageRating = reviews.Any() ? reviews.Average(r => r.Rating) : 0
+                    })
+                .OrderByDescending(x => x.AverageRating) 
+                .ThenByDescending(x => x.Serie.CreatedAt) 
+                .Take(10) 
                 .ToListAsync();
 
-            // var serieIds = series.Select(s => s.Id).ToList();
-            // var reviews = await _unitOfWork.Repository<Review>()
-            // .Entities
-            // .Where(r => r.SerieId.HasValue && serieIds.Contains(r.SerieId.Value))
-            // .GroupBy(r => r.SerieId != null ? r.SerieId.Value : Guid.Empty)
-            // .Select(g => new
-            // {
-            //     SerieId = g.Key,
-            //     AverageRating = g.Average(r => r.Rating)
-            // })
-            // .ToListAsync();
-
-            // foreach (var serie in series)
-            // {
-            //     var review = reviews.FirstOrDefault(r => r.SerieId == serie.Id);
-            //     serie.Rating = review != null ? review.AverageRating : 1;
-            // }
+            var series = seriesWithRatings.Select(x => new SerieViewModel()
+            {
+                Id = x.Serie.Id,
+                Title = x.Serie.Title,
+                Poster = x.Serie.Poster,
+                ProductionYear = x.Serie.ProductionYear,
+                CreatedAt = x.Serie.CreatedAt,
+                Rating = x.AverageRating
+            }).ToList();
 
             ViewBag.StarSeries = series;
         }
-
     }
-}
+    }
