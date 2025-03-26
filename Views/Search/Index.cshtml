@@ -1,4 +1,4 @@
-﻿@model IPagedList<DetailFilmViewModel>
+﻿@model IPagedList<Netflex.Models.Search.SearchItemViewModel>
 @using X.PagedList.Mvc.Core
 
 @{
@@ -29,23 +29,28 @@
 		</form>
 
 		<div class="my-3 movie-list">
-			@foreach (var film in Model)
+			@foreach (var item in Model)
 			{
 				<div class="movie-item">
-					<a href="@Url.Action("detail", "film", new { id = film.Id })" class="text-white">
+					<a href="@(item.Type == "Film" ? @Url.Action("detail", "film", new { id = item.Id }) 
+                :  @Url.Action("detail", "film", new { id =item.Id }))" class="text-white">
 						<div class="card bg-transparent text-white mb-1 ">
 							<div class="d-flex gap-4 movie-banner">
-								<div>
-									<img src="@film.Poster" alt="@film.Title" class="movie-image">
+								<div class=" position-relative">
+									<img src="@item.Poster" alt="@item.Title" class="movie-image">
+									<div class="position-absolute top-0 end-0 text-sm text-center"
+										style="background-color: @(item.Type == "Film" ? "#28a745" :  "#a72828")">
+										<p class="m-0 p-1 text-white-70">@(item.Type == "Film" ? "Phim lẻ" : "Phim bộ")</p>
+									</div>
 								</div>
 								<div class="flex-grow-1 overflow-hidden">
-									<p class="m-0">@film.Title</p>
-									<p class="text-white-50 m-0 text-sm">@film.ProductionYear</p>
-									@if (film.About is not null)
+									<p class="m-0">@item.Title</p>
+									<p class="text-white-50 m-0 text-sm">@item.ProductionYear</p>
+									@if (item.About is not null)
 									{
-										<p class="text-white-50 m-0 text-sm">@Html.Raw(film.About.Length > 300 ?
-											film.About.Substring(0, 300) +
-											"..." : film.About)</p>
+										<p class="text-white-50 m-0 text-sm">@Html.Raw(item.About.Length > 300 ?
+											item.About.Substring(0, 300) +
+											"..." : item.About)</p>
 									}
 								</div>
 							</div>
