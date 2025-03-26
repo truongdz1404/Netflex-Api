@@ -35,11 +35,17 @@
     display: none;
 }
 
-.image-movie{
+.movie-image{
     width: 120px;
     height: 120px;
     object-fit: cover;
 }
 .movie-banner{
     height: 120px;
+}
+
+.movie-list .movie-item:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    padding-bottom: 0.8rem;
+    margin-bottom: 1rem;
 }

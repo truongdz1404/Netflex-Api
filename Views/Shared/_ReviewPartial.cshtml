@@ -8,7 +8,7 @@
 	class="d-flex align-items-center align-items-md-start py-2 border-top border-bottom border-line border-2 gap-2 flex-column flex-md-row">
 	<div class="d-flex gap-2">
 		<div class="points rounded p-2 d-flex align-items-center justify-content-center">
-			<p class="fs-4 fw-bold m-0" id="average-rating">@Model.AverageRating</p>
+			<p class="fs-4 fw-bold m-0" id="average-rating">@Math.Round(Model.AverageRating, 2)</p>
 		</div>
 		<div>
 			<div class="rating-stars">
