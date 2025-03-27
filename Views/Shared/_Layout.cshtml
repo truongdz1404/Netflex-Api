@@ -200,7 +200,7 @@
             function showToast(message) {
                 try {
                     var data = JSON.parse(message);
-                    $("#toastBody").html(`<a href="${data.Link}" class="text-black">${data.Message}</a>`);
+                    $("#toastBody").html(`<a href="${data.Link}" class="text-black">NETFLEX: ${data.Message}</a>`);
                     var toast = new bootstrap.Toast(document.getElementById('notificationToast'));
                     toast.show();
                 } catch (e) {
