@@ -15,7 +15,7 @@ namespace Netflex.Controllers
 {
     public class SerieController : BaseController
     {
-        private const int PAGE_SIZE = 10;
+        private const int PAGE_SIZE = 12;
         private readonly ApplicationDbContext _context;
 
         private readonly IFollowRepository _followRepository;
@@ -31,7 +31,7 @@ namespace Netflex.Controllers
         {
             int pageNumber = page ?? 1;
 
-            var models = _unitOfWork.Repository<Serie>().Entities.Select(
+            var models = _unitOfWork.Repository<Serie>().Entities.OrderByDescending(m => m.CreatedAt).Select(
                 serie => new SerieViewModel()
                 {
                     Id = serie.Id,

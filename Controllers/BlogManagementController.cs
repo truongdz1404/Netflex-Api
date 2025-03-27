@@ -23,7 +23,7 @@ namespace Netflex.Controllers
     {
         private readonly IStorageService _storage = storage;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private const int PAGE_SIZE = 5;
+        private const int PAGE_SIZE = 6;
         private readonly ApplicationDbContext _context = context;
 
         private readonly ILogger<BlogManagementController> _logger = logger;
@@ -263,7 +263,7 @@ namespace Netflex.Controllers
             return RedirectToAction("index", "blogmanagement");
         }
 
-        
+
         [Route("/dashboard/blog/delete/{id}")]
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid? id)

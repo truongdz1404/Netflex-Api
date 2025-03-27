@@ -14,7 +14,7 @@ namespace Netflex.Controllers
 {
     public class FilmController : BaseController
     {
-        private const int PAGE_SIZE = 10;
+        private const int PAGE_SIZE = 12;
         private readonly ApplicationDbContext _context;
         private readonly IFollowRepository _followRepository;
         private readonly UserManager<User> _userManager;
@@ -55,6 +55,7 @@ namespace Netflex.Controllers
             }
 
             var models = filmQuery
+                .OrderByDescending(f => f.CreatedAt)
                 .Select(film => new FilmViewModel()
                 {
                     Id = film.Id,
@@ -65,7 +66,6 @@ namespace Netflex.Controllers
                     ProductionYear = film.ProductionYear,
                     CreatedAt = film.CreatedAt
                 })
-                .OrderBy(f => f.CreatedAt)
                 .ToPagedList(pageNumber, PAGE_SIZE);
 
             string genreName = genreId.HasValue

@@ -15,7 +15,7 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
     private readonly IStorageService _storage = storage;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ApplicationDbContext _context = context;
-    private const int PAGE_SIZE = 3;
+    private const int PAGE_SIZE = 6;
     [Route("dashboard/film")]
     public IActionResult Index(string? searchTerm, int? productionYear, string? sortOrder, int? page, bool export = false)
     {

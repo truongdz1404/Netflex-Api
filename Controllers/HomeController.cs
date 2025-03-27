@@ -69,7 +69,7 @@ public class HomeController : BaseController
                 CreatedAt = film.CreatedAt
 
             }
-        ).OrderBy(f => f.CreatedAt).Take(ListSize)
+        ).OrderByDescending(f => f.CreatedAt).Take(ListSize)
         .ToList();
         ViewBag.SingleFilms = models;
     }
@@ -121,7 +121,7 @@ public class HomeController : BaseController
                 ProductionYear = serie.ProductionYear,
                 CreatedAt = serie.CreatedAt
             }
-        ).OrderBy(f => f.CreatedAt).Take(ListSize)
+        ).OrderByDescending(f => f.CreatedAt).Take(ListSize)
         .ToList();
         ViewBag.SeriesFilms = models;
     }
