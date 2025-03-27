@@ -116,12 +116,24 @@ namespace Netflex.Controllers
                 Path = film.Path,
                 Trailer = film.Trailer,
                 ProductionYear = film.ProductionYear,
-                IsFollowed = isFollowed
+                IsFollowed = isFollowed,
+                CreatedAt = film.CreatedAt
             };
 
             var actorIds = _context.FilmActors
                 .Where(fa => fa.FilmId == id)
                 .Select(fa => fa.ActorId)
+                .ToList();
+
+            var countryIds = _context.FilmCountries
+                .Where(fc => fc.FilmId == id)
+                .Select(fc => fc.CountryId)
+                .ToList();
+
+            ViewBag.FilmCountries = _unitOfWork.Repository<Country>()
+                .Entities
+                .Where(a => countryIds.Contains(a.Id))
+                .Select(c => c.Name)
                 .ToList();
 
             ViewBag.Actors = _unitOfWork.Repository<Actor>()
