@@ -12,4 +12,5 @@ public class DetailSerieViewModel
     public required List<Guid> GenreIds { get; set; }
     public required List<Guid> CountryIds { get; set; }
     public bool IsFollowed { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

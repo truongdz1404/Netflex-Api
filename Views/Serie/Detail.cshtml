@@ -38,7 +38,13 @@
             </div>
             <div>
                 <p class="text-white-50 text-sm mb-1">@Model.Title @Model.ProductionYear</p>
-                <p class="text-sm"><span class="date">Dec. 31, 2023</span>&nbsp;&nbsp;&nbsp;China&nbsp;&nbsp;&nbsp;</p>
+                <p class="text-sm">
+                    <span class="date">@Model.CreatedAt.ToString("MMM. dd, yyyy")</span>&nbsp;&nbsp;&nbsp;
+                    @foreach (var country in ViewBag.SerieCountries)
+                    {
+                        <span>@country </span>
+                    } &nbsp;&nbsp;&nbsp;
+                </p>
             </div>
             <div id="review-container">
             </div>
@@ -112,8 +118,8 @@
     </div>
     <div class="movie-card mt-2">
         <p class="text-base text-white">Serie liên quan</p>
-         <div class="row">
-        @if (ViewBag.RelatedSeries != null && ViewBag.RelatedSeries.Count > 0)
+        <div class="row">
+            @if (ViewBag.RelatedSeries != null && ViewBag.RelatedSeries.Count > 0)
             {
                 @foreach (var serie in ViewBag.RelatedSeries)
                 {
@@ -129,7 +135,7 @@
                     </div>
                 }
             }
-            </div>
+        </div>
     </div>
 </div>
 <script async defer crossorigin="anonymous"

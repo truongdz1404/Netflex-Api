@@ -52,7 +52,13 @@
             </div>
             <div>
                 <p class="text-white-50 text-sm mb-1">@Model.Title @Model.ProductionYear</p>
-                <p class="text-sm"><span class="date">Dec. 31, 2023</span>&nbsp;&nbsp;&nbsp;China&nbsp;&nbsp;&nbsp;</p>
+                <p class="text-sm">
+                    <span class="date">@Model.CreatedAt.ToString("MMM. dd, yyyy")</span>&nbsp;&nbsp;&nbsp;
+                    @foreach (var country in ViewBag.FilmCountries)
+                    {
+                        <span>@country </span>
+                    } &nbsp;&nbsp;&nbsp;
+                </p>
             </div>
 
             <div id="review-container">
@@ -162,10 +168,10 @@
     </script>
     <script>
         async function toggleFollow(button, isLogin) {
-            if (isLogin=="False") {
+            if (isLogin == "False") {
                 window.location.href = "/Identity/Account/Login";
                 return;
-            } else if (isLogin=="True") {
+            } else if (isLogin == "True") {
                 const filmId = button.getAttribute("data-film-id");
 
                 const isFollowed = button.querySelector("i").classList.contains("fa-regular");
@@ -187,7 +193,7 @@
                         ? '<i class="fa-regular fa-bookmark" style="margin-right: 8px;"></i><span>Theo dõi</span>'
                         : '<i class="fa-solid fa-bookmark" style="margin-right: 8px;"></i><span>Đã theo dõi</span>';
                 }
-            }  
+            }
         }
     </script>
 }

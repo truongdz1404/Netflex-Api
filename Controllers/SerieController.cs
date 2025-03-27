@@ -74,8 +74,8 @@ namespace Netflex.Controllers
                 CountryIds = _context.SerieCountries.Where(x => x.SerieId == serie.Id).Select(x => x.CountryId).ToList(),
                 GenreIds = _context.SerieGenres.Where(x => x.SerieId == serie.Id).Select(x => x.GenreId).ToList(),
                 ActorIds = _context.SerieActors.Where(x => x.SerieId == serie.Id).Select(x => x.ActorId).ToList(),
-                IsFollowed = isFollowed
-
+                IsFollowed = isFollowed,
+                CreatedAt = serie.CreatedAt
             };
             ViewBag.Episodes = _unitOfWork.Repository<Episode>().Entities.Where(e => e.SerieId == id).ToList();
 
@@ -83,6 +83,17 @@ namespace Netflex.Controllers
                            .Where(fa => fa.SerieId == id)
                            .Select(fa => fa.ActorId)
                            .ToList();
+
+            var countryIds = _context.SerieCountries
+                .Where(fc => fc.SerieId == id)
+                .Select(fc => fc.CountryId)
+                .ToList();
+
+            ViewBag.SerieCountries = _unitOfWork.Repository<Country>()
+                .Entities
+                .Where(a => countryIds.Contains(a.Id))
+                .Select(c => c.Name)
+                .ToList();
 
             ViewBag.Actors = _unitOfWork.Repository<Actor>()
                 .Entities

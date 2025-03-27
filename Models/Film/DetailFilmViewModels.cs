@@ -11,4 +11,5 @@ public class DetailFilmViewModel
     public int ProductionYear { get; set; }
     public string? AgeCategory { get; set; }
     public bool IsFollowed { get; set; }
+    public DateTime CreatedAt { get; set; }
 }
