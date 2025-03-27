@@ -85,9 +85,6 @@ namespace Netflex.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(Input.Email);
-                bool isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
-                Console.WriteLine($"Is Admin: {isAdmin}");
-
                 if (user != null)
                 {
                     var result = await _signInManager.PasswordSignInAsync(user, Input.Password, Input.RememberMe, lockoutOnFailure: false);
