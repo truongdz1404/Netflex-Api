@@ -49,11 +49,12 @@ public class HomeController : BaseController
             .ToList();
         GetFeaturedFilms();
         GetSerieFilms();
+        GetNewFilms();
         return View(blogs);
     }
 
 
-    public void GetFeaturedFilms()
+    public void GetNewFilms()
     {
 
         var models = _unitOfWork.Repository<Film>().Entities.Select(
@@ -68,11 +69,45 @@ public class HomeController : BaseController
                 CreatedAt = film.CreatedAt
 
             }
-        ).OrderBy(f => f.CreatedAt).Take(ListSize)
+        ).OrderByDescending(f => f.CreatedAt).Take(ListSize)
         .ToList();
+        ViewBag.SingleFilms = models;
+    }
+
+
+    public void GetFeaturedFilms()
+    {
+        var oneMonthAgo = DateTime.UtcNow.AddMonths(-1);
+
+        var filmsWithRatings = _unitOfWork.Repository<Film>().Entities
+            .Where(f => f.CreatedAt >= oneMonthAgo)
+            .GroupJoin(
+                _unitOfWork.Repository<Review>().Entities,
+                film => film.Id,
+                review => review.FilmId,
+                (film, reviews) => new
+                {
+                    Film = film,
+                    AverageRating = reviews.Any() ? reviews.Average(r => r.Rating) : 0
+                })
+            .OrderByDescending(x => x.AverageRating)
+            .ThenByDescending(x => x.Film.CreatedAt)
+            .Take(ListSize)
+            .ToList();
+
+        var models = filmsWithRatings.Select(x => new FilmViewModel()
+        {
+            Id = x.Film.Id,
+            Title = x.Film.Title,
+            Poster = x.Film.Poster,
+            Path = x.Film.Path,
+            Trailer = x.Film.Trailer,
+            ProductionYear = x.Film.ProductionYear,
+            CreatedAt = x.Film.CreatedAt,
+        })
+            .ToList();
 
         ViewBag.FeaturedFilms = models;
-        ViewBag.SingleFilms = models;
     }
     public void GetSerieFilms()
     {
@@ -86,7 +121,7 @@ public class HomeController : BaseController
                 ProductionYear = serie.ProductionYear,
                 CreatedAt = serie.CreatedAt
             }
-        ).OrderBy(f => f.CreatedAt).Take(ListSize)
+        ).OrderByDescending(f => f.CreatedAt).Take(ListSize)
         .ToList();
         ViewBag.SeriesFilms = models;
     }

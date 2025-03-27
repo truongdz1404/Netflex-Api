@@ -94,4 +94,19 @@
 }
 
 
+.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.img-6x9 {
+    width: 100%;          
+    aspect-ratio: 2 / 3; 
+    object-fit: cover;  
+}
+
+
+
 

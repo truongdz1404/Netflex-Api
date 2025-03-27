@@ -22,7 +22,7 @@ public class EditFilmViewModel
     public IFormFile? File { get; set; }
     public string? PosterUrl { get; set; }
     public string? FileUrl { get; set; }
-    public List<Guid> ActorIds { get; set; } = new();
-    public List<Guid> GenreIds { get; set; } = new();
-    public List<Guid> CountryIds { get; set; } = new();
+    public List<Guid>? ActorIds { get; set; } = new();
+    public List<Guid>? GenreIds { get; set; } = new();
+    public List<Guid>? CountryIds { get; set; } = new();
 }

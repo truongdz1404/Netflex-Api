@@ -67,8 +67,10 @@
                             <td>
                                 <a class="btn btn-warning btn-sm" asp-controller="Episode" asp-action="edit"
                                     asp-route-id="@item.Id">Edit</a>
-                                <a class="btn btn-danger btn-sm delete" data-id="@item.Id" data-controller="episode"
-                                    data-action="delete" data-body-message="Bạn có muốn xóa tập phim này">Delete</a>
+                                <a class="btn btn-danger btn-sm delete" data-id="@item.Id" 
+                                    data-url="/dashboard/episode/delete"
+                                    dataredirect-url="/dashboard/episode/@ViewData["SerieId"]"
+                                 data-body-message="Bạn có muốn xóa tập phim này">Delete</a>
                             </td>
                         </tr>
                     }
@@ -78,30 +80,43 @@
 
         <div class="d-flex justify-content-center mt-4">
             <ul class="pagination">
+                <!-- Previous Page Link -->
                 @if (Model.HasPreviousPage)
                 {
-                    <li class="page-item"><a class="page-link"
-                            href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a></li>
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="/dashboard/episode/index/@ViewData["SerieId"]?page=@(Model.PageNumber - 1)&searchTerm=@(ViewBag.SearchTerm)&sortOrder=@(ViewBag.SortOrder)">Previous</a>
+                    </li>
                 }
                 else
                 {
-                    <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
                 }
 
+                <!-- Page Number Links -->
                 @for (var i = 1; i <= Model.PageCount; i++)
                 {
-                    <li class="page-item @(i == Model.PageNumber ? "active" : "")"><a class="page-link"
-                            href="@Url.Action("Index", new { page = i })">@i</a></li>
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link"
+                            href="/dashboard/episode/index/@ViewData["SerieId"]?page=@(i)&searchTerm=@(ViewBag.SearchTerm)&sortOrder=@(ViewBag.SortOrder)">@i</a>
+                    </li>
                 }
 
+                <!-- Next Page Link -->
                 @if (Model.HasNextPage)
                 {
-                    <li class="page-item"><a class="page-link"
-                            href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a></li>
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="/dashboard/episode/index/@ViewData["SerieId"]?page=@(Model.PageNumber + 1)&searchTerm=@(ViewBag.SearchTerm)&sortOrder=@(ViewBag.SortOrder)">Next</a>
+                    </li>
                 }
                 else
                 {
-                    <li class="page-item disabled"><span class="page-link">Next</span></li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
                 }
             </ul>
         </div>
@@ -140,21 +155,5 @@
             submitForm();
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const deleteButtons = document.querySelectorAll('.delete');
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const id = this.getAttribute('data-id');
-                    const controller = this.getAttribute('data-controller');
-                    const action = this.getAttribute('data-action');
-                    const message = this.getAttribute('data-body-message');
-
-                    if (confirm(message)) {
-                        window.location.href = `/${controller}/${action}/${id}`;
-                    }
-                });
-            });
-        });
     </script>
 }

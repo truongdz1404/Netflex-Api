@@ -10,7 +10,7 @@ namespace Netflex.Controllers
     public class CountryController : Controller
     {
         private readonly ICountryRepository _countryRepository;
-        private const int PageSize = 5;
+        private const int PageSize = 12;
 
         public CountryController(ICountryRepository countryRepository)
         {
@@ -33,7 +33,7 @@ namespace Netflex.Controllers
 
             ViewBag.SearchString = searchString;
 
-            return View("~/Views/Dashboard/Country/Index.cshtml",pagedCountries);
+            return View("~/Views/Dashboard/Country/Index.cshtml", pagedCountries);
         }
 
         [Route("/dashboard/country/create")]
@@ -60,7 +60,7 @@ namespace Netflex.Controllers
         {
             var country = await _countryRepository.GetByIdAsync(id);
             if (country == null) return NotFound();
-            return View("~/Views/Dashboard/Country/Edit.cshtml",country);
+            return View("~/Views/Dashboard/Country/Edit.cshtml", country);
         }
 
         [HttpPost]

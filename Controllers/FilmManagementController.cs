@@ -15,7 +15,7 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
     private readonly IStorageService _storage = storage;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ApplicationDbContext _context = context;
-    private const int PAGE_SIZE = 3;
+    private const int PAGE_SIZE = 6;
     [Route("dashboard/film")]
     public IActionResult Index(string? searchTerm, int? productionYear, string? sortOrder, int? page, bool export = false)
     {
@@ -119,7 +119,7 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
         package.SaveAs(stream);
         stream.Position = 0;
 
-        return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Films.xlsx");
+        return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Films-{Guid.NewGuid()}.xlsx");
     }
 
     [Route("/dashboard/film/detail/{id}")]
@@ -159,6 +159,11 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
         {
             await _unitOfWork.Repository<Follow>().DeleteAsync(follow);
         }
+        var ratings = _unitOfWork.Repository<Review>().Entities.Where(f => f.FilmId == film.Id).ToList();
+        foreach (var rating in ratings)
+        {
+            await _unitOfWork.Repository<Review>().DeleteAsync(rating);
+        }
         await _unitOfWork.Repository<Film>().DeleteAsync(film);
         await _unitOfWork.Save(CancellationToken.None);
         return RedirectToAction("index", "filmmanagement");
@@ -196,7 +201,7 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
         if (!ModelState.IsValid)
         {
             await PopulateViewBags(update);
-            return View(update);
+            return View("~/Views/Dashboard/Film/Edit.cshtml", update);
         }
         var film = await _unitOfWork.Repository<Film>().GetByIdAsync(update.Id);
         if (film == null)
@@ -272,7 +277,7 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
             ViewBag.Genres = await _unitOfWork.Repository<Genre>().GetAllAsync();
             ViewBag.Countries = await _unitOfWork.Repository<Country>().GetAllAsync();
             ViewBag.AgeCategories = await _unitOfWork.Repository<AgeCategory>().GetAllAsync();
-            return View("~/Views/Dashboard/Film/Create.cshtml",film);
+            return View("~/Views/Dashboard/film/Create.cshtml", film);
         }
 
         var posterUri = film.Poster != null ? await _storage.UploadFileAsync("poster", film.Poster) : null;
@@ -291,28 +296,38 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
         };
         await _unitOfWork.Repository<Film>().AddAsync(newFilm);
         await _unitOfWork.Save(CancellationToken.None);
+
         if (film.ActorIds != null)
         {
-            foreach (var actorId in film.ActorIds)
+            var filmActors = film.ActorIds.Select(actorId => new FilmActor
             {
-                _context.Set<FilmActor>().Add(new FilmActor { FilmId = newFilm.Id, ActorId = actorId });
-            }
+                FilmId = newFilm.Id,
+                ActorId = actorId
+            }).ToList();
+
+            _context.Set<FilmActor>().AddRange(filmActors);
         }
 
         if (film.GenreIds != null)
         {
-            foreach (var genreId in film.GenreIds)
+            var filmGenres = film.GenreIds.Select(genreId => new FilmGenre
             {
-                _context.Set<FilmGenre>().Add(new FilmGenre { FilmId = newFilm.Id, GenreId = genreId });
-            }
+                FilmId = newFilm.Id,
+                GenreId = genreId
+            }).ToList();
+
+            _context.Set<FilmGenre>().AddRange(filmGenres);
         }
 
         if (film.CountryIds != null)
         {
-            foreach (var countryId in film.CountryIds)
+            var filmCountries = film.CountryIds.Select(countryId => new FilmCountry
             {
-                _context.Set<FilmCountry>().Add(new FilmCountry { FilmId = newFilm.Id, CountryId = countryId });
-            }
+                FilmId = newFilm.Id,
+                CountryId = countryId
+            }).ToList();
+
+            _context.Set<FilmCountry>().AddRange(filmCountries);
         }
 
         await _context.SaveChangesAsync();
