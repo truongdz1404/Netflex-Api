@@ -53,52 +53,61 @@ namespace Netflex.Areas.Identity.Pages.Account
                     return RedirectToAction("Login", "Account");
                 }
 
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                if (email == null)
+                {
+                    TempData["ErrorMessage"] = "Không thể lấy thông tin email từ nhà cung cấp.";
+                    return RedirectToPage("/Account/Login", new { area = "Identity" });
+
+                }
+
+                var user = await _userManager.FindByEmailAsync(email);
+
+                if (user != null && await _userManager.IsLockedOutAsync(user))
+                {
+                    _logger.LogWarning($"Tài khoản {email} đã bị vô hiệu hoá.");
+                    TempData["ErrorMessage"] = "Tài khoản của bạn đã bị vô hiệu hoá.";
+                    return RedirectToPage("/Account/Login", new { area = "Identity" });
+                }
+
                 var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+
                 if (result.Succeeded)
                 {
-                    var user = await _userManager.FindByEmailAsync(info.Principal.FindFirstValue(ClaimTypes.Email) ?? throw new Exception("User email is null"));
-                    if (user != null)
+                    await LogUserRole(user!);
+                    return RedirectToRoleBasedPage(user!, returnUrl);
+                }
+
+                if (user == null)
+                {
+                    user = new User
                     {
+                        UserName = email,
+                        Email = email,
+                        EmailConfirmed = true,
+                    };
+
+                    var createResult = await _userManager.CreateAsync(user);
+                    if (createResult.Succeeded)
+                    {
+                        if (!await _roleManager.RoleExistsAsync("User"))
+                        {
+                            await _roleManager.CreateAsync(new IdentityRole("User"));
+                        }
+                        await _userManager.AddToRoleAsync(user, "User");
+
+                        await _userManager.AddLoginAsync(user, info);
+                        await _signInManager.SignInAsync(user, isPersistent: false);
                         await LogUserRole(user);
                         return RedirectToRoleBasedPage(user, returnUrl);
                     }
                 }
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-
-                if (email != null)
+                else
                 {
-                    var user = await _userManager.FindByEmailAsync(email);
-                    if (user == null)
-                    {
-                        user = new User
-                        {
-                            UserName = email,
-                            Email = email,
-                            EmailConfirmed = true,
-                        };
-
-                        var createResult = await _userManager.CreateAsync(user);
-                        if (createResult.Succeeded)
-                        {
-                            if (!await _roleManager.RoleExistsAsync("User"))
-                            {
-                                await _roleManager.CreateAsync(new IdentityRole("User"));
-                            }
-                            await _userManager.AddToRoleAsync(user, "User");
-
-                            await _userManager.AddLoginAsync(user, info);
-                            await _signInManager.SignInAsync(user, isPersistent: false);
-                            await LogUserRole(user); 
-                            return RedirectToRoleBasedPage(user, returnUrl);
-                        }
-                    }
-                    else
-                    {
-                        await _userManager.AddLoginAsync(user, info);
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        await LogUserRole(user); 
-                        return RedirectToRoleBasedPage(user, returnUrl);
-                    }
+                    await _userManager.AddLoginAsync(user, info);
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    await LogUserRole(user);
+                    return RedirectToRoleBasedPage(user, returnUrl);
                 }
 
                 return RedirectToAction("Login", "Account");
@@ -110,6 +119,7 @@ namespace Netflex.Areas.Identity.Pages.Account
                 return RedirectToAction("Login", "Account");
             }
         }
+
 
         private async Task LogUserRole(User user)
         {

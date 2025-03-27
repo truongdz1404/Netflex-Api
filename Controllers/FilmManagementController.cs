@@ -106,13 +106,18 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
         worksheet.Cells[1, 2].Value = "Title";
         worksheet.Cells[1, 3].Value = "Production Year";
         worksheet.Cells[1, 4].Value = "Trailer Link";
+        worksheet.Cells[1, 5].Value = "Poster";
+        worksheet.Cells[1, 6].Value = "Path";
         Console.WriteLine($"Exporting {films.Count} films");
 
         for (int i = 0; i < films.Count; i++)
         {
-            worksheet.Cells[i + 2, 1].Value = films[i].Title;
-            worksheet.Cells[i + 2, 2].Value = films[i].ProductionYear;
-            worksheet.Cells[i + 2, 3].Value = films[i].Trailer;
+            worksheet.Cells[i + 2, 1].Value = films[i].Id;
+            worksheet.Cells[i + 2, 2].Value = films[i].Title;
+            worksheet.Cells[i + 2, 3].Value = films[i].ProductionYear;
+            worksheet.Cells[i + 2, 4].Value = films[i].Trailer;
+            worksheet.Cells[i + 2, 5].Value = films[i].Poster;
+            worksheet.Cells[i + 2, 6].Value = films[i].Path;
         }
 
         var stream = new MemoryStream();

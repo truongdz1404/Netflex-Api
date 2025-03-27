@@ -24,7 +24,7 @@ namespace Netflex.Areas.Identity.Pages.Account
         private readonly ILogger<LoginModel> _logger;
         private readonly UserManager<User> _userManager;
 
-        public LoginModel(SignInManager<User> signInManager, 
+        public LoginModel(SignInManager<User> signInManager,
         ILogger<LoginModel> logger,
         UserManager<User> userManager)
         {
@@ -33,21 +33,21 @@ namespace Netflex.Areas.Identity.Pages.Account
             _userManager = userManager;
         }
 
-   
+
         [BindProperty]
         public InputModel Input { get; set; }
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
         public string ReturnUrl { get; set; }
 
-       
+
         [TempData]
         public string ErrorMessage { get; set; }
 
-      
+
         public class InputModel
         {
-         
+
             [Required]
             [EmailAddress]
             public string Email { get; set; }
@@ -116,21 +116,33 @@ namespace Netflex.Areas.Identity.Pages.Account
                     if (result.IsLockedOut)
                     {
                         _logger.LogWarning("User account locked out.");
-                        return RedirectToPage("./Lockout");
+                        ModelState.AddModelError(string.Empty, "Tài khoản đã bị vô hiệu hoá.");
+                        // return RedirectToPage("./Lockout");
+                        return Page();
                     }
                 }
 
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                ModelState.AddModelError(string.Empty, "Sai tên đăng nhập hoặc mật khẩu.");
             }
 
             return Page();
         }
 
 
-        public IActionResult OnPostExternalLogin(string provider){
+        public async Task<IActionResult> OnPostExternalLogin(string provider)
+        {
             var redirectUrl = Url.Page("Account/ExternalLogin", pageHandler: "Callback");
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+
+            var user = await _userManager.FindByEmailAsync(Input.Email);
+            if (user != null && await _userManager.IsLockedOutAsync(user))
+            {
+                ModelState.AddModelError(string.Empty, "Tài khoản của bạn đã bị vô hiệu hoá.");
+                return Page();
+            }
+
             return new ChallengeResult(provider, properties);
         }
+
     }
 }

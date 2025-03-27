@@ -11,10 +11,10 @@
             class="position-absolute py-5 px-5 top-50 start-50 translate-middle col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 shadow-lg rounded bg-my-dark text-white-50">
             <section>
                 <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                    <h2 class="text-center">Welcom to Netflex.
+                    <h2 class="text-center">Chào Mừng Đến Netflex.
                     </h2>
-                    <p class="text-center">Already have an account?
-                        <a asp-page="./Login" class="text-white fw-bold">Log in</a>
+                    <p class="text-center">Bạn đã có tài khoản?
+                        <a asp-page="./Login" class="text-white fw-bold">Đăng nhập</a>
                     </p>
 
                     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
@@ -24,22 +24,20 @@
                             autocomplete="username" aria-required="true" placeholder="name@example.com" />
                         <span asp-validation-for="Input.Email" class="text-danger"></span>
                     </div>
-                    <label asp-for="Input.Password" class="form-label fw-bold">Password</label>
+                    <label asp-for="Input.Password" class="form-label fw-bold">Mật khẩu</label>
                     <div class="mb-3">
                         <input asp-for="Input.Password" class="form-control form-control-xs"
                             autocomplete="current-password" aria-required="true" placeholder="***********" />
                         <span asp-validation-for="Input.Password" class="text-danger"></span>
                     </div>
 
-                    <label asp-for="Input.ConfirmPassword" class="form-label fw-bold">Confirm
-                        Password</label>
+                    <label asp-for="Input.ConfirmPassword" class="form-label fw-bold">Nhập lại mật khẩu </label>
                     <div class="mb-3">
                         <input asp-for="Input.ConfirmPassword" class="form-control form-control-xs" aria-required="true"
                             placeholder="***********" />
                         <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                     </div>
-                    <button id="registerSubmit" type="submit" class="w-100 btn btn-md btn-dark fw-bold">REGISTER
-                        NOW</button>
+                    <button id="registerSubmit" type="submit" class="w-100 btn btn-md btn-dark fw-bold">ĐĂNG KÍ NGAY</button>
                     @* <div class="d-flex justify-content-between">
                         <div class="checkbox mb-3">
                             <label asp-for="Input.RememberMe" class="form-label">
