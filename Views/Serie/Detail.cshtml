@@ -1,7 +1,17 @@
+@using Microsoft.AspNetCore.Identity
+@using Netflex.Entities
+@using System.Security.Claims
+
+@inject SignInManager<User> SignInManager
+
 @model DetailSerieViewModel
 @{
     ViewData["Title"] = Model.Title;
     Layout = "_Layout";
+    var userLoginProvider = User.FindFirstValue(ClaimTypes.AuthenticationMethod);
+    bool isLoggedIn = !string.IsNullOrEmpty(userLoginProvider);
+    string loginProvider = isLoggedIn ? userLoginProvider ?? "Unknown" : "Not logged in";
+    bool isFacebookLogin = isLoggedIn && userLoginProvider == "Facebook";
 }
 <div class="container">
     <nav aria-label="breadcrumb">
@@ -112,10 +122,50 @@
             </div>
         </div>
     </div>
-    <div class="comment-section mt-3">
-        <div class="fb-comments" data-href="@ViewData["Domain"]/Serie/Details/@Model.Id" data-width="100%"
-            data-numposts="5"></div>
+
+    @if (isFacebookLogin)
+    {
+        <div class="comment-section mt-3">
+            <div class="fb-comments" data-href="@ViewData["Domain"]/Film/Details/@Model.Id" data-width="100%"
+                data-numposts="5"></div>
+        </div>
+    }
+    else
+    {
+        @if (isLoggedIn)
+        {
+            <p style="display: none;">Login Provider: @loginProvider</p>
+            <div class="comment-section mt-3" onclick="showLoginPopup()">
+                <div id="fbunlog" class="fb-comments" data-href="@ViewData["Domain"]/Film/Details/@Model.Id" data-width="100%"
+                    data-numposts="5" style="pointer-events: none;"></div>
+            </div>
+        }
+        else
+        {
+            <p style="display: none;">Login Provider: @loginProvider</p>
+            <div class="comment-section mt-3" onclick="showLoginPopup()">
+                <div id="fbunlog" class="fb-comments" data-href="@ViewData["Domain"]/Film/Details/@Model.Id" data-width="100%"
+                    data-numposts="5" style="pointer-events: none;"></div>
+            </div>
+        }
+    }
+
+    <div id="loginPopup" class="login-popup">
+        <div class="popup-content">
+            <div class="modal-header pt-2" onclick="closePopup()">
+                <button class="btn-transparent p-0 fw-bold fs-3 close close-btn" type="button" data-bs-dismiss="modal"
+                    aria-label="Close">
+                    <span aria-hidden="true" class="text-white-50">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Để có thể bình luận, bạn cần đăng nhập bằng tài khoản Facebook.</p>
+                <a href="https://www.facebook.com/v14.0/dialog/oauth?client_id=652761647319873&scope=email&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fsignin-facebook&code_challenge=ZqYvdQTL-5EWO4lVtOBqtUzd5Qcw-1otqhnYr-WJCho&code_challenge_method=S256&state=CfDJ8FU5GHcfszFJvj2kWI-SBml5UzZiGeec0NQtDaXaigUPlNu9E7G3BWTdneuHqQ5Pv-9Toc6E3mXpm-LsFrZ52Oue-vWkSitFwt2Yo73a5oL9E9O-asESC-R4zYBoP9iy6YvPOwQGp0Z8ASgy6WMM4j9oyMg0Kx1Rq4WgE8jTSztF2HT8U--uyJ0vR8D8m9oB-imz6x1KMP9eok5_ID-UbKXziQ4a7HgshJIDzAIZnXUMdwRuWA2YlAc2YSyd-y-_E_2kREwMG9CtRoL8n1iQfCejIdfNvubkGLCWI8FXsPD5mfs6Fa8Z6tHxl2xgR9J-YCHCBGHRSJdcPQPs5Vq7JD4x2O-MnsGBltiakUwpM9-o"
+                    class="btn-login"><i class="fa-brands fa-facebook mx-2"></i><span>Đăng nhập bằng Facebook</span></a>
+            </div>
+        </div>
     </div>
+
     <div class="movie-card mt-2">
         <p class="text-base text-white">Serie liên quan</p>
         <div class="row">
@@ -184,5 +234,25 @@
             }
         }
 
+    </script>
+
+    <script>
+        function showLoginPopup() {
+            var popup = document.getElementById("loginPopup");
+            popup.style.display = "block";
+            setTimeout(function () {
+                popup.classList.add("fade-in");
+            }, 10);
+        }
+
+        function closePopup() {
+            var popup = document.getElementById("loginPopup");
+            popup.classList.remove("fade-in");
+            popup.classList.add("fade-out");
+            setTimeout(function () {
+                popup.style.display = "none";
+                popup.classList.remove("fade-out");
+            }, 300);
+        }
     </script>
 }
