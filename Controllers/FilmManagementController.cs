@@ -259,7 +259,7 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
         ViewBag.Genres = await _unitOfWork.Repository<Genre>().GetAllAsync();
         ViewBag.Countries = await _unitOfWork.Repository<Country>().GetAllAsync();
         ViewBag.AgeCategories = await _unitOfWork.Repository<AgeCategory>().GetAllAsync();
-        return View("~/Views/Dashboard/film/Create.cshtml");
+        return View("~/Views/Dashboard/Film/Create.cshtml");
     }
 
     [HttpPost]
@@ -272,7 +272,7 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
             ViewBag.Genres = await _unitOfWork.Repository<Genre>().GetAllAsync();
             ViewBag.Countries = await _unitOfWork.Repository<Country>().GetAllAsync();
             ViewBag.AgeCategories = await _unitOfWork.Repository<AgeCategory>().GetAllAsync();
-            return View(film);
+            return View("~/Views/Dashboard/Film/Create.cshtml",film);
         }
 
         var posterUri = film.Poster != null ? await _storage.UploadFileAsync("poster", film.Poster) : null;
