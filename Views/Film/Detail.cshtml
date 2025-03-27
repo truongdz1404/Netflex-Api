@@ -242,24 +242,40 @@
             }
         }
     </script>
-
     <script>
-        function showLoginPopup() {
-            var popup = document.getElementById("loginPopup");
-            popup.style.display = "block";
-            setTimeout(function () {
-                popup.classList.add("fade-in");
-            }, 10);
-        }
+        (function () {
+            $('body').append(`
+                <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+                <div class="modal-dialog text-white" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header pt-2">
+                            <h5 class="modal-title" id="loginModalLabel">Yêu cầu đăng nhập</h5>
+                            <button class="btn-transparent p-0 fw-bold fs-3 close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true" class="text-white-50">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Hãy đăng nhập bằng Facebook để bình luận.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="button" class="btn btn-primary" id="login-facebook-btn"><i class="fa-brands fa-facebook mx-2"></i>Đăng nhập với Facebook</button>
+                        </div>
+                    </div>
+                </div>
+                </div>`);
 
-        function closePopup() {
-            var popup = document.getElementById("loginPopup");
-            popup.classList.remove("fade-in");
-            popup.classList.add("fade-out");
-            setTimeout(function () {
-                popup.style.display = "none";
-                popup.classList.remove("fade-out");
-            }, 300);
-        }
+            window.showLoginPopup = function () {
+                $('#loginModal').modal('show');
+            };
+
+            $(document).on('click', '#login-facebook-btn', function () {
+                window.location.href = '/Identity/Account/Login';
+            });
+
+            $(".comment-section").on('click', function () {
+                showLoginPopup();
+            });
+        }());
     </script>
 }
