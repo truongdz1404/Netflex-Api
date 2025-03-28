@@ -269,7 +269,7 @@ public class FilmManagementController(IStorageService storage, IUnitOfWork unitO
         ViewBag.Genres = await _unitOfWork.Repository<Genre>().GetAllAsync();
         ViewBag.Countries = await _unitOfWork.Repository<Country>().GetAllAsync();
         ViewBag.AgeCategories = await _unitOfWork.Repository<AgeCategory>().GetAllAsync();
-        return View("~/Views/Dashboard/film/Create.cshtml");
+        return View("~/Views/Dashboard/Film/Create.cshtml");
     }
 
     [HttpPost]
