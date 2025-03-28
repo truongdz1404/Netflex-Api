@@ -1,8 +1,16 @@
 ﻿@page
 @model ConfirmEmailModel
 @{
-    ViewData["Title"] = "Confirm email";
+    ViewData["Title"] = "Xác nhận Email";
 }
 
 <h1>@ViewData["Title"]</h1>
 <partial name="_StatusMessage" model="Model.StatusMessage" />
+
+<p>Bạn sẽ được chuyển hướng đến trang đăng nhập sau 5 giây...</p>
+
+<script>
+    setTimeout(function () {
+        window.location.href = "/Identity/Account/Login";
+    }, 5000);
+</script>

@@ -79,51 +79,56 @@ namespace Netflex.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
-
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(Input.Email);
-                if (user != null)
+
+                if (user == null)
                 {
-                    var result = await _signInManager.PasswordSignInAsync(user, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-
-                    if (result.Succeeded)
-                    {
-                        _logger.LogInformation("User logged in.");
-
-                        var roles = await _userManager.GetRolesAsync(user);
-
-                        if (roles.Contains("Admin"))
-                        {
-                            return LocalRedirect("~/Admin");
-                        }
-                        foreach (var role in roles)
-                        {
-                            Console.WriteLine($"User Role: {role}");
-                        }
-
-                        return LocalRedirect(returnUrl);
-                    }
-                    if (result.RequiresTwoFactor)
-                    {
-                        return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
-                    }
-                    if (result.IsLockedOut)
-                    {
-                        _logger.LogWarning("User account locked out.");
-                        ModelState.AddModelError(string.Empty, "Tài khoản đã bị vô hiệu hoá.");
-                        // return RedirectToPage("./Lockout");
-                        return Page();
-                    }
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return Page();
                 }
 
-                ModelState.AddModelError(string.Empty, "Sai tên đăng nhập hoặc mật khẩu.");
+                if (!user.EmailConfirmed)
+                {
+                    ModelState.AddModelError(string.Empty, "Bạn cần xác nhận email trước khi đăng nhập.");
+                    return Page();
+                }
+
+                var result = await _signInManager.PasswordSignInAsync(user, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation("User logged in.");
+                    var roles = await _userManager.GetRolesAsync(user);
+
+                    if (roles.Contains("Admin"))
+                    {
+                        return LocalRedirect("~/Admin");
+                    }
+
+                    return LocalRedirect(returnUrl);
+                }
+
+                if (result.RequiresTwoFactor)
+                {
+                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, Input.RememberMe });
+                }
+
+                if (result.IsLockedOut)
+                {
+                    _logger.LogWarning("User account locked out.");
+                    return RedirectToPage("./Lockout");
+                }
+
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             }
 
             return Page();
         }
+
 
 
         public async Task<IActionResult> OnPostExternalLogin(string provider)
