@@ -90,7 +90,7 @@ namespace Netflex.Controllers
 
             var pagedModels = models.ToPagedList(pageNumber, PAGE_SIZE);
 
-            return View("~/Views/Dashboard/User/Index.cshtml",pagedModels);
+            return View("~/Views/Dashboard/User/Index.cshtml", pagedModels);
         }
 
         public async Task<IActionResult> ExportToExcel()
@@ -168,7 +168,7 @@ namespace Netflex.Controllers
                 LockoutEnabled = user.LockoutEnabled
             };
 
-            return View("~/Views/Dashboard/User/Details.cshtml",model);
+            return View("~/Views/Dashboard/User/Details.cshtml", model);
         }
 
         // GET: UserController/Create
@@ -180,7 +180,7 @@ namespace Netflex.Controllers
             {
                 AvailableRoles = roles.Select(r => r.Name ?? string.Empty).ToList()
             };
-            return View("~/Views/Dashboard/User/Create.cshtml",model);
+            return View("~/Views/Dashboard/User/Create.cshtml", model);
         }
 
         // POST: UserController/Create
@@ -252,7 +252,7 @@ namespace Netflex.Controllers
                 SelectedRoles = currentRoles.ToList()
             };
             ViewBag.SelectedRoles = model.SelectedRoles;
-            return View("~/Views/Dashboard/User/Edit.cshtml",model);
+            return View("~/Views/Dashboard/User/Edit.cshtml", model);
         }
 
         // POST: UserController/Edit/5
@@ -311,7 +311,7 @@ namespace Netflex.Controllers
 
             var roles = await _roleManager.Roles.ToListAsync();
             model.AvailableRoles = roles.Select(r => r.Name ?? string.Empty).ToList();
-            return View("~/Views/Dashboard/User/Edit.cshtml",model);
+            return View("~/Views/Dashboard/User/Edit.cshtml", model);
         }
 
         [Route("/dashboard/user/lock/{id}")]
@@ -323,10 +323,11 @@ namespace Netflex.Controllers
                 return NotFound();
             }
 
-            // var result = await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddDays(1));
+            await _userManager.SetLockoutEnabledAsync(user, true);
+            var result = await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddYears(99));
             // if (result.Succeeded)
             // { 
-            await _userManager.SetLockoutEnabledAsync(user, true);
+            await _userManager.UpdateAsync(user);
             return RedirectToAction(nameof(Index));
             // }
 
@@ -342,15 +343,14 @@ namespace Netflex.Controllers
                 return NotFound();
             }
 
-            // var result = await _userManager.SetLockoutEndDateAsync(user, null);
-            // if (result.Succeeded)
-            // {
+            await _userManager.SetLockoutEndDateAsync(user, null);
             await _userManager.SetLockoutEnabledAsync(user, false);
 
-            return RedirectToAction(nameof(Index));
-            // }
+            await _userManager.UpdateAsync(user);
 
+            return RedirectToAction(nameof(Index));
         }
+
 
     }
 }
