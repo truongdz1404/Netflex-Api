@@ -125,7 +125,7 @@ public class HomeController : BaseController
         .ToList();
         ViewBag.SeriesFilms = models;
     }
-
+    [HttpGet("/Privacy")]
     public IActionResult Privacy()
     {
         return View();
