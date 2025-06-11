@@ -6,7 +6,11 @@ using Netflex.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddDependencyInjection(builder.Configuration);
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
@@ -16,27 +20,26 @@ builder.Services.AddSingleton<ConnectionManager>();
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+else
+{
+    app.UseExceptionHandler("/error");
     app.UseHsts();
 }
 
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.MapGet("/", () => "SpaceY API is running!");
 
 app.UseRouting();
-
 app.UseAuthentication();
-
 app.UseAuthorization();
 
+app.MapControllers(); 
 app.MapHub<NotificationHub>("/notification-hub");
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.MapRazorPages();
 app.Run();

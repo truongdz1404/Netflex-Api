@@ -1,36 +1,35 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore;
 using Netflex.Entities;
 using Netflex.Models.Genre;
-using System.Drawing.Printing;
+using System.Threading.Tasks;
 using X.PagedList.Extensions;
 
 namespace Netflex.Controllers
 {
-    public class GenreController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class GenreController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        public const int PAGE_SIZE = 10;
+        private const int PAGE_SIZE = 10;
+
         public GenreController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-        [Route("/dashboard/genre")]
-        public IActionResult Index(string? SearchString, string? SortBy = "name", int PageNumber = 1)
+
+        [HttpGet]
+        public IActionResult GetGenres(string? searchString, string? sortBy = "name", int pageNumber = 1)
         {
             var repository = _unitOfWork.Repository<Genre>();
             var query = repository.Entities;
 
-            ViewData["CurrentFilter"] = SearchString;
-            ViewData["SortBy"] = SortBy;
-
-            if (!string.IsNullOrEmpty(SearchString))
+            if (!string.IsNullOrEmpty(searchString))
             {
-                query = query.Where(x => x.Name.ToLower().Contains(SearchString.ToLower()));
+                query = query.Where(x => x.Name.ToLower().Contains(searchString.ToLower()));
             }
 
-            query = SortBy switch
+            query = sortBy switch
             {
                 "name" => query.OrderBy(x => x.Name),
                 "name_desc" => query.OrderByDescending(x => x.Name),
@@ -41,12 +40,18 @@ namespace Netflex.Controllers
             {
                 Id = x.Id,
                 Name = x.Name
-            }).ToPagedList(PageNumber, PAGE_SIZE);
+            }).ToPagedList(pageNumber, PAGE_SIZE);
 
-            return View("~/Views/Dashboard/Genre/Index.cshtml",result);
+            return Ok(new
+            {
+                Genres = result,
+                CurrentFilter = searchString,
+                SortBy = sortBy
+            });
         }
-        // 
-        public IActionResult GenreDropdown()
+
+        [HttpGet("dropdown")]
+        public IActionResult GetGenreDropdown()
         {
             try
             {
@@ -55,68 +60,77 @@ namespace Netflex.Controllers
                     .OrderBy(g => g.Name)
                     .Select(g => new GenreViewModel { Id = g.Id, Name = g.Name })
                     .ToList();
-                ViewData["Genres"] = genres;
-                return PartialView("_GenresPartial", genres);
+
+                return Ok(genres);
             }
             catch (Exception ex)
             {
-                return Content("Server Error: " + ex.Message);
+                return StatusCode(500, $"Server Error: {ex.Message}");
             }
         }
 
-        [Route("/dashboard/genre/create")]
-        public IActionResult Create() => View("~/Views/Dashboard/Genre/Create.cshtml");
-
         [HttpPost]
-        [Route("/dashboard/genre/create")]
-        public async Task<IActionResult> Create(GenreEditModel model)
+        public async Task<IActionResult> Create([FromBody] GenreEditModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            Genre entity = new Genre() { Id = Guid.NewGuid(), Name = model.Name };
+            var entity = new Genre { Id = Guid.NewGuid(), Name = model.Name };
             await _unitOfWork.Repository<Genre>().AddAsync(entity);
             await _unitOfWork.Save(CancellationToken.None);
-            return RedirectToAction(nameof(Index));
+
+            return CreatedAtAction(nameof(GetGenre), new { id = entity.Id }, entity);
         }
 
-        [Route("/dashboard/genre/edit/{id}")]
-        public async Task<IActionResult> Edit(Guid id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetGenre(Guid id)
         {
-            var category = await _unitOfWork.Repository<Genre>().GetByIdAsync(id);
-            if (category == null) return NotFound();
-            GenreEditModel model = new GenreEditModel() { Name = category.Name };
+            var genre = await _unitOfWork.Repository<Genre>().GetByIdAsync(id);
+            if (genre == null)
+            {
+                return NotFound("Genre not found");
+            }
 
-            return View("~/Views/Dashboard/Genre/Edit.cshtml",model);
+            var model = new GenreViewModel { Id = genre.Id, Name = genre.Name };
+            return Ok(model);
         }
 
-        [HttpPost]
-        [Route("/dashboard/genre/edit/{id}")]
-        public async Task<IActionResult> Edit(Guid id, GenreEditModel model)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] GenreEditModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var entity = await _unitOfWork.Repository<Genre>().GetByIdAsync(id);
-            if (entity == null) return NotFound();
+            if (entity == null)
+            {
+                return NotFound("Genre not found");
+            }
+
             entity.Name = model.Name;
             await _unitOfWork.Repository<Genre>().UpdateAsync(entity);
             await _unitOfWork.Save(CancellationToken.None);
-            return RedirectToAction(nameof(Index));
+
+            return Ok(entity);
         }
 
-
-        [HttpDelete]
-        [Route("/dashboard/genre/delete/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var entity = await _unitOfWork.Repository<Genre>().GetByIdAsync(id);
-            if (entity != null)
+            if (entity == null)
             {
-                await _unitOfWork.Repository<Genre>().DeleteAsync(entity);
-                await _unitOfWork.Save(CancellationToken.None);
+                return NotFound("Genre not found");
             }
-            return RedirectToAction(nameof(Index));
+
+            await _unitOfWork.Repository<Genre>().DeleteAsync(entity);
+            await _unitOfWork.Save(CancellationToken.None);
+
+            return NoContent();
         }
-
-
-       
     }
 }

@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -9,11 +11,12 @@ using X.PagedList.Extensions;
 
 namespace Netflex.Controllers
 {
+    [ApiController]
+    [Route("api/notifications")]
     public class NotificationController : BaseController
     {
         private readonly ApplicationDbContext _context;
         private readonly NotificationQueueService _notificationService;
-
         private const int PAGE_SIZE = 6;
 
         public NotificationController(IUnitOfWork unitOfWork, ApplicationDbContext context,
@@ -29,81 +32,125 @@ namespace Netflex.Controllers
             public string Link { get; set; } = string.Empty;
         }
 
-
-        [HttpGet("/notification/unread")]
-        public IActionResult CountUnreadNotification()
+        [HttpGet("unread-count")]
+        [Authorize]
+        public IActionResult GetUnreadNotificationCount()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { error = "User not authenticated" });
+            }
+
             var count = _context.UserNotifications
-                .Where(un => un.UserId == userId && un.HaveRead == false)
+                .Where(un => un.UserId == userId && !un.HaveRead)
                 .Count();
-            return Json(count);
+
+            return Ok(new { unreadCount = count });
         }
 
-        public IActionResult IndexAsync(int? page)
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetNotifications([FromQuery] int page = 1)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var notificationId = _context.UserNotifications
-                .Where(un => un.UserId == userId)
-                .Select(un => new { un.NotificationId, un.HaveRead }).Distinct().ToList();
-
-            var notifications = _context.Notifications.Where(n => notificationId.Select(x => x.NotificationId).Contains(n.Id))
-                .OrderByDescending(x => x.CreatedAt).AsQueryable();
-
-            int pageNumber = page ?? 1;
-
-            var models = new List<NotificationViewModel>();
-            foreach (var b in notifications)
+            if (string.IsNullOrEmpty(userId))
             {
-                var content = JsonSerializer.Deserialize<JsonContent>(b.Content);
-                if (content == null) continue;
-                models.Add(new NotificationViewModel
-                {
-                    Id = b.Id,
-                    Message = content.Message,
-                    Link = content.Link,
-                    HaveRead = notificationId.FirstOrDefault(x => x.NotificationId == b.Id)?.HaveRead ?? false,
-                    CreatedAt = b.CreatedAt
-                });
+                return Unauthorized(new { error = "User not authenticated" });
             }
+
+            var notificationIds = _context.UserNotifications
+                .Where(un => un.UserId == userId)
+                .Select(un => new { un.NotificationId, un.HaveRead })
+                .Distinct()
+                .ToList();
+
+            var notifications = _context.Notifications
+                .Where(n => notificationIds.Select(x => x.NotificationId).Contains(n.Id))
+                .OrderByDescending(x => x.CreatedAt);
+
+            var models = notifications.AsEnumerable().Select(b =>
+ {
+     var content = JsonSerializer.Deserialize<JsonContent>(b.Content);
+     if (content == null) return null;
+     return new NotificationViewModel
+     {
+         Id = b.Id,
+         Message = content.Message,
+         Link = content.Link,
+         HaveRead = notificationIds.FirstOrDefault(x => x.NotificationId == b.Id)?.HaveRead ?? false,
+         CreatedAt = b.CreatedAt
+     };
+ }).Where(m => m != null).ToList();
+
+            // Mark notifications as read
             foreach (var model in models)
             {
-                var userNotification = _context.UserNotifications.FirstOrDefault(un => un.UserId == userId && un.NotificationId == model.Id);
-                if (userNotification == null) continue;
-                userNotification.HaveRead = true;
+                var userNotification = _context.UserNotifications
+                    .FirstOrDefault(un => un.UserId == userId && un.NotificationId == model.Id);
+                if (userNotification != null)
+                {
+                    userNotification.HaveRead = true;
+                }
             }
-            _context.SaveChanges();
-            return View(models.ToPagedList(pageNumber, PAGE_SIZE));
+
+            await _context.SaveChangesAsync();
+
+            var pagedList = models.ToPagedList(page, PAGE_SIZE);
+
+            return Ok(new
+            {
+                data = pagedList,
+                pagination = new
+                {
+                    currentPage = pagedList.PageNumber,
+                    totalPages = pagedList.PageCount,
+                    pageSize = PAGE_SIZE,
+                    totalItems = pagedList.TotalItemCount
+                }
+            });
         }
 
-        [HttpPost("/notification/test")]
-        public async Task<IActionResult> TestNotification()
+        [HttpPost("test")]
+        [Authorize]
+        public async Task<IActionResult> CreateTestNotification()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId != null)
+            if (string.IsNullOrEmpty(userId))
             {
-                var sendTo = new string[] { userId };
-                var notification = new Notification
-                {
-                    Id = Guid.NewGuid(),
-                    Content = JsonSerializer.Serialize(new JsonContent { Message = "You have a new notification", Link = "/notification" }),
-                    Status = "System",
-                    CreatedAt = DateTime.UtcNow,
-                };
-                _context.Notifications.Add(notification);
-                _context.SaveChanges();
-
-
-                foreach (var id in sendTo)
-                {
-                    _context.UserNotifications.Add(new UserNotification { UserId = id, NotificationId = notification.Id, HaveRead = false });
-                }
-
-                _context.SaveChanges();
-                await _notificationService.PushAsync(new Message(sendTo, "You have a new notification"));
-
+                return Unauthorized(new { error = "User not authenticated" });
             }
-            return Ok();
+
+            var notification = new Notification
+            {
+                Id = Guid.NewGuid(),
+                Content = JsonSerializer.Serialize(new JsonContent
+                {
+                    Message = "You have a new notification",
+                    Link = "/notification"
+                }),
+                Status = "System",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Notifications.Add(notification);
+            _context.UserNotifications.Add(new UserNotification
+            {
+                UserId = userId,
+                NotificationId = notification.Id,
+                HaveRead = false
+            });
+
+            await _context.SaveChangesAsync();
+            await _notificationService.PushAsync(new Message(new[] { userId }, "You have a new notification"));
+
+            return Created($"/api/notifications/{notification.Id}", new
+            {
+                notification.Id,
+                notification.Content,
+                notification.Status,
+                notification.CreatedAt
+            });
         }
     }
 }

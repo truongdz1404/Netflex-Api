@@ -6,27 +6,40 @@ using Netflex.Models.Dashboard;
 
 namespace Netflex.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize(Roles = "admin")]
-    public class DashboardController : Controller
+    public class DashboardController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ApplicationDbContext _context;
         private readonly ConnectionManager _connection;
-        public DashboardController(IUnitOfWork unitOfWork, ConnectionManager connection,
-            ApplicationDbContext context)
+
+        public DashboardController(IUnitOfWork unitOfWork, ConnectionManager connection, ApplicationDbContext context)
         {
             _unitOfWork = unitOfWork;
             _connection = connection;
             _context = context;
         }
-        public IActionResult Index()
+
+        [HttpGet]
+        public IActionResult GetDashboardStats()
         {
-            var todayFilms = _unitOfWork.Repository<Film>().Entities.Where(x => x.CreatedAt.Date == DateTime.UtcNow.Date).Count();
-            var todaySeries = _unitOfWork.Repository<Serie>().Entities.Where(x => x.CreatedAt.Date == DateTime.UtcNow.Date).Count();
-            var todayBlogs = _unitOfWork.Repository<Blog>().Entities.Where(x => x.CreatedAt.Date == DateTime.UtcNow.Date).Count();
+            var todayFilms = _unitOfWork.Repository<Film>().Entities
+                .Where(x => x.CreatedAt.Date == DateTime.UtcNow.Date)
+                .Count();
+
+            var todaySeries = _unitOfWork.Repository<Serie>().Entities
+                .Where(x => x.CreatedAt.Date == DateTime.UtcNow.Date)
+                .Count();
+
+            var todayBlogs = _unitOfWork.Repository<Blog>().Entities
+                .Where(x => x.CreatedAt.Date == DateTime.UtcNow.Date)
+                .Count();
+
             var onlineUsers = _connection.OnlineUsers.Count();
 
-            ViewBag.MonthlyFilmsUploads = _unitOfWork.Repository<Film>().Entities
+            var monthlyFilmsUploads = _unitOfWork.Repository<Film>().Entities
                 .Where(x => x.CreatedAt >= DateTime.UtcNow.AddMonths(-11).Date)
                 .GroupBy(x => new { x.CreatedAt.Year, x.CreatedAt.Month })
                 .Select(g => new
@@ -37,7 +50,7 @@ namespace Netflex.Controllers
                 .OrderBy(x => x.Month)
                 .ToList();
 
-            ViewBag.MonthlySeriesUploads = _unitOfWork.Repository<Serie>().Entities
+            var monthlySeriesUploads = _unitOfWork.Repository<Serie>().Entities
                 .Where(x => x.CreatedAt >= DateTime.UtcNow.AddMonths(-11).Date)
                 .GroupBy(x => new { x.CreatedAt.Year, x.CreatedAt.Month })
                 .Select(g => new
@@ -48,10 +61,23 @@ namespace Netflex.Controllers
                 .OrderBy(x => x.Month)
                 .ToList();
 
-            return View(new DashboardViewModel { TodayFilms = todayFilms, TodaySeries = todaySeries, TodayBlogs = todayBlogs, OnlineUsers = onlineUsers });
+            var dashboardStats = new DashboardViewModel
+            {
+                TodayFilms = todayFilms,
+                TodaySeries = todaySeries,
+                TodayBlogs = todayBlogs,
+                OnlineUsers = onlineUsers
+            };
+
+            return Ok(new
+            {
+                dashboardStats,
+                monthlyFilmsUploads,
+                monthlySeriesUploads
+            });
         }
 
-        [HttpGet("/dashboard/media")]
+        [HttpGet("media")]
         public IActionResult GetMediaStatics()
         {
             var now = DateTime.UtcNow;
@@ -89,8 +115,7 @@ namespace Netflex.Controllers
             return Ok(new { labels, filmData, serieData });
         }
 
-
-        [HttpGet("/dashboard/blog-statics")]
+        [HttpGet("blog-statics")]
         public IActionResult GetBlogStatics()
         {
             var now = DateTime.UtcNow;
@@ -111,9 +136,9 @@ namespace Netflex.Controllers
                 var label = month.ToString("MM/yyyy");
                 labels.Add(label);
 
-                var filmCount = blogs.FirstOrDefault(f => f.Month == month.Month && f.Year == month.Year)?.Count ?? 0;
+                var blogCount = blogs.FirstOrDefault(f => f.Month == month.Month && f.Year == month.Year)?.Count ?? 0;
 
-                data.Add(filmCount);
+                data.Add(blogCount);
             }
 
             return Ok(new { labels, data });

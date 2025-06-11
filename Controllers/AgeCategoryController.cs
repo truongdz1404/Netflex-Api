@@ -1,121 +1,138 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Netflex.Models.AgeCategory;
-using System.Drawing.Printing;
-using X.PagedList.Extensions;
 
-namespace Netflex.Controllers
+namespace Netflex.ApiControllers
 {
-    public class AgeCategoryController : Controller
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AgeCategoryController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        public const int PAGE_SIZE = 3;
+        private const int PAGE_SIZE = 3;
+
         public AgeCategoryController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        [Route("/dashboard/agecategory")]
-        public IActionResult Index(string? SearchString, string? SortBy = "name", int PageNumber = 1)
+        [HttpGet]
+        public async Task<IActionResult> GetAll(string? searchString = null, string? sortBy = "name", int pageNumber = 1)
         {
             var repository = _unitOfWork.Repository<AgeCategory>();
             var query = repository.Entities;
 
-            ViewData["CurrentFilter"] = SearchString;
-            ViewData["SortBy"] = SortBy;
-
-            if (!string.IsNullOrEmpty(SearchString))
+            if (!string.IsNullOrEmpty(searchString))
             {
-                query = query.Where(x => x.Name.ToLower().Contains(SearchString.ToLower()));
+                query = query.Where(x => x.Name.ToLower().Contains(searchString.ToLower()));
             }
 
-            query = SortBy switch
+            query = sortBy switch
             {
                 "name" => query.OrderBy(x => x.Name),
                 "name_desc" => query.OrderByDescending(x => x.Name),
                 _ => query.OrderBy(x => x.Name)
             };
 
-            var result = query.Select(x => new AgeCategoryViewModel
+            var totalItems = await query.CountAsync();
+            var items = await query
+                .Skip((pageNumber - 1) * PAGE_SIZE)
+                .Take(PAGE_SIZE)
+                .Select(x => new AgeCategoryViewModel
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToListAsync();
+
+            return Ok(new
             {
-                Id = x.Id,
-                Name = x.Name
-            }).ToPagedList(PageNumber, PAGE_SIZE);
-
-            return View("~/Views/Dashboard/AgeCategory/Index.cshtml", result);
+                TotalItems = totalItems,
+                PageNumber = pageNumber,
+                PageSize = PAGE_SIZE,
+                Items = items
+            });
         }
 
-
-        [Route("/dashboard/agecategory/create")]
-        public IActionResult Create() => View("~/Views/Dashboard/AgeCategory/Create.cshtml");
-
-        [HttpPost]
-        [Route("/dashboard/agecategory/create")]
-        public async Task<IActionResult> Create(AgeCategoryEditModel model)
-        {
-            if (!ModelState.IsValid) return View(model);
-
-            AgeCategory entity = new AgeCategory() { Id = Guid.NewGuid(), Name = model.Name };
-            await _unitOfWork.Repository<AgeCategory>().AddAsync(entity);
-            await _unitOfWork.Save(CancellationToken.None);
-            return RedirectToAction(nameof(Index));
-        }
-
-        [Route("/dashboard/agecategory/edit/{id}")]
-        public async Task<IActionResult> Edit(Guid id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
         {
             var category = await _unitOfWork.Repository<AgeCategory>().GetByIdAsync(id);
             if (category == null) return NotFound();
-            AgeCategoryEditModel model = new AgeCategoryEditModel() { Name = category.Name };
 
-            return View("~/Views/Dashboard/AgeCategory/Edit.cshtml", model);
+            var model = new AgeCategoryViewModel
+            {
+                Id = category.Id,
+                Name = category.Name
+            };
+
+            return Ok(model);
         }
 
         [HttpPost]
-        [Route("/dashboard/agecategory/edit/{id}")]
-        public async Task<IActionResult> Edit(Guid id, AgeCategoryEditModel model)
+        public async Task<IActionResult> Create([FromBody] AgeCategoryEditModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var entity = new AgeCategory
+            {
+                Id = Guid.NewGuid(),
+                Name = model.Name
+            };
+
+            await _unitOfWork.Repository<AgeCategory>().AddAsync(entity);
+            await _unitOfWork.Save(CancellationToken.None);
+
+            return CreatedAtAction(nameof(GetById), new { id = entity.Id }, entity);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Edit(Guid id, [FromBody] AgeCategoryEditModel model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             var entity = await _unitOfWork.Repository<AgeCategory>().GetByIdAsync(id);
             if (entity == null) return NotFound();
 
             entity.Name = model.Name;
             await _unitOfWork.Repository<AgeCategory>().UpdateAsync(entity);
             await _unitOfWork.Save(CancellationToken.None);
-            return RedirectToAction(nameof(Index));
+
+            return NoContent();
         }
 
-        [HttpDelete]
-        [Route("/dashboard/agecategory/delete/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var entity = await _unitOfWork.Repository<AgeCategory>().GetByIdAsync(id);
+            if (entity == null) return NotFound();
 
-            if (entity != null)
+            var filmRepo = _unitOfWork.Repository<Film>();
+            var serieRepo = _unitOfWork.Repository<Serie>();
+
+            var filmsWithCategory = (await filmRepo.GetAllAsync())
+                .Where(f => f.AgeCategoryId == id)
+                .ToList();
+
+            foreach (var film in filmsWithCategory)
             {
-                var allFilms = await _unitOfWork.Repository<Film>().GetAllAsync();
-                var filmsWithCategory = allFilms.Where(f => f.AgeCategoryId == id).ToList();
-
-                foreach (var film in filmsWithCategory)
-                {
-                    film.AgeCategoryId = null;
-                    await _unitOfWork.Repository<Film>().UpdateAsync(film);
-                }
-
-                var allSeries = await _unitOfWork.Repository<Serie>().GetAllAsync();
-                var seriesWithCategory = allSeries.Where(s => s.AgeCategoryId == id).ToList();
-                
-                foreach (var serie in seriesWithCategory)
-                {
-                    serie.AgeCategoryId = null;
-                    await _unitOfWork.Repository<Serie>().UpdateAsync(serie);
-                }
-
-                await _unitOfWork.Repository<AgeCategory>().DeleteAsync(entity);
-                await _unitOfWork.Save(CancellationToken.None);
+                film.AgeCategoryId = null;
+                await filmRepo.UpdateAsync(film);
             }
 
-            return RedirectToAction(nameof(Index));
+            var seriesWithCategory = (await serieRepo.GetAllAsync())
+                .Where(s => s.AgeCategoryId == id)
+                .ToList();
+
+            foreach (var serie in seriesWithCategory)
+            {
+                serie.AgeCategoryId = null;
+                await serieRepo.UpdateAsync(serie);
+            }
+
+            await _unitOfWork.Repository<AgeCategory>().DeleteAsync(entity);
+            await _unitOfWork.Save(CancellationToken.None);
+
+            return NoContent();
         }
     }
 }

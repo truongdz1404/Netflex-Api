@@ -1,31 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-
+using Microsoft.EntityFrameworkCore;
 using Netflex.Database;
 using Netflex.Models.Blog;
 
-using X.PagedList.Extensions;
-
-
-namespace Netflex.Controllers
+namespace Netflex.ApiControllers
 {
-    public class BlogController : BaseController
+    [ApiController]
+    [Route("api/[controller]")]
+    public class BlogController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private const int PAGE_SIZE = 6;
 
-        public BlogController(ApplicationDbContext context, IUnitOfWork unitOfWork) : base(unitOfWork)
+        public BlogController(ApplicationDbContext context)
         {
             _context = context;
         }
-        private const int PAGE_SIZE = 6;
 
-        public IActionResult Index(int? page)
+        [HttpGet]
+        public async Task<IActionResult> GetAll(int page = 1)
         {
-            int pageNumber = page ?? 1;
-            var users = _context.Users.ToList();
-            ViewBag.Users = new SelectList(users, "Id", "UserName");
-
-            var blogs = _context.Blogs
+            var query = _context.Blogs
                 .Select(b => new BlogViewModel
                 {
                     Id = b.Id,
@@ -34,23 +29,33 @@ namespace Netflex.Controllers
                     Thumbnail = b.Thumbnail,
                     CreatedAt = b.CreatedAt,
                     CreaterId = b.CreaterId,
-                    CreatorName = _context.Users.Where(u => u.Id == b.CreaterId).Select(u => u.UserName).FirstOrDefault()
-                })
-                .OrderByDescending(b => b.CreatedAt)
-                .ToPagedList(pageNumber, PAGE_SIZE);
+                    CreatorName = _context.Users
+                        .Where(u => u.Id == b.CreaterId)
+                        .Select(u => u.UserName)
+                        .FirstOrDefault()
+                });
 
-            return View(blogs);
+            var totalItems = await query.CountAsync();
+
+            var blogs = await query
+                .OrderByDescending(b => b.CreatedAt)
+                .Skip((page - 1) * PAGE_SIZE)
+                .Take(PAGE_SIZE)
+                .ToListAsync();
+
+            return Ok(new
+            {
+                PageNumber = page,
+                PageSize = PAGE_SIZE,
+                TotalItems = totalItems,
+                Blogs = blogs
+            });
         }
 
-        public IActionResult Details(Guid? id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetDetails(Guid id)
         {
-            if (id == null)
-                return NotFound();
-
-            var users = _context.Users.ToList();
-            ViewBag.Users = new SelectList(users, "Id", "UserName");
-
-            var blog = _context.Blogs
+            var blog = await _context.Blogs
                 .Where(b => b.Id == id)
                 .Select(b => new DetailBlogViewModels
                 {
@@ -60,14 +65,27 @@ namespace Netflex.Controllers
                     Thumbnail = b.Thumbnail,
                     CreatedAt = b.CreatedAt,
                     CreaterId = b.CreaterId,
-                    CreatorName = _context.Users.Where(u => u.Id == b.CreaterId).Select(u => u.UserName).FirstOrDefault()
+                    CreatorName = _context.Users
+                        .Where(u => u.Id == b.CreaterId)
+                        .Select(u => u.UserName)
+                        .FirstOrDefault()
                 })
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             if (blog == null)
                 return NotFound();
-                
-            return View(blog);
+
+            return Ok(blog);
+        }
+
+        [HttpGet("creators")]
+        public async Task<IActionResult> GetAllCreators()
+        {
+            var creators = await _context.Users
+                .Select(u => new { u.Id, u.UserName })
+                .ToListAsync();
+
+            return Ok(creators);
         }
     }
 }

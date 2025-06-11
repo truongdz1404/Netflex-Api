@@ -5,8 +5,15 @@ using Netflex.Models.Film;
 using Netflex.Models.Serie;
 using Netflex.Models.User;
 using X.PagedList.Extensions;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
+
 namespace Netflex.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class FollowController : BaseController
     {
         private const int PAGE_SIZE = 5;
@@ -19,14 +26,15 @@ namespace Netflex.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index(int? page)
+        [HttpGet]
+        public async Task<IActionResult> GetFollowedItems(int? page)
         {
             int pageNumber = page ?? 1;
             var user = await _userManager.GetUserAsync(User);
 
             if (user == null)
             {
-                return Redirect("/Identity/Account/Login");
+                return Unauthorized(new { message = "User not authenticated" });
             }
 
             var followedFilms = await _followRepository.GetByUserIdAsync(user.Id);
@@ -57,7 +65,7 @@ namespace Netflex.Controllers
             {
                 var filmDetails = _unitOfWork.Repository<Film>().Entities
                     .Where(f => f.Id == film.FilmId)
-                    .Select(f => new DetailFilmViewModel()
+                    .Select(f => new DetailFilmViewModel
                     {
                         Id = f.Id,
                         Title = f.Title,
@@ -65,7 +73,7 @@ namespace Netflex.Controllers
                         Poster = f.Poster,
                         Path = f.Path,
                         Trailer = f.Trailer,
-                        ProductionYear = f.ProductionYear,
+                        ProductionYear = f.ProductionYear
                     }).FirstOrDefault();
 
                 if (filmDetails != null)
@@ -78,7 +86,7 @@ namespace Netflex.Controllers
             {
                 var serieDetails = _unitOfWork.Repository<Serie>().Entities
                     .Where(s => s.Id == serie.SerieId)
-                    .Select(s => new SerieViewModel()
+                    .Select(s => new SerieViewModel
                     {
                         Id = s.Id,
                         Title = s.Title,
@@ -97,25 +105,32 @@ namespace Netflex.Controllers
             var combinedFollowedItems = followedFilmViewModels
                 .Where(f => f.FollowedFilms != null)
                 .Concat(followedSeries.Where(s => s.FollowedSeries != null))
-                .ToList();
+                .ToPagedList(pageNumber, PAGE_SIZE);
 
-            return View(combinedFollowedItems.ToPagedList(pageNumber, PAGE_SIZE));
+            return Ok(new
+            {
+                items = combinedFollowedItems,
+                pageNumber,
+                pageSize = PAGE_SIZE,
+                totalItems = combinedFollowedItems.TotalItemCount,
+                totalPages = combinedFollowedItems.PageCount
+            });
         }
 
-
+        [HttpPost("film/{filmId}")]
         public async Task<IActionResult> AddFilm(Guid filmId)
         {
             var user = await _userManager.GetUserAsync(User);
 
             if (user == null)
             {
-                return Redirect("/Identity/Account/Login");
+                return Unauthorized(new { message = "User not authenticated" });
             }
 
             var filmExists = await _followRepository.GetByUserIdAndFilmIdAsync(user.Id, filmId);
             if (filmExists != null)
             {
-                return BadRequest("You are already following this film.");
+                return BadRequest(new { message = "You are already following this film." });
             }
 
             var follow = new Follow
@@ -129,22 +144,23 @@ namespace Netflex.Controllers
             await _followRepository.AddAsync(follow);
             await _followRepository.Save(CancellationToken.None);
 
-            return RedirectToAction(nameof(Index));
+            return Ok(new { message = "Film followed successfully", follow });
         }
 
+        [HttpPost("serie/{serieId}")]
         public async Task<IActionResult> AddSerie(Guid serieId)
         {
             var user = await _userManager.GetUserAsync(User);
 
             if (user == null)
             {
-                return Redirect("/Identity/Account/Login");
+                return Unauthorized(new { message = "User not authenticated" });
             }
 
-            var filmExists = await _followRepository.GetByUserIdAndFilmIdAsync(user.Id, serieId);
-            if (filmExists != null)
+            var serieExists = await _followRepository.GetByUserIdAndSerieIdAsync(user.Id, serieId);
+            if (serieExists != null)
             {
-                return BadRequest("You are already following this film.");
+                return BadRequest(new { message = "You are already following this serie." });
             }
 
             var follow = new Follow
@@ -158,30 +174,31 @@ namespace Netflex.Controllers
             await _followRepository.AddAsync(follow);
             await _followRepository.Save(CancellationToken.None);
 
-            return RedirectToAction(nameof(Index));
+            return Ok(new { message = "Serie followed successfully", follow });
         }
 
+        [HttpGet("check/{filmId}")]
         public async Task<IActionResult> CheckFollowStatus(Guid filmId)
         {
             var user = await _userManager.GetUserAsync(User);
 
             if (user == null)
             {
-                return Json(new { isFollowed = false });
+                return Ok(new { isFollowed = false });
             }
 
             var filmExists = await _followRepository.GetByUserIdAndFilmIdAsync(user.Id, filmId);
 
-            return Json(new { isFollowed = filmExists != null });
+            return Ok(new { isFollowed = filmExists != null });
         }
 
-        [HttpPost]
+        [HttpPost("toggle/film")]
         public async Task<IActionResult> ToggleFollowFilm([FromBody] Guid filmId)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return Unauthorized();
+                return Unauthorized(new { message = "User not authenticated" });
             }
 
             var existingFollow = await _followRepository.GetByUserIdAndFilmIdAsync(user.Id, filmId);
@@ -189,7 +206,7 @@ namespace Netflex.Controllers
             {
                 await _unitOfWork.Repository<Follow>().DeleteAsync(existingFollow);
                 await _unitOfWork.Save(CancellationToken.None);
-                return Json(new { isFollowed = false });
+                return Ok(new { isFollowed = false, message = "Film unfollowed successfully" });
             }
             else
             {
@@ -202,17 +219,17 @@ namespace Netflex.Controllers
                 };
                 await _followRepository.AddAsync(follow);
                 await _followRepository.Save(CancellationToken.None);
-                return Json(new { isFollowed = true });
+                return Ok(new { isFollowed = true, message = "Film followed successfully" });
             }
         }
 
-        [HttpPost]
+        [HttpPost("toggle/serie")]
         public async Task<IActionResult> ToggleFollowSerie([FromBody] Guid serieId)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return Unauthorized();
+                return Unauthorized(new { message = "User not authenticated" });
             }
 
             var existingFollow = await _followRepository.GetByUserIdAndSerieIdAsync(user.Id, serieId);
@@ -220,7 +237,7 @@ namespace Netflex.Controllers
             {
                 await _unitOfWork.Repository<Follow>().DeleteAsync(existingFollow);
                 await _unitOfWork.Save(CancellationToken.None);
-                return Json(new { isFollowed = false });
+                return Ok(new { isFollowed = false, message = "Serie unfollowed successfully" });
             }
             else
             {
@@ -233,23 +250,28 @@ namespace Netflex.Controllers
                 };
                 await _followRepository.AddAsync(follow);
                 await _followRepository.Save(CancellationToken.None);
-                return Json(new { isFollowed = true });
+                return Ok(new { isFollowed = true, message = "Serie followed successfully" });
             }
         }
 
-        [HttpDelete]
-        [Route("/follow/delete/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
-                return NotFound();
+            {
+                return NotFound(new { message = "Follow ID is required" });
+            }
+
             var follow = _unitOfWork.Repository<Follow>().Entities.FirstOrDefault(m => m.Id.Equals(id));
             if (follow == null)
-                return NotFound();
+            {
+                return NotFound(new { message = "Follow not found" });
+            }
+
             await _unitOfWork.Repository<Follow>().DeleteAsync(follow);
             await _unitOfWork.Save(CancellationToken.None);
-            return RedirectToAction("Index", "Follow");
+
+            return Ok(new { message = "Follow deleted successfully" });
         }
     }
 }
-
