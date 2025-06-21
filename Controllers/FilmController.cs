@@ -1,17 +1,19 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Netflex.Database;
+using Netflex.Models;
+using Netflex.Models.Film;
+using X.PagedList.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Netflex.Database;
-using Netflex.Models.Film;
-using Microsoft.AspNetCore.Identity;
-using X.PagedList.Extensions;
 
 namespace Netflex.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class FilmController : BaseController
     {
         private const int PAGE_SIZE = 12;
@@ -19,154 +21,198 @@ namespace Netflex.Controllers
         private readonly IFollowRepository _followRepository;
         private readonly UserManager<User> _userManager;
 
-        public FilmController(IFollowRepository followRepository, IUnitOfWork unitOfWork, UserManager<User> userManager,
-            ApplicationDbContext context) : base(unitOfWork)
+        public FilmController(IFollowRepository followRepository, IUnitOfWork unitOfWork, UserManager<User> userManager, ApplicationDbContext context)
+            : base(unitOfWork)
         {
             _followRepository = followRepository;
             _userManager = userManager;
             _context = context;
-
         }
 
-        public IActionResult Index(int? page, Guid? genreId, Guid? countryId, int? year)
+        [HttpGet]
+        public async Task<IActionResult> GetFilms(int? page, Guid? genreId, Guid? countryId, int? year)
         {
-            int pageNumber = page ?? 1;
-            var filmQuery = _unitOfWork.Repository<Film>().Entities.AsQueryable();
-
-            if (genreId.HasValue)
+            try
             {
-                var filmGenreEntities = _context.FilmGenres
-                    .Where(fg => fg.GenreId == genreId)
-                    .Select(fg => fg.FilmId);
-                filmQuery = filmQuery.Where(film => filmGenreEntities.Contains(film.Id));
-            }
+                int pageNumber = page ?? 1;
+                var filmQuery = _unitOfWork.Repository<Film>().Entities.AsQueryable();
 
-            if (countryId.HasValue)
+                if (genreId.HasValue)
+                {
+                    var filmGenreEntities = await _context.FilmGenres
+                        .Where(fg => fg.GenreId == genreId)
+                        .Select(fg => fg.FilmId)
+                        .ToListAsync();
+                    filmQuery = filmQuery.Where(film => filmGenreEntities.Contains(film.Id));
+                }
+
+                if (countryId.HasValue)
+                {
+                    var filmCountryEntities = await _context.FilmCountries
+                        .Where(fc => fc.CountryId == countryId)
+                        .Select(fc => fc.FilmId)
+                        .ToListAsync();
+                    filmQuery = filmQuery.Where(film => filmCountryEntities.Contains(film.Id));
+                }
+
+                if (year.HasValue)
+                {
+                    filmQuery = filmQuery.Where(film => film.ProductionYear == year.Value);
+                }
+
+                var models = await filmQuery
+      .OrderByDescending(f => f.CreatedAt)
+      .Select(film => new FilmViewModel
+      {
+          Id = film.Id,
+          Title = film.Title,
+          Poster = film.Poster,
+          Path = film.Path,
+          Trailer = film.Trailer,
+          ProductionYear = film.ProductionYear,
+          CreatedAt = film.CreatedAt
+      })
+      .ToListAsync(); // Note the use of ToListAsync instead of ToPagedListAsync
+
+                var pagedModels = models.ToPagedList(pageNumber, PAGE_SIZE);
+
+                string genreName = genreId.HasValue
+                    ? await _unitOfWork.Repository<Genre>().Entities
+                        .Where(g => g.Id == genreId)
+                        .Select(g => g.Name)
+                        .FirstOrDefaultAsync() ?? "Unknown Genre"
+                    : "";
+
+                string countryName = countryId.HasValue
+                    ? await _unitOfWork.Repository<Country>().Entities
+                        .Where(c => c.Id == countryId)
+                        .Select(c => c.Name)
+                        .FirstOrDefaultAsync() ?? "Unknown Country"
+                    : "";
+
+                string yearTitle = year.HasValue ? $"{year}" : "";
+                string title = $"{genreName} {countryName} {yearTitle}".Trim();
+                if (string.IsNullOrEmpty(title))
+                {
+                    title = "Phim lẻ";
+                }
+
+                return Ok(new
+                {
+                    items = pagedModels,
+                    pageNumber,
+                    pageSize = PAGE_SIZE,
+                    totalItems = pagedModels.TotalItemCount,
+                    totalPages = pagedModels.PageCount,
+                    title
+                });
+            }
+            catch (Exception ex)
             {
-                var filmCountryEntities = _context.FilmCountries
-                    .Where(fc => fc.CountryId == countryId)
-                    .Select(fc => fc.FilmId);
-                filmQuery = filmQuery.Where(film => filmCountryEntities.Contains(film.Id));
+                return StatusCode(500, new { message = "An error occurred while fetching films", error = ex.Message });
             }
+        }
 
-            if (year.HasValue)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetFilmDetail(Guid? id)
+        {
+            try
             {
-                filmQuery = filmQuery.Where(film => film.ProductionYear == year.Value);
-            }
+                if (id == null || id == Guid.Empty)
+                    return BadRequest(new { message = "Invalid Film ID" });
 
-            var models = filmQuery
-                .OrderByDescending(f => f.CreatedAt)
-                .Select(film => new FilmViewModel()
+                var film = await _unitOfWork.Repository<Film>().Entities
+                    .FirstOrDefaultAsync(m => m.Id.Equals(id));
+
+                if (film == null)
+                    return NotFound(new { message = "Film not found" });
+
+                var user = await _userManager.GetUserAsync(User);
+                bool isFollowed = false;
+
+                if (user != null)
+                {
+                    var existingFollow = await _followRepository.GetByUserIdAndFilmIdAsync(user.Id, film.Id);
+                    isFollowed = existingFollow != null;
+                }
+
+                var model = new DetailFilmViewModel
                 {
                     Id = film.Id,
                     Title = film.Title,
+                    About = film.About,
                     Poster = film.Poster,
                     Path = film.Path,
                     Trailer = film.Trailer,
                     ProductionYear = film.ProductionYear,
+                    IsFollowed = isFollowed,
                     CreatedAt = film.CreatedAt
-                })
-                .ToPagedList(pageNumber, PAGE_SIZE);
+                };
 
-            string genreName = genreId.HasValue
-                ? _unitOfWork.Repository<Genre>().Entities
-                    .Where(g => g.Id == genreId)
-                    .Select(g => g.Name)
-                    .FirstOrDefault() ?? "Unknown Genre"
-                : "";
+                var actorIds = await _context.FilmActors
+                    .Where(fa => fa.FilmId == id)
+                    .Select(fa => fa.ActorId)
+                    .ToListAsync();
 
-            string countryName = countryId.HasValue
-                ? _unitOfWork.Repository<Country>().Entities
-                    .Where(c => c.Id == countryId)
+                var actors = await _unitOfWork.Repository<Actor>().Entities
+                    .Where(a => actorIds.Contains(a.Id))
+                    .ToListAsync();
+
+                var countryIds = await _context.FilmCountries
+                    .Where(fc => fc.FilmId == id)
+                    .Select(fc => fc.CountryId)
+                    .ToListAsync();
+
+                var countries = await _unitOfWork.Repository<Country>().Entities
+                    .Where(a => countryIds.Contains(a.Id))
                     .Select(c => c.Name)
-                    .FirstOrDefault() ?? "Unknown Country"
-                : "";
+                    .ToListAsync();
 
-            string yearTitle = year.HasValue ? $"{year}" : "";
+                var genreIds = await _context.FilmGenres
+                    .Where(fg => fg.FilmId == id)
+                    .Select(fg => fg.GenreId)
+                    .ToListAsync();
 
-            ViewData["Title"] = $"{genreName} {countryName} {yearTitle}".Trim();
-            if (ViewData["Title"]?.ToString() == "")
-            {
-                ViewData["Title"] = "Phim lẻ";
+                var genres = await _unitOfWork.Repository<Genre>().Entities
+                    .Where(g => genreIds.Contains(g.Id))
+                    .ToListAsync();
+
+                var relatedFilmIds = await _context.FilmGenres
+                    .Where(fg => genreIds.Contains(fg.GenreId) && fg.FilmId != id)
+                    .Select(fg => fg.FilmId)
+                    .Distinct()
+                    .Take(50)
+                    .ToListAsync();
+
+                var relatedFilms = await _unitOfWork.Repository<Film>().Entities
+                    .Where(f => relatedFilmIds.Contains(f.Id))
+                    .OrderBy(f => f.Title)
+                    .Take(10)
+                    .Select(f => new FilmViewModel
+                    {
+                        Id = f.Id,
+                        Title = f.Title,
+                        Poster = f.Poster,
+                        Path = f.Path,
+                        Trailer = f.Trailer,
+                        ProductionYear = f.ProductionYear,
+                        CreatedAt = f.CreatedAt
+                    })
+                    .ToListAsync();
+
+                return Ok(new
+                {
+                    film = model,
+                    actors,
+                    countries,
+                    genres,
+                    relatedFilms
+                });
             }
-            return View(models);
-        }
-        public async Task<IActionResult> Detail(Guid? id)
-        {
-            if (id == null)
-                return NotFound();
-            var film = _unitOfWork.Repository<Film>().Entities.FirstOrDefault(m => m.Id.Equals(id));
-            if (film == null)
-                return NotFound();
-
-            var user = await _userManager.GetUserAsync(User);
-            bool isFollowed = false;
-
-            if (user != null)
+            catch (Exception ex)
             {
-                var existingFollow = await _followRepository.GetByUserIdAndFilmIdAsync(user.Id, film.Id);
-                isFollowed = existingFollow != null;
+                return StatusCode(500, new { message = "An error occurred while fetching film details", error = ex.Message });
             }
-            var model = new DetailFilmViewModel
-            {
-                Id = film.Id,
-                Title = film.Title,
-                About = film.About,
-                Poster = film.Poster,
-                Path = film.Path,
-                Trailer = film.Trailer,
-                ProductionYear = film.ProductionYear,
-                IsFollowed = isFollowed,
-                CreatedAt = film.CreatedAt
-            };
-
-            var actorIds = _context.FilmActors
-                .Where(fa => fa.FilmId == id)
-                .Select(fa => fa.ActorId)
-                .ToList();
-
-            var countryIds = _context.FilmCountries
-                .Where(fc => fc.FilmId == id)
-                .Select(fc => fc.CountryId)
-                .ToList();
-
-            ViewBag.FilmCountries = _unitOfWork.Repository<Country>()
-                .Entities
-                .Where(a => countryIds.Contains(a.Id))
-                .Select(c => c.Name)
-                .ToList();
-
-            ViewBag.Actors = _unitOfWork.Repository<Actor>()
-                .Entities
-                .Where(a => actorIds.Contains(a.Id))
-                .ToList();
-
-            var genreIds = _context.FilmGenres
-                .Where(fg => fg.FilmId == id)
-                .Select(fg => fg.GenreId)
-                .ToList();
-
-            ViewBag.Genres = _unitOfWork.Repository<Genre>()
-                .Entities
-                .Where(g => genreIds.Contains(g.Id))
-                .ToList();
-
-            var relatedFilmIds = _context.FilmGenres
-                .Where(fg => genreIds.Contains(fg.GenreId) && fg.FilmId != id)
-                .Select(fg => fg.FilmId)
-                .Distinct()
-                .Take(50)
-                .ToList();
-
-            var relatedFilms = _unitOfWork.Repository<Film>()
-                .Entities
-                .Where(f => relatedFilmIds.Contains(f.Id))
-                .OrderBy(f => f.Title)
-                .Take(10)
-                .ToList();
-
-            ViewBag.RelatedFilms = relatedFilms;
-            return View(model);
         }
     }
 }

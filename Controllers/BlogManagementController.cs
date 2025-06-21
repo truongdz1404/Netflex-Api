@@ -1,96 +1,67 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Netflex.Database;
 using Netflex.Models.Blog;
 using System;
 using System.Linq;
-using X.PagedList.Extensions;
+using X.PagedList;
 using OfficeOpenXml;
-using System.IO;
 using Microsoft.AspNetCore.Authorization;
+using X.PagedList.Extensions;
 
 namespace Netflex.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     [Authorize(Roles = "admin")]
-
-    public class BlogManagementController(ApplicationDbContext context,
-        IStorageService storage,
-        IUnitOfWork unitOfWork,
-        ILogger<BlogManagementController> logger)
-        : Controller
+    public class BlogManagementController : ControllerBase
     {
-        private readonly IStorageService _storage = storage;
-        private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private const int PAGE_SIZE = 6;
-        private readonly ApplicationDbContext _context = context;
+        private readonly ApplicationDbContext _context;
+        private readonly IStorageService _storage;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<BlogManagementController> _logger;
 
-        private readonly ILogger<BlogManagementController> _logger = logger;
+        public BlogManagementController(ApplicationDbContext context,
+            IStorageService storage,
+            IUnitOfWork unitOfWork,
+            ILogger<BlogManagementController> logger)
+        {
+            _context = context;
+            _storage = storage;
+            _unitOfWork = unitOfWork;
+            _logger = logger;
+        }
 
-        [Route("/dashboard/blog")]
-        public IActionResult Index(int? page, string searchTerm, string createrName, string createrId, DateTime? createdAt, string sortOrder)
+        [HttpGet]
+        public IActionResult GetAll(int? page = 1, string? searchTerm = null, string? createrName = null,
+            string? createrId = null, DateTime? createdAt = null, string? sortOrder = null)
         {
             int pageNumber = page ?? 1;
-
-            var users = _context.Users.ToList();
-            ViewBag.Users = new SelectList(users, "Id", "UserName");
-
             var blogsQuery = _context.Blogs
-                .Join(_context.Users, b => b.CreaterId, u => u.Id, (b, u) => new
-                {
-                    Blog = b,
-                    UserName = u.UserName
-                })
+                .Join(_context.Users, b => b.CreaterId, u => u.Id, (b, u) => new { Blog = b, UserName = u.UserName })
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(searchTerm))
-            {
                 blogsQuery = blogsQuery.Where(b => b.Blog.Title.Contains(searchTerm));
-            }
-
             if (!string.IsNullOrEmpty(createrId))
-            {
                 blogsQuery = blogsQuery.Where(b => b.Blog.CreaterId == createrId);
-            }
-
             if (!string.IsNullOrEmpty(createrName))
-            {
-                blogsQuery = blogsQuery.Where(b => b.UserName != null && b.UserName.Contains(createrName));
-            }
-
+                blogsQuery = blogsQuery.Where(b => b.UserName.Contains(createrName));
             if (createdAt.HasValue)
-            {
-                var utcCreatedAt = createdAt.Value.Kind == DateTimeKind.Utc ? createdAt.Value : createdAt.Value.ToUniversalTime();
-                blogsQuery = blogsQuery.Where(b => b.Blog.CreatedAt.Date == utcCreatedAt.Date);
-            }
+                blogsQuery = blogsQuery.Where(b => b.Blog.CreatedAt.Date == createdAt.Value.Date);
 
-            switch (sortOrder)
+            blogsQuery = sortOrder switch
             {
-                case "title":
-                    blogsQuery = blogsQuery.OrderBy(b => b.Blog.Title);
-                    break;
-                case "title_desc":
-                    blogsQuery = blogsQuery.OrderByDescending(b => b.Blog.Title);
-                    break;
-                case "created_at":
-                    blogsQuery = blogsQuery.OrderBy(b => b.Blog.CreatedAt);
-                    break;
-                case "created_at_desc":
-                    blogsQuery = blogsQuery.OrderByDescending(b => b.Blog.CreatedAt);
-                    break;
-                case "creater_id":
-                    blogsQuery = blogsQuery.OrderBy(b => b.Blog.CreaterId);
-                    break;
-                case "creater_id_desc":
-                    blogsQuery = blogsQuery.OrderByDescending(b => b.Blog.CreaterId);
-                    break;
-                default:
-                    blogsQuery = blogsQuery.OrderBy(b => b.Blog.Title);
-                    break;
-            }
+                "title" => blogsQuery.OrderBy(b => b.Blog.Title),
+                "title_desc" => blogsQuery.OrderByDescending(b => b.Blog.Title),
+                "created_at" => blogsQuery.OrderBy(b => b.Blog.CreatedAt),
+                "created_at_desc" => blogsQuery.OrderByDescending(b => b.Blog.CreatedAt),
+                "creater_id" => blogsQuery.OrderBy(b => b.Blog.CreaterId),
+                "creater_id_desc" => blogsQuery.OrderByDescending(b => b.Blog.CreaterId),
+                _ => blogsQuery.OrderBy(b => b.Blog.Title)
+            };
 
-            var models = blogsQuery.Select(b => new BlogViewModel()
+            var result = blogsQuery.Select(b => new BlogViewModel
             {
                 Id = b.Blog.Id,
                 Title = b.Blog.Title,
@@ -99,22 +70,15 @@ namespace Netflex.Controllers
                 CreatedAt = b.Blog.CreatedAt,
                 CreaterId = b.Blog.CreaterId,
                 CreatorName = b.UserName
-            })
-            .ToPagedList(pageNumber, PAGE_SIZE);
+            }).ToPagedList(pageNumber, 6);
 
-            ViewBag.SearchTerm = searchTerm;
-            ViewBag.CreaterId = createrId;
-            ViewBag.CreatedAt = createdAt;
-            ViewBag.SortOrder = sortOrder;
-
-            return View("~/Views/Dashboard/Blog/Index.cshtml", models);
+            return Ok(result);
         }
 
+        [HttpGet("export")]
         public IActionResult ExportToExcel()
         {
-            var blogsQuery = _unitOfWork.Repository<Blog>().Entities.AsQueryable();
-
-            var blogsData = blogsQuery.Select(b => new
+            var blogsData = _unitOfWork.Repository<Blog>().Entities.Select(b => new
             {
                 b.Id,
                 b.Title,
@@ -123,40 +87,33 @@ namespace Netflex.Controllers
                 b.CreatedAt
             }).ToList();
 
-            // Create the Excel file using EPPlus
-            using (var package = new ExcelPackage())
+            using var package = new ExcelPackage();
+            var worksheet = package.Workbook.Worksheets.Add("Blogs");
+            worksheet.Cells[1, 1].Value = "ID";
+            worksheet.Cells[1, 2].Value = "Title";
+            worksheet.Cells[1, 3].Value = "Content";
+            worksheet.Cells[1, 4].Value = "Creator ID";
+            worksheet.Cells[1, 5].Value = "Created At";
+
+            for (int i = 0; i < blogsData.Count; i++)
             {
-                var worksheet = package.Workbook.Worksheets.Add("Blogs");
-
-                worksheet.Cells[1, 1].Value = "ID";
-                worksheet.Cells[1, 2].Value = "Title";
-                worksheet.Cells[1, 3].Value = "Content";
-                worksheet.Cells[1, 4].Value = "Creator ID";
-                worksheet.Cells[1, 5].Value = "Created At";
-
-                for (int i = 0; i < blogsData.Count; i++)
-                {
-                    worksheet.Cells[i + 2, 1].Value = blogsData[i].Id;
-                    worksheet.Cells[i + 2, 2].Value = blogsData[i].Title;
-                    worksheet.Cells[i + 2, 3].Value = blogsData[i].Content;
-                    worksheet.Cells[i + 2, 4].Value = blogsData[i].CreaterId;
-                    worksheet.Cells[i + 2, 5].Value = blogsData[i].CreatedAt;
-                }
-
-                var fileContents = package.GetAsByteArray();
-                return File(fileContents, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Blogs.xlsx");
+                worksheet.Cells[i + 2, 1].Value = blogsData[i].Id;
+                worksheet.Cells[i + 2, 2].Value = blogsData[i].Title;
+                worksheet.Cells[i + 2, 3].Value = blogsData[i].Content;
+                worksheet.Cells[i + 2, 4].Value = blogsData[i].CreaterId;
+                worksheet.Cells[i + 2, 5].Value = blogsData[i].CreatedAt;
             }
+
+            var fileContents = package.GetAsByteArray();
+            return File(fileContents, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Blogs.xlsx");
         }
 
-        [Route("/dashboard/blog/detail/{id}")]
-        public IActionResult Details(Guid? id)
+        [HttpGet("{id}")]
+        public IActionResult GetById(Guid id)
         {
-            if (id == null)
-                return NotFound();
-
             var b = _unitOfWork.Repository<Blog>().Entities.FirstOrDefault(m => m.Id.Equals(id));
-            if (b == null)
-                return NotFound();
+            if (b == null) return NotFound();
+
             var model = new DetailBlogViewModels
             {
                 Id = b.Id,
@@ -164,41 +121,20 @@ namespace Netflex.Controllers
                 Content = b.Content,
                 Thumbnail = b.Thumbnail,
                 CreatedAt = b.CreatedAt,
-                CreaterId = b.CreaterId,
+                CreaterId = b.CreaterId
             };
-
-            return View("~/Views/Dashboard/Blog/Details.cshtml", model);
-        }
-
-        [Route("/dashboard/blog/create")]
-        public IActionResult Create()
-        {
-            ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName");
-            return View("~/Views/Dashboard/Blog/Create.cshtml");
+            return Ok(model);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Route("/dashboard/blog/create")]
-        public async Task<IActionResult> Create(CreateBlogViewModels blogViewModel)
+        public async Task<IActionResult> Create([FromForm] CreateBlogViewModels blogViewModel)
         {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName");
-                return View(blogViewModel);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
+            var thumbnailUri = blogViewModel.Thumbnail != null
+                ? await _storage.UploadFileAsync("thumbnail", blogViewModel.Thumbnail)
+                : null;
 
-            var thumbnailUri = blogViewModel.Thumbnail != null ? await _storage.UploadFileAsync("thumbnail", blogViewModel.Thumbnail) : null;
-
-            if (blogViewModel.Thumbnail == null)
-            {
-                _logger.LogWarning("No thumbnail uploaded.");
-            }
-            else
-            {
-                _logger.LogInformation("Thumbnail uploaded: {FileName}", blogViewModel.Thumbnail.FileName);
-            }
             var blog = new Blog
             {
                 Id = Guid.NewGuid(),
@@ -209,73 +145,46 @@ namespace Netflex.Controllers
                 CreaterId = blogViewModel.CreaterId
             };
 
-            ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName", blogViewModel.CreaterId);
             await _unitOfWork.Repository<Blog>().AddAsync(blog);
             await _unitOfWork.Save(CancellationToken.None);
 
-            return RedirectToAction("index", "blogmanagement");
+            return Ok(blog);
         }
 
-        [Route("/dashboard/blog/edit/{id}")]
-        public IActionResult Edit(Guid? id)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromForm] EditBlogViewModels blogViewModel)
         {
-            if (id == null)
-                return NotFound();
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var blog = _unitOfWork.Repository<Blog>().Entities.FirstOrDefault(b => b.Id == id);
+            if (blog == null) return NotFound();
+
+            var thumbnailUri = blogViewModel.Thumbnail != null
+                ? await _storage.UploadFileAsync("thumbnail", blogViewModel.Thumbnail)
+                : null;
+
+            blog.Title = blogViewModel.Title;
+            blog.Content = blogViewModel.Content;
+            blog.Thumbnail = thumbnailUri?.ToString() ?? blogViewModel.ThumbnailUrl;
+            blog.CreaterId = blogViewModel.CreaterId;
+            blog.CreatedAt = DateTime.UtcNow;
+
+            await _unitOfWork.Repository<Blog>().UpdateAsync(blog);
+            await _unitOfWork.Save(CancellationToken.None);
+
+            return Ok(blog);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
             var blog = _unitOfWork.Repository<Blog>().Entities.FirstOrDefault(m => m.Id.Equals(id));
-            if (blog == null)
-                return NotFound();
+            if (blog == null) return NotFound();
 
-            var blogViewModel = new EditBlogViewModels
-            {
-                Id = blog.Id,
-                Title = blog.Title,
-                Content = blog.Content,
-                ThumbnailUrl = blog.Thumbnail,
-                CreatedAt = DateTime.UtcNow,
-                CreaterId = blog.CreaterId
-            };
-            ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName", blog.CreaterId);
-            return View("~/Views/Dashboard/Blog/Edit.cshtml", blogViewModel);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Route("/dashboard/blog/edit/{id}")]
-        public async Task<IActionResult> Edit(EditBlogViewModels blogViewModel)
-        {
-            if (!ModelState.IsValid)
-                return View(blogViewModel);
-
-            var thumbnailUri = blogViewModel.Thumbnail != null ? await _storage.UploadFileAsync("thumbnail", blogViewModel.Thumbnail) : null;
-            var newBlog = new Blog()
-            {
-
-                Id = blogViewModel.Id,
-                Title = blogViewModel.Title,
-                Content = blogViewModel.Content,
-                Thumbnail = thumbnailUri?.ToString() ?? blogViewModel.ThumbnailUrl,
-                CreatedAt = DateTime.UtcNow,
-                CreaterId = blogViewModel.CreaterId
-            };
-            ViewBag.CreaterId = new SelectList(_context.Users, "Id", "UserName", blogViewModel.CreaterId);
-            await _unitOfWork.Repository<Blog>().UpdateAsync(newBlog);
+            await _unitOfWork.Repository<Blog>().DeleteAsync(blog);
             await _unitOfWork.Save(CancellationToken.None);
-            return RedirectToAction("index", "blogmanagement");
-        }
 
-
-        [Route("/dashboard/blog/delete/{id}")]
-        [HttpDelete]
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null)
-                return NotFound();
-            var b = _unitOfWork.Repository<Blog>().Entities.FirstOrDefault(m => m.Id.Equals(id));
-            if (b == null)
-                return NotFound();
-            await _unitOfWork.Repository<Blog>().DeleteAsync(b);
-            await _unitOfWork.Save(CancellationToken.None);
-            return RedirectToAction("index", "blogmanagement");
+            return NoContent();
         }
     }
 }

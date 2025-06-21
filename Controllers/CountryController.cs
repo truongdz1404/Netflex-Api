@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Netflex.Database.Repositories.Abstractions;
-using Netflex.Database.Repositories.Implements;
 using Netflex.Models.Country;
 using X.PagedList;
 using X.PagedList.Extensions;
 
 namespace Netflex.Controllers
 {
-    public class CountryController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CountryController : ControllerBase
     {
         private readonly ICountryRepository _countryRepository;
         private const int PageSize = 12;
@@ -16,81 +17,90 @@ namespace Netflex.Controllers
         {
             _countryRepository = countryRepository;
         }
-        [Route("/dashboard/country")]
-        public async Task<IActionResult> Index(string? searchString, int? page)
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll(string? searchString, int? page)
         {
             var countries = await _countryRepository.GetAllAsync();
 
-            // Tìm kiếm nếu có từ khóa
             if (!string.IsNullOrEmpty(searchString))
             {
                 countries = countries.Where(c => c.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // Phân trang
             var pageNumber = page ?? 1;
             var pagedCountries = countries.ToPagedList(pageNumber, PageSize);
 
-            ViewBag.SearchString = searchString;
-
-            return View("~/Views/Dashboard/Country/Index.cshtml", pagedCountries);
+            return Ok(pagedCountries);
         }
 
-        [Route("/dashboard/country/create")]
-        public IActionResult Create() => View("~/Views/Dashboard/Country/Create.cshtml");
-
         [HttpPost]
-        [Route("/dashboard/country/create")]
-        public async Task<IActionResult> Create(CreateCountryViewModel country)
+        public async Task<IActionResult> Create([FromBody] CreateCountryViewModel country)
         {
-            if (!ModelState.IsValid) return View(country);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             var newCountry = new Country
             {
                 Id = Guid.NewGuid(),
                 Name = country.Name
             };
+
             await _countryRepository.AddAsync(newCountry);
             await _countryRepository.SaveChangeAsync();
-            return RedirectToAction(nameof(Index));
+
+            return CreatedAtAction(nameof(GetById), new { id = newCountry.Id }, newCountry);
         }
 
-        [Route("/dashboard/country/edit/{id}")]
-        public async Task<IActionResult> Edit(Guid id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
         {
             var country = await _countryRepository.GetByIdAsync(id);
-            if (country == null) return NotFound();
-            return View("~/Views/Dashboard/Country/Edit.cshtml", country);
+            if (country == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(country);
         }
 
-        [HttpPost]
-        [Route("/dashboard/country/edit/{id}")]
-        public async Task<IActionResult> Edit(Guid id, EditCountryViewModel country)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] EditCountryViewModel country)
         {
-            if (!ModelState.IsValid) return View(country);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             var existingCountry = await _countryRepository.GetByIdAsync(id);
-            if (existingCountry == null) return NotFound();
+            if (existingCountry == null)
+            {
+                return NotFound();
+            }
 
             existingCountry.Name = country.Name;
 
             await _countryRepository.UpdateAsync(existingCountry);
             await _countryRepository.SaveChangeAsync();
 
-            return RedirectToAction(nameof(Index));
+            return Ok(existingCountry);
         }
 
-        [HttpDelete]
-        [Route("/dashboard/country/delete/{id}")]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
             var country = await _countryRepository.GetByIdAsync(id);
-            if (country == null) return NotFound();
+            if (country == null)
+            {
+                return NotFound();
+            }
 
             await _countryRepository.DeleteAsync(country);
             await _countryRepository.SaveChangeAsync();
 
-            return RedirectToAction(nameof(Index));
+            return NoContent();
         }
     }
 }

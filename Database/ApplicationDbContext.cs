@@ -26,7 +26,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(builder);
 
-        builder.HasDefaultSchema("dbo");
+        // builder.HasDefaultSchema("dbo");
         builder.Entity<IdentityRole>().ToTable("tblRoles");
         builder.Entity<IdentityUserRole<string>>().ToTable("tblUserRoles");
         builder.Entity<IdentityUserToken<string>>().ToTable("tblUserTokens");
