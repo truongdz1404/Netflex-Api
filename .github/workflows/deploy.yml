@@ -13,8 +13,10 @@ jobs:
       - name: Pull latest code
         uses: actions/checkout@v3
 
-      - name: Stop and clean old containers
-        run: docker-compose down
+      - name: Stop and remove old container
+        run: |
+          docker-compose down
+          docker rm -f netflex-api-prod || true
 
-      - name: Build and run new containers
+      - name: Build and run new container
         run: docker-compose up -d --build
