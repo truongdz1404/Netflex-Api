@@ -20,16 +20,8 @@ builder.Services.AddSingleton<ConnectionManager>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
-else
-{
-    app.UseExceptionHandler("/error");
-    app.UseHsts();
-}
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
