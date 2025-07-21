@@ -1,17 +1,16 @@
 services:
   netflex-api:
-    image: ${DOCKER_REGISTRY-}netflex-api:latest
+    image: netflex-api:latest
     container_name: netflex-api-prod
     build:
       context: .
       dockerfile: Dockerfile
     env_file:
-      - /home/truong-hi/netflex-api/Netflex-Api/.env
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_HTTP_PORTS=8888
       - ConnectionStrings__DbConnection=Host=ep-square-bonus-a8a3m2w4-pooler.eastus2.azure.neon.tech;Database=netflex;Username=netflex_owner;Password=npg_SrpXlCq7gL9s;SSL Mode=Require;Trust Server Certificate=true
-      - EMAIL_API_KEY=${EMAIL_API_KEY}
     ports:
       - "8888:8888"
     volumes:
