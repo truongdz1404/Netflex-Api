@@ -15,5 +15,5 @@ services:
       - "8888:8888"
     volumes:
       - ~/.aspnet/https:/https:ro
-      - ./netflex-storage-key.json:/app/netflex-storage-key.json:ro
+      - /home/truong-hi/netflex-api/Netflex-Api/netflex-storage-key.json:/app/netflex-storage-key.json:ro
     restart: always
