@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Netflex.Entities;
+using Netflex.Services.Implements;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -15,15 +17,18 @@ public class AuthController : ControllerBase
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IConfiguration _configuration;
+    private readonly IEmailSender _emailSender;
 
     public AuthController(
         UserManager<User> userManager,
         SignInManager<User> signInManager,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IEmailSender emailSender)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _configuration = configuration;
+        _emailSender = emailSender;
     }
 
     [HttpPost("register")]
@@ -158,19 +163,39 @@ public class AuthController : ControllerBase
         return BadRequest(ModelState);
     }
 
-    [HttpPost("forgot-password")]
-    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+   [HttpPost("forgot-password")]
+public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+{
+    if (!ModelState.IsValid)
+        return BadRequest(ModelState);
+
+    var user = await _userManager.FindByEmailAsync(request.Email);
+    if (user == null)
+        return Ok(new { message = "If the email exists, an OTP has been sent" });
+
+    // Tạo OTP 6 chữ số
+    var otp = new Random().Next(100000, 999999).ToString();
+
+    // Tạo nội dung HTML
+    string html = "<html><body>" +
+                  "<h3>Xin chào,</h3>" +
+                  "<p>Mã OTP để đặt lại mật khẩu của bạn là:</p>" +
+                  $"<h2 style='color:blue'>{otp}</h2>" +
+                  "<p>Mã này sẽ hết hạn sau 5 phút.</p>" +
+                  "<p>Nếu bạn không yêu cầu, vui lòng bỏ qua email này.</p>" +
+                  "</body></html>";
+
+    // Gửi email
+    await _emailSender.SendEmailAsync(request.Email, "Mã OTP đặt lại mật khẩu", html);
+
+    // Trả về client
+    return Ok(new
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        message = "OTP has been sent to your email",
+        otp = otp
+    });
+}
 
-        var user = await _userManager.FindByEmailAsync(request.Email);
-        if (user == null)
-            return Ok(new { message = "If the email exists, a password reset link has been sent" });
-
-        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        return Ok(new { message = "Password reset token generated", token = token });
-    }
 
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
