@@ -44,12 +44,12 @@ namespace Netflex.Controllers
 
             return Ok(new
             {
+                comments,
                 currentPage = page,
                 pageSize,
                 sort,
                 hasMore,
                 totalItems,
-                items = comments
             });
         }
 
