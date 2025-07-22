@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Netflex.Database;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Netflex.Controllers
 {
@@ -23,7 +24,7 @@ namespace Netflex.Controllers
             if (page <= 0 || pageSize <= 0)
                 return BadRequest("page và pageSize phải > 0");
 
-            IQueryable<Comment> query = _context.Comments;
+            IQueryable<Comment> query = _context.Comments.Include(x => x.User);
 
             sort = sort.ToLower();
             query = sort switch
@@ -42,9 +43,20 @@ namespace Netflex.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
+            var dto = comments.Select(x => new CommentDto
+            {
+                Id = x.Id,
+                Content = x.Content,
+                CreatedAt = x.CreatedAt,
+                FilmId = x.Id,
+                ModifiedAt = x.ModifiedAt,
+                SeriesId = x.SeriesId,
+                User = x.User,
+            });
+
             return Ok(new
             {
-                comments,
+                comments = dto,
                 currentPage = page,
                 pageSize,
                 sort,
@@ -128,6 +140,27 @@ namespace Netflex.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        public class CommentDto
+        {
+            public Guid Id { get; set; }
+            public string? Content { get; set; }
+
+            public User User { get; set; }
+
+            [ForeignKey(nameof(Film))]
+            public Guid? FilmId { get; set; }
+
+            public Guid? SeriesId { get; set; }
+
+            public DateTime CreatedAt { get; set; }
+            public DateTime? ModifiedAt { get; set; }
+        }
+
+        public class UserCommentDto
+        {
+
         }
 
         public class CreateCommentDto
