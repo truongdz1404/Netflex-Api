@@ -1,10 +1,12 @@
 services:
   netflex-api:
-    image: ${DOCKER_REGISTRY-}netflex-api:latest
+    image: netflex-api:latest
     container_name: netflex-api-prod
     build:
       context: .
       dockerfile: Dockerfile
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_HTTP_PORTS=8888
@@ -13,4 +15,5 @@ services:
       - "8888:8888"
     volumes:
       - ~/.aspnet/https:/https:ro
+      - /home/truong-hi/netflex-api/Netflex-Api/netflex-storage-key.json:/app/netflex-storage-key.json:ro
     restart: always

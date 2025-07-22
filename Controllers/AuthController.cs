@@ -411,8 +411,9 @@ public class AuthController : ControllerBase
         var user = await _userManager.FindByEmailAsync(request.Email);
         if (user == null)
             return BadRequest(new { message = "Invalid request" });
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-        var result = await _userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
+        var result = await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
         if (result.Succeeded)
             return Ok(new { message = "Password reset successfully" });
 
@@ -513,7 +514,6 @@ public class ForgotPasswordRequest
 public class ResetPasswordRequest
 {
     public string Email { get; set; } = string.Empty;
-    public string Token { get; set; } = string.Empty;
     public string NewPassword { get; set; } = string.Empty;
 }
 

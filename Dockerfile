@@ -12,6 +12,7 @@ RUN dotnet publish -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/out ./
+# Xóa dòng này: COPY netflex-storage-key.json ./netflex-storage-key.json
 
 ENV ASPNETCORE_HTTP_PORTS=8888
 EXPOSE 8888
