@@ -67,16 +67,29 @@ namespace Netflex.Controllers
 
         // GET: api/Comments/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Comment>> GetComment(Guid id)
+        public async Task<IActionResult> GetComment(Guid id)
         {
-            var comment = await _context.Comments.FindAsync(id);
+            var comment = await _context.Comments
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (comment == null)
             {
                 return NotFound();
             }
 
-            return comment;
+            var dto = new CommentDto
+            {
+                Id = comment.Id,
+                Content = comment.Content,
+                CreatedAt = comment.CreatedAt,
+                FilmId = comment.Id,
+                ModifiedAt = comment.ModifiedAt,
+                SeriesId = comment.SeriesId,
+                User = comment.User,
+            };
+
+            return Ok(dto);
         }
 
         // PUT: api/Comments/5
