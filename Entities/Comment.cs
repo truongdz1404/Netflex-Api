@@ -12,11 +12,11 @@ namespace Netflex.Entities
         public User User { get; set; }
 
         [ForeignKey(nameof(Film))]
-        public Guid FilmId { get; set; }
+        public Guid? FilmId { get; set; }
         public Film Film { get; set; }
 
         [ForeignKey(nameof(Serie))]
-        public Guid SeriesId { get; set; }
+        public Guid? SeriesId { get; set; }
         public Serie Serie { get; set; }
 
         public DateTime CreatedAt { get; set; }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Netflex.Database;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Netflex.Controllers
 {
@@ -18,9 +18,39 @@ namespace Netflex.Controllers
 
         // GET: api/Comments
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Comment>>> GetComments()
+        public async Task<ActionResult> GetComments(int page = 1, int pageSize = 10, string sort = "desc")
         {
-            return await _context.Comments.ToListAsync();
+            if (page <= 0 || pageSize <= 0)
+                return BadRequest("page và pageSize phải > 0");
+
+            IQueryable<Comment> query = _context.Comments;
+
+            sort = sort.ToLower();
+            query = sort switch
+            {
+                "asc" => query.OrderBy(c => c.CreatedAt),
+                "desc" => query.OrderByDescending(c => c.CreatedAt),
+                _ => query.OrderByDescending(c => c.CreatedAt)
+            };
+
+            var totalItems = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            var hasMore = page < totalPages;
+
+            var comments = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return Ok(new
+            {
+                currentPage = page,
+                pageSize,
+                sort,
+                hasMore,
+                totalItems,
+                items = comments
+            });
         }
 
         // GET: api/Comments/5
@@ -39,42 +69,49 @@ namespace Netflex.Controllers
 
         // PUT: api/Comments/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutComment(Guid id, Comment comment)
+        public async Task<IActionResult> PutComment(Guid id, EditCommentDto dto)
         {
-            if (id != comment.Id)
+            var comment = await _context.Comments.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (comment == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(comment).State = EntityState.Modified;
+            comment.Content = dto.Content;
+            comment.ModifiedAt = DateTime.UtcNow;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CommentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
         // POST: api/Comments
         [HttpPost]
-        public async Task<ActionResult<Comment>> PostComment(Comment comment)
+        public async Task<IActionResult> PostComment(CreateCommentDto dto)
         {
-            _context.Comments.Add(comment);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var newComment = new Comment
+                {
+                    Id = Guid.NewGuid(),
+                    CreatedAt = DateTime.UtcNow,
+                    Content = dto.Content,
+                    FilmId = dto.FilmId.HasValue ? dto.FilmId.Value : null,
+                    UserId = dto.UserId,
+                    SeriesId = dto.SeriesId.HasValue ? dto.SeriesId.Value : null,
+                };
 
-            return CreatedAtAction("GetComment", new { id = comment.Id }, comment);
+                await _context.Comments.AddAsync(newComment);
+                await _context.SaveChangesAsync();
+
+                return Created();
+            }
+
+            catch (Exception)
+            {
+                return BadRequest("Lỗi không xác định.");
+            }
         }
 
         // DELETE: api/Comments/5
@@ -93,24 +130,20 @@ namespace Netflex.Controllers
             return NoContent();
         }
 
-        private bool CommentExists(Guid id)
+        public class CreateCommentDto
         {
-            return _context.Comments.Any(e => e.Id == id);
+            [Required]
+            public string UserId { get; set; }
+            [Required]
+            public string Content { get; set; } = string.Empty;
+
+            public Guid? FilmId { get; set; }
+            public Guid? SeriesId { get; set; }
         }
 
-        private class CreateCommentDto
+        public class EditCommentDto
         {
-            public string UserId { get; set; }
-            public User User { get; set; }
-
-            public Guid FilmId { get; set; }
-            public Film Film { get; set; }
-
-            public Guid SeriesId { get; set; }
-            public Serie Serie { get; set; }
-
-            public DateTime CreatedAt { get; set; }
-            public DateTime? ModifiedAt { get; set; }
+            public string Content { get; set; } = string.Empty;
         }
     }
 }
