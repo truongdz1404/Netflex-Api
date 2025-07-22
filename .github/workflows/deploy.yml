@@ -1,0 +1,49 @@
+name: Self-Hosted Docker Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull latest code
+        uses: actions/checkout@v3
+
+      - name: Debug secrets
+        run: |
+          echo "Checking if EMAIL_API_KEY secret exists..."
+          echo "Secret length: ${#EMAIL_API_KEY}"
+          if [ -z "$EMAIL_API_KEY" ]; then
+            echo "ERROR: EMAIL_API_KEY is empty or not set"
+          else
+            echo "SUCCESS: EMAIL_API_KEY is available"
+          fi
+        env:
+          EMAIL_API_KEY: ${{ secrets.EMAIL_API_KEY }}
+
+      - name: Create .env file
+        run: |
+          echo "EMAIL_API_KEY=$EMAIL_API_KEY" > .env
+          echo "Created .env file"
+          echo "Checking .env content:"
+          cat .env
+        env:
+          EMAIL_API_KEY: ${{ secrets.EMAIL_API_KEY }}
+
+      - name: Stop and remove old container
+        run: |
+          docker-compose down
+          docker rm -f netflex-api-prod || true
+
+      - name: Build and run new container
+        run: docker-compose up -d --build
+
+      - name: Verify container environment
+        run: |
+          sleep 5
+          echo "Container environment check:"
+          docker exec netflex-api-prod env | grep EMAIL_API_KEY
