@@ -22,6 +22,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public virtual DbSet<Follow> Follows { get; set; }
     public virtual DbSet<Serie> Series { get; set; }
     public virtual DbSet<Comment> Comments { get; set; }
+    public virtual DbSet<FavoriteFilms> FavoriteFilms { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -35,6 +36,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         builder.Entity<IdentityUserClaim<string>>().ToTable("tblUserClaims");
         builder.Entity<IdentityRoleClaim<string>>().ToTable("tblRoleClaims");
         builder.Entity<Comment>().ToTable("tblComments");
+        builder.Entity<FavoriteFilms>().ToTable("tblFavoriteFilms");
 
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }

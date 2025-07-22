@@ -14,5 +14,6 @@ namespace Netflex.Entities
         public ICollection<SerieActor> SerieActors { get; set; } = [];
         public ICollection<SerieGenre> SerieGenres { get; set; } = [];
         public ICollection<SerieCountry> SerieCountries { get; set; } = [];
+        public ICollection<FavoriteFilms> FavoriteFilms { get; set; } = [];
     }
 }

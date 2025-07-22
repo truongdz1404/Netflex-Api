@@ -13,4 +13,6 @@ public class Film : Entity
     public Guid? AgeCategoryId { get; set; }
     public TimeSpan HowLong { get; set; }
     public DateTime CreatedAt { get; set; }
+
+    public ICollection<FavoriteFilms> FavoriteFilms { get; set; } = [];
 }
