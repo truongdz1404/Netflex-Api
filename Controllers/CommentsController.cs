@@ -18,13 +18,16 @@ namespace Netflex.Controllers
         }
 
         // GET: api/Comments
-        [HttpGet]
-        public async Task<ActionResult> GetComments(int page = 1, int pageSize = 10, string sort = "desc")
+        [HttpGet("paged/{filmId}")]
+        public async Task<ActionResult> GetComments([FromRoute] Guid filmId,
+            int page = 1, int pageSize = 10, string sort = "desc")
         {
             if (page <= 0 || pageSize <= 0)
                 return BadRequest("page và pageSize phải > 0");
 
-            IQueryable<Comment> query = _context.Comments.Include(x => x.User);
+            IQueryable<Comment> query = _context.Comments
+                .Where(x => x.FilmId == filmId)
+                .Include(x => x.User);
 
             sort = sort.ToLower();
             query = sort switch
