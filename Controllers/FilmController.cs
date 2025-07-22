@@ -30,7 +30,7 @@ namespace Netflex.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFilms(int? page, Guid? genreId, Guid? countryId, int? year)
+        public async Task<IActionResult> GetFilms(int? page, Guid? genreId, Guid? countryId, int? year, string? keyword)
         {
             try
             {
@@ -59,6 +59,13 @@ namespace Netflex.Controllers
                 {
                     filmQuery = filmQuery.Where(film => film.ProductionYear == year.Value);
                 }
+
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    filmQuery = filmQuery.Where(film => film.Title.ToLower().Contains(keyword.ToLower())
+);
+                }
+
 
                 var models = await filmQuery
       .OrderByDescending(f => f.CreatedAt)
