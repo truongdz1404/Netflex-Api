@@ -68,7 +68,7 @@ namespace Netflex.Controllers
 
 
                 var models = await filmQuery
-      .OrderByDescending(f => f.CreatedAt)
+      //.OrderByDescending(f => f.CreatedAt)
       .Select(film => new FilmViewModel
       {
           Id = film.Id,
@@ -119,6 +119,46 @@ namespace Netflex.Controllers
                 return StatusCode(500, new { message = "An error occurred while fetching films", error = ex.Message });
             }
         }
+
+        [HttpGet("latest")]
+        public async Task<IActionResult> GetLatestFilms(int? page)
+        {
+            try
+            {
+                int pageNumber = page ?? 1;
+
+                var filmQuery = _unitOfWork.Repository<Film>().Entities
+                    .OrderByDescending(f => f.CreatedAt)
+                    .Select(film => new FilmViewModel
+                    {
+                        Id = film.Id,
+                        Title = film.Title,
+                        Poster = film.Poster,
+                        Path = film.Path,
+                        Trailer = film.Trailer,
+                        ProductionYear = film.ProductionYear,
+                        CreatedAt = film.CreatedAt
+                    });
+
+                var models = await filmQuery.ToListAsync();
+                var pagedModels = models.ToPagedList(pageNumber, PAGE_SIZE);
+
+                return Ok(new
+                {
+                    items = pagedModels,
+                    pageNumber,
+                    pageSize = PAGE_SIZE,
+                    totalItems = pagedModels.TotalItemCount,
+                    totalPages = pagedModels.PageCount,
+                    title = "Phim mới nhất"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while fetching latest films", error = ex.Message });
+            }
+        }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetFilmDetail(Guid? id)
