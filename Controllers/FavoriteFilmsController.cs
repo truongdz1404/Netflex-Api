@@ -118,23 +118,24 @@ namespace Netflex.Controllers
 
 
         // DELETE: api/FavoriteFilms/film?userId=abc123&filmId=xxx-guid
-        [HttpDelete("item")]
-        public async Task<IActionResult> DeleteFavoriteItem(string userId, Guid itemId)
+        [HttpDelete("remove")]
+        public async Task<IActionResult> Remove(string userId, Guid? filmId, Guid? seriesId)
         {
             var favorite = await _context.FavoriteFilms.FirstOrDefaultAsync(f =>
                 f.UserId == userId &&
-                (f.FilmId == itemId || f.SeriesId == itemId));
+                (f.FilmId == filmId || f.SeriesId == seriesId));
 
             if (favorite == null)
             {
-                return NotFound(new { message = "Không tìm thấy mục yêu thích cần xóa." });
+                return NotFound(new { message = "Không tìm thấy mục yêu thích cần xoá." });
             }
 
             _context.FavoriteFilms.Remove(favorite);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Đã xóa mục yêu thích khỏi danh sách." });
+            return Ok(new { message = "Đã xoá khỏi yêu thích." });
         }
+
 
 
         [HttpGet("is-favorite")]
