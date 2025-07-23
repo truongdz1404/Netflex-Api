@@ -133,7 +133,7 @@ namespace Netflex.Controllers
                 await _context.Comments.AddAsync(newComment);
                 await _context.SaveChangesAsync();
 
-                return Ok("");
+                return Created();
             }
 
             catch (Exception)
