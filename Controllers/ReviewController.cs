@@ -53,19 +53,17 @@ namespace Netflex.Controllers
         {
             try
             {
-                var createrId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (createrId == null)
-                    return Unauthorized(new { message = "User not authenticated" });
-
-                if (id == Guid.Empty)
-                    return BadRequest(new { message = "Invalid Film ID" });
+                if (id == Guid.Empty || model.CreaterId == Guid.Empty)
+                    return BadRequest(new { message = "Invalid film or user ID" });
 
                 if (!ModelState.IsValid)
                     return BadRequest(new { message = "Invalid request data", errors = ModelState });
 
                 var reviewRepo = _unitOfWork.Repository<Review>();
+                var createrIdStr = model.CreaterId.ToString(); // Convert Guid to string
+
                 var existingReview = await reviewRepo.Entities
-                    .FirstOrDefaultAsync(x => x.FilmId == id && x.CreaterId == createrId);
+                    .FirstOrDefaultAsync(x => x.FilmId == id && x.CreaterId == createrIdStr);
 
                 if (existingReview == null)
                 {
@@ -73,7 +71,7 @@ namespace Netflex.Controllers
                     {
                         Id = Guid.NewGuid(),
                         Rating = model.Rating,
-                        CreaterId = createrId,
+                        CreaterId = createrIdStr,
                         FilmId = id,
                         SerieId = null
                     };
@@ -84,9 +82,10 @@ namespace Netflex.Controllers
                     existingReview.Rating = model.Rating;
                     await reviewRepo.UpdateAsync(existingReview);
                 }
+
                 await _unitOfWork.Save(CancellationToken.None);
 
-                var modelView = await GetFilmRating(id, createrId);
+                var modelView = await GetFilmRating(id, createrIdStr);
                 return Ok(new { message = "Film review saved successfully", review = modelView });
             }
             catch (Exception ex)
@@ -95,24 +94,23 @@ namespace Netflex.Controllers
             }
         }
 
+        // Fix for CS0019: Convert Guid to string for comparison with CreaterId (which is string)
         [HttpPost("serie/{id}")]
         public async Task<IActionResult> SerieRating(Guid id, [FromBody] ReviewEditModel model)
         {
             try
             {
-                var createrId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (createrId == null)
-                    return Unauthorized(new { message = "User not authenticated" });
-
-                if (id == Guid.Empty)
-                    return BadRequest(new { message = "Invalid Series ID" });
+                if (id == Guid.Empty || model.CreaterId == Guid.Empty)
+                    return BadRequest(new { message = "Invalid series or user ID" });
 
                 if (!ModelState.IsValid)
                     return BadRequest(new { message = "Invalid request data", errors = ModelState });
 
                 var reviewRepo = _unitOfWork.Repository<Review>();
+                var createrIdStr = model.CreaterId.ToString(); // Convert Guid to string
+
                 var existingReview = await reviewRepo.Entities
-                    .FirstOrDefaultAsync(x => x.SerieId == id && x.CreaterId == createrId);
+                    .FirstOrDefaultAsync(x => x.SerieId == id && x.CreaterId == createrIdStr);
 
                 if (existingReview == null)
                 {
@@ -120,7 +118,7 @@ namespace Netflex.Controllers
                     {
                         Id = Guid.NewGuid(),
                         Rating = model.Rating,
-                        CreaterId = createrId,
+                        CreaterId = createrIdStr,
                         SerieId = id,
                         FilmId = null
                     };
@@ -131,9 +129,10 @@ namespace Netflex.Controllers
                     existingReview.Rating = model.Rating;
                     await reviewRepo.UpdateAsync(existingReview);
                 }
+
                 await _unitOfWork.Save(CancellationToken.None);
 
-                var modelView = await GetSerieRating(id, createrId);
+                var modelView = await GetSerieRating(id, createrIdStr);
                 return Ok(new { message = "Series review saved successfully", review = modelView });
             }
             catch (Exception ex)
@@ -141,6 +140,8 @@ namespace Netflex.Controllers
                 return StatusCode(500, new { message = "An error occurred while saving the series review", error = ex.Message });
             }
         }
+
+
 
         private async Task<ReviewViewModel> GetFilmRating(Guid id, string createrId)
         {

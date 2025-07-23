@@ -65,6 +65,93 @@ namespace Netflex.Controllers
             }
         }
 
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetSeriesFilter(int? page, Guid? genreId, Guid? countryId, int? year, string? keyword)
+        {
+            try
+            {
+                int pageNumber = page ?? 1;
+                var serieQuery = _unitOfWork.Repository<Serie>().Entities.AsQueryable();
+
+                if (genreId.HasValue)
+                {
+                    var serieGenreEntities = await _context.SerieGenres
+                        .Where(sg => sg.GenreId == genreId)
+                        .Select(sg => sg.SerieId)
+                        .ToListAsync();
+                    serieQuery = serieQuery.Where(serie => serieGenreEntities.Contains(serie.Id));
+                }
+
+                if (countryId.HasValue)
+                {
+                    var serieCountryEntities = await _context.SerieCountries
+                        .Where(sc => sc.CountryId == countryId)
+                        .Select(sc => sc.SerieId)
+                        .ToListAsync();
+                    serieQuery = serieQuery.Where(serie => serieCountryEntities.Contains(serie.Id));
+                }
+
+                if (year.HasValue)
+                {
+                    serieQuery = serieQuery.Where(serie => serie.ProductionYear == year.Value);
+                }
+
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    serieQuery = serieQuery.Where(serie => serie.Title.ToLower().Contains(keyword.ToLower()));
+                }
+
+                var models = await serieQuery
+                    .OrderByDescending(s => s.CreatedAt)
+                    .Select(serie => new
+                    {
+                        Id = serie.Id,
+                        Title = serie.Title,
+                        Poster = serie.Poster,
+                        ProductionYear = serie.ProductionYear,
+                        CreatedAt = serie.CreatedAt
+                    })
+                    .ToListAsync();
+
+                var pagedModels = models.ToPagedList(pageNumber, PAGE_SIZE);
+
+                string genreName = genreId.HasValue
+                    ? await _unitOfWork.Repository<Genre>().Entities
+                        .Where(g => g.Id == genreId)
+                        .Select(g => g.Name)
+                        .FirstOrDefaultAsync() ?? "Unknown Genre"
+                    : "";
+
+                string countryName = countryId.HasValue
+                    ? await _unitOfWork.Repository<Country>().Entities
+                        .Where(c => c.Id == countryId)
+                        .Select(c => c.Name)
+                        .FirstOrDefaultAsync() ?? "Unknown Country"
+                    : "";
+
+                string yearTitle = year.HasValue ? $"{year}" : "";
+                string title = $"{genreName} {countryName} {yearTitle}".Trim();
+                if (string.IsNullOrEmpty(title))
+                {
+                    title = "Series";
+                }
+
+                return Ok(new
+                {
+                    items = pagedModels,
+                    pageNumber,
+                    pageSize = PAGE_SIZE,
+                    totalItems = pagedModels.TotalItemCount,
+                    totalPages = pagedModels.PageCount,
+                    title
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while fetching series", error = ex.ToString() });
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSerieDetail(Guid? id)
         {
