@@ -142,6 +142,93 @@ namespace Netflex.Controllers
             }
         }
 
+
+        [HttpGet("film/{id}/all")]
+        public async Task<IActionResult> GetAllFilmReviews(Guid id)
+        {
+            try
+            {
+                if (id == Guid.Empty)
+                {
+                    return BadRequest(new { message = "Invalid Film ID" });
+                }
+
+                var reviewRepo = _unitOfWork.Repository<Review>();
+
+                var reviews = await reviewRepo.Entities
+                    .Where(r => r.FilmId == id)
+                    .ToListAsync();
+
+                var result = reviews.Select(r => new
+                {
+                    ReviewId = r.Id,
+                    r.Rating,
+                    r.CreaterId,
+                    r.FilmId,
+                });
+
+                return Ok(new
+                {
+                    message = "Fetched film reviews successfully",
+                    total = result.Count(),
+                    reviews = result
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while fetching film reviews",
+                    error = ex.Message
+                });
+            }
+        }
+
+
+        [HttpGet("serie/{id}/all")]
+        public async Task<IActionResult> GetAllSerieReviews(Guid id)
+        {
+            try
+            {
+                if (id == Guid.Empty)
+                {
+                    return BadRequest(new { message = "Invalid Series ID" });
+                }
+
+                var reviewRepo = _unitOfWork.Repository<Review>();
+
+                var reviews = await reviewRepo.Entities
+                    .Where(r => r.SerieId == id)
+                    .ToListAsync();
+
+                var result = reviews.Select(r => new
+                {
+                    ReviewId = r.Id,
+                    r.Rating,
+                    r.CreaterId,
+                    r.SerieId,
+                });
+
+                return Ok(new
+                {
+                    message = "Fetched series reviews successfully",
+                    total = result.Count(),
+                    reviews = result
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while fetching series reviews",
+                    error = ex.Message
+                });
+            }
+        }
+
+
+
+
         private async Task<ReviewViewModel> GetFilmRating(Guid id, string createrId)
         {
             var reviews = await _unitOfWork.Repository<Review>().Entities
@@ -177,5 +264,45 @@ namespace Netflex.Controllers
                 SerieId = id
             };
         }
+
+        [HttpGet("film/{id}/rating")]
+        public async Task<IActionResult> GetFilmRatingPublic(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest(new { message = "Invalid Film ID" });
+
+            var reviews = await _unitOfWork.Repository<Review>().Entities
+                .Where(r => r.FilmId == id)
+                .ToListAsync();
+
+            return Ok(new
+            {
+                message = "Fetched film rating successfully",
+                averageRating = reviews.Any() ? reviews.Average(r => r.Rating) : 1,
+                totalReviews = reviews.Count,
+                filmId = id
+            });
+        }
+
+        [HttpGet("serie/{id}/rating")]
+        public async Task<IActionResult> GetSerieRatingPublic(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest(new { message = "Invalid Series ID" });
+
+            var reviews = await _unitOfWork.Repository<Review>().Entities
+                .Where(r => r.SerieId == id)
+                .ToListAsync();
+
+            return Ok(new
+            {
+                message = "Fetched series rating successfully",
+                averageRating = reviews.Any() ? reviews.Average(r => r.Rating) : 1,
+                totalReviews = reviews.Count,
+                serieId = id
+            });
+        }
+
+
     }
 }
