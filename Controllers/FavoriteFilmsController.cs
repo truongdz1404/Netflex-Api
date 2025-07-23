@@ -68,10 +68,9 @@ namespace Netflex.Controllers
         {
             if (string.IsNullOrEmpty(dto.UserId) || (dto.FilmId == null && dto.SeriesId == null))
             {
-                return BadRequest("Thiếu thông tin UserId hoặc Film/Serie.");
+                return BadRequest(new { message = "Thiếu thông tin UserId hoặc Film/Serie." });
             }
 
-            // Kiểm tra đã có chưa
             var exists = await _context.FavoriteFilms.AnyAsync(f =>
                 f.UserId == dto.UserId &&
                 ((dto.FilmId != null && f.FilmId == dto.FilmId) ||
@@ -79,26 +78,24 @@ namespace Netflex.Controllers
 
             if (exists)
             {
-                return Conflict("Phim hoặc series đã có trong danh sách yêu thích.");
+                return Conflict(new { message = "Phim hoặc series đã có trong danh sách yêu thích." });
             }
 
             if (dto.FilmId.HasValue)
             {
-                Console.WriteLine("FilmId: " + dto.FilmId);
                 var filmExists = await _context.Films.AnyAsync(f => f.Id == dto.FilmId.Value);
                 if (!filmExists)
                 {
-                    return NotFound("Film không tồn tại.");
+                    return NotFound(new { message = "Film không tồn tại." });
                 }
             }
 
             if (dto.SeriesId.HasValue)
             {
-                Console.WriteLine("SeriesId: " + dto.SeriesId);
                 var seriesExists = await _context.Series.AnyAsync(s => s.Id == dto.SeriesId.Value);
                 if (!seriesExists)
                 {
-                    return NotFound("Series không tồn tại.");
+                    return NotFound(new { message = "Series không tồn tại." });
                 }
             }
 
@@ -113,8 +110,9 @@ namespace Netflex.Controllers
             _context.FavoriteFilms.Add(favorite);
             await _context.SaveChangesAsync();
 
-            return Ok("Đã thêm vào danh sách yêu thích.");
+            return Ok(new { message = "Đã thêm vào danh sách yêu thích." });
         }
+
 
 
 
@@ -129,14 +127,15 @@ namespace Netflex.Controllers
 
             if (favorite == null)
             {
-                return NotFound("Không tìm thấy mục yêu thích cần xóa.");
+                return NotFound(new { message = "Không tìm thấy mục yêu thích cần xóa." });
             }
 
             _context.FavoriteFilms.Remove(favorite);
             await _context.SaveChangesAsync();
 
-            return Ok("Đã xóa mục yêu thích khỏi danh sách.");
+            return Ok(new { message = "Đã xóa mục yêu thích khỏi danh sách." });
         }
+
 
         [HttpGet("is-favorite")]
         public async Task<IActionResult> IsFavorite([FromQuery] string userId, [FromQuery] Guid? filmId, [FromQuery] Guid? seriesId)
