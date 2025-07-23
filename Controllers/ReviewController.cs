@@ -177,5 +177,45 @@ namespace Netflex.Controllers
                 SerieId = id
             };
         }
+
+        [HttpGet("film/{id}/rating")]
+        public async Task<IActionResult> GetFilmRatingPublic(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest(new { message = "Invalid Film ID" });
+
+            var reviews = await _unitOfWork.Repository<Review>().Entities
+                .Where(r => r.FilmId == id)
+                .ToListAsync();
+
+            return Ok(new
+            {
+                message = "Fetched film rating successfully",
+                averageRating = reviews.Any() ? reviews.Average(r => r.Rating) : 1,
+                totalReviews = reviews.Count,
+                filmId = id
+            });
+        }
+
+        [HttpGet("serie/{id}/rating")]
+        public async Task<IActionResult> GetSerieRatingPublic(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest(new { message = "Invalid Series ID" });
+
+            var reviews = await _unitOfWork.Repository<Review>().Entities
+                .Where(r => r.SerieId == id)
+                .ToListAsync();
+
+            return Ok(new
+            {
+                message = "Fetched series rating successfully",
+                averageRating = reviews.Any() ? reviews.Average(r => r.Rating) : 1,
+                totalReviews = reviews.Count,
+                serieId = id
+            });
+        }
+
+
     }
 }
