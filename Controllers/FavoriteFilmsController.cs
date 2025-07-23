@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Netflex.Database;
 using Microsoft.EntityFrameworkCore;
-using Humanizer;
+
 
 
 namespace Netflex.Controllers
@@ -118,23 +118,34 @@ namespace Netflex.Controllers
 
 
         // DELETE: api/FavoriteFilms/film?userId=abc123&filmId=xxx-guid
-        [HttpDelete("remove")]
-        public async Task<IActionResult> Remove(string userId, Guid? filmId, Guid? seriesId)
-        {
-            var favorite = await _context.FavoriteFilms.FirstOrDefaultAsync(f =>
-                f.UserId == userId &&
-                (f.FilmId == filmId || f.SeriesId == seriesId));
+       [HttpDelete("remove")]
+public async Task<IActionResult> Remove(string userId, Guid? filmId, Guid? seriesId)
+{
+    FavoriteFilms? favorite = null;
 
-            if (favorite == null)
-            {
-                return NotFound(new { message = "Không tìm thấy mục yêu thích cần xoá." });
-            }
+    if (filmId.HasValue)
+    {
+        favorite = await _context.FavoriteFilms.FirstOrDefaultAsync(f =>
+            f.UserId == userId && f.FilmId == filmId);
+    }
+    else if (seriesId.HasValue)
+    {
+        favorite = await _context.FavoriteFilms.FirstOrDefaultAsync(f =>
+            f.UserId == userId && f.SeriesId == seriesId);
+    }
 
-            _context.FavoriteFilms.Remove(favorite);
-            await _context.SaveChangesAsync();
+    if (favorite == null)
+    {
+        return NotFound(new { message = "Không tìm thấy mục yêu thích cần xoá." });
+    }
 
-            return Ok(new { message = "Đã xoá khỏi yêu thích." });
-        }
+    _context.FavoriteFilms.Remove(favorite);
+    await _context.SaveChangesAsync();
+
+    return Ok(new { message = "Đã xoá khỏi yêu thích." });
+}
+
+
 
 
 
