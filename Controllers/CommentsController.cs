@@ -18,15 +18,15 @@ namespace Netflex.Controllers
         }
 
         // GET: api/Comments
-        [HttpGet("paged/{filmId}")]
-        public async Task<ActionResult> GetComments([FromRoute] Guid filmId,
+        [HttpGet("paged/{id}")]
+        public async Task<ActionResult> GetComments([FromRoute] Guid id,
             int page = 1, int pageSize = 10, string sort = "desc")
         {
             if (page <= 0 || pageSize <= 0)
                 return BadRequest("page và pageSize phải > 0");
 
             IQueryable<Comment> query = _context.Comments
-                .Where(x => x.FilmId == filmId)
+                .Where(x => x.FilmId == id || x.SeriesId == id)
                 .Include(x => x.User);
 
             sort = sort.ToLower();
@@ -133,7 +133,7 @@ namespace Netflex.Controllers
                 await _context.Comments.AddAsync(newComment);
                 await _context.SaveChangesAsync();
 
-                return Created();
+                return Ok("");
             }
 
             catch (Exception)
