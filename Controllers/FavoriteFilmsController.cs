@@ -45,7 +45,8 @@ namespace Netflex.Controllers
                     .Select(f => new FavoriteFilmDto
                     {
                         FilmId = f.FilmId!.Value,
-                        Title = f.Film!.Title
+                        Title = f.Film!.Title,
+                        Poster = f.Film.Poster
                     })
                     .ToList(),
                 FavoriteSeries = favorites
@@ -53,7 +54,8 @@ namespace Netflex.Controllers
                     .Select(f => new FavoriteSeriesDto
                     {
                         SeriesId = f.SeriesId!.Value,
-                        Title = f.Serie!.Title
+                        Title = f.Serie!.Title,
+                        Poster = f.Serie.Poster
                     })
                     .ToList()
             };
@@ -118,32 +120,32 @@ namespace Netflex.Controllers
 
 
         // DELETE: api/FavoriteFilms/film?userId=abc123&filmId=xxx-guid
-       [HttpDelete("remove")]
-public async Task<IActionResult> Remove(string userId, Guid? filmId, Guid? seriesId)
-{
-    FavoriteFilms? favorite = null;
+        [HttpDelete("remove")]
+        public async Task<IActionResult> Remove(string userId, Guid? filmId, Guid? seriesId)
+        {
+            FavoriteFilms? favorite = null;
 
-    if (filmId.HasValue)
-    {
-        favorite = await _context.FavoriteFilms.FirstOrDefaultAsync(f =>
-            f.UserId == userId && f.FilmId == filmId);
-    }
-    else if (seriesId.HasValue)
-    {
-        favorite = await _context.FavoriteFilms.FirstOrDefaultAsync(f =>
-            f.UserId == userId && f.SeriesId == seriesId);
-    }
+            if (filmId.HasValue)
+            {
+                favorite = await _context.FavoriteFilms.FirstOrDefaultAsync(f =>
+                    f.UserId == userId && f.FilmId == filmId);
+            }
+            else if (seriesId.HasValue)
+            {
+                favorite = await _context.FavoriteFilms.FirstOrDefaultAsync(f =>
+                    f.UserId == userId && f.SeriesId == seriesId);
+            }
 
-    if (favorite == null)
-    {
-        return NotFound(new { message = "Không tìm thấy mục yêu thích cần xoá." });
-    }
+            if (favorite == null)
+            {
+                return NotFound(new { message = "Không tìm thấy mục yêu thích cần xoá." });
+            }
 
-    _context.FavoriteFilms.Remove(favorite);
-    await _context.SaveChangesAsync();
+            _context.FavoriteFilms.Remove(favorite);
+            await _context.SaveChangesAsync();
 
-    return Ok(new { message = "Đã xoá khỏi yêu thích." });
-}
+            return Ok(new { message = "Đã xoá khỏi yêu thích." });
+        }
 
 
 
@@ -198,12 +200,15 @@ public async Task<IActionResult> Remove(string userId, Guid? filmId, Guid? serie
         {
             public Guid FilmId { get; set; }
             public string Title { get; set; } = null!;
+            public string? Poster { get; set; }
+
         }
 
         public class FavoriteSeriesDto
         {
             public Guid SeriesId { get; set; }
             public string Title { get; set; } = null!;
+            public string? Poster { get; set; }
         }
 
 
